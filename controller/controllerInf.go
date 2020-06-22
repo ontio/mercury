@@ -1,5 +1,7 @@
 package controller
 
+import "git.ont.io/ontid/otf/message"
+
 type ParameterInf interface {
 	GetParameter() interface{}
 }
@@ -9,12 +11,12 @@ type ControllerResp interface {
 	GetBytes() ([]byte, error)
 	GetInt64() (int64, error)
 	GetMap() (map[string]interface{}, error)
-	GetNextMessage() (Message, error)
+	GetNextMessage() (message.Message, error)
 }
 
 type ControllerInf interface {
 	Name() string
 	Initiate(param ParameterInf) error
-	Process(msg Message) (ControllerResp, error)
+	Process(msg message.Message) (ControllerResp, error)
 	Shutdown() error
 }

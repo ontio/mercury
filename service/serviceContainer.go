@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/controller"
+	"git.ont.io/ontid/otf/message"
 )
 
 type ServiceInf interface {
@@ -12,11 +13,11 @@ type ServiceInf interface {
 	GetController(name string) (controller.ControllerInf, error)
 	GetControllers() (map[string]controller.ControllerInf, error)
 	RemoveController(name string) error
-	Serv(message controller.Message) (controller.ControllerResp, error)
+	Serv(message message.Message) (controller.ControllerResp, error)
 }
 
 type ServiceResp struct {
-	OriginalMessage controller.Message
+	OriginalMessage message.Message
 	Message         map[string]interface{}
 }
 
@@ -39,8 +40,8 @@ func (r ServiceResp) GetMap() (map[string]interface{}, error) {
 	return r.Message, nil
 }
 
-func (r ServiceResp) GetNextMessage() (controller.Message, error) {
-	m := controller.Message{}
+func (r ServiceResp) GetNextMessage() (message.Message, error) {
+	m := message.Message{}
 	m.MessageType = r.OriginalMessage.MessageType
 	m.Content = r.Message
 	return m, nil
@@ -85,7 +86,7 @@ func (s *Service) RemoveController(name string) error {
 	return nil
 }
 
-func (s *Service) Serv(message controller.Message) (controller.ControllerResp, error) {
+func (s *Service) Serv(message message.Message) (controller.ControllerResp, error) {
 
 	m := message
 	for e := s.Container.Front(); e != nil; e = e.Next() {
