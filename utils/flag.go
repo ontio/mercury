@@ -8,7 +8,9 @@ import (
 const (
 	DEFAULT_WALLET_PATH = "./wallet.dat"
 	//DEFAULT_LOG_LEVEL                       = log.InfoLo
-	DEFAULT_HTTP_PORT = ":8080"
+	DEFAULT_HTTP_PORT     = ":8080"
+	DEFAULT_LOG_FILE_NAME = ""
+	DEFAULT_LOG_FILE_PATH = "Log"
 )
 
 var (

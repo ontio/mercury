@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"syscall"
 
+	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
@@ -35,12 +36,12 @@ func main() {
 
 func startAgent(ctx *cli.Context) {
 	r := gin.Default()
-	r.Use()
+	r.Use(middleware.LoggerToFile())
 	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("addr:", account.Address)
+	middleware.Log.Infof("start agent svr%s",account.Address)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
