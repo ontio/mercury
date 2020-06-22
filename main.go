@@ -4,21 +4,44 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/micro/cli"
 )
 
+func setupAPP() *cli.App {
+	app := cli.NewApp()
+	app.Usage = "agent otf"
+	app.Action = startAgent
+	app.Flags = []cli.Flag{
+		utils.LogLevelFlag,
+		utils.LogDirFlag,
+	}
+	app.Before = func(context *cli.Context) error {
+		runtime.GOMAXPROCS(runtime.NumCPU())
+		return nil
+	}
+	return app
+}
 func main() {
+	if err := setupAPP().Run(os.Args); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
+func startAgent(ctx *cli.Context) {
 	r := gin.Default()
 	r.Use()
-	account, err := utils.OpenAccount("./wallet.dat")
+	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("addr:", account.Address)
-	err = r.Run(":8080")
+	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
 	}
