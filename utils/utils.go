@@ -2,29 +2,28 @@ package utils
 
 import (
 	"fmt"
-	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/howeyc/gopass"
+	sdk "github.com/ontio/ontology-go-sdk"
 )
 
 var Version = ""
 
-
-func OpenAccount(path string) (*sdk.Account,error){
+func OpenAccount(path string) (*sdk.Account, error) {
 	ontSdk := sdk.NewOntologySdk()
-	wallet,err := ontSdk.OpenWallet("./wallet.dat")
+	wallet, err := ontSdk.OpenWallet("./wallet.dat")
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	pwd, err := GetPassword()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer ClearPasswd(pwd)
-	account, err :=wallet.GetDefaultAccount(pwd)
+	account, err := wallet.GetDefaultAccount(pwd)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
-	return account,nil
+	return account, nil
 }
 
 func GetPassword() ([]byte, error) {

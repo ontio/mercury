@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
 	"git.ont.io/ontid/otf/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -17,11 +17,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	account,err := utils.OpenAccount("./wallet.dat")
+	account, err := utils.OpenAccount("./wallet.dat")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("addr:",account.Address)
+	fmt.Println("addr:", account.Address)
 	signalHandle()
 }
 
