@@ -13,15 +13,15 @@ import (
 func main() {
 	r := gin.Default()
 	r.Use()
-	err := r.Run(":8080")
-	if err != nil {
-		panic(err)
-	}
 	account, err := utils.OpenAccount("./wallet.dat")
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("addr:", account.Address)
+	err = r.Run(":8080")
+	if err != nil {
+		panic(err)
+	}
 	signalHandle()
 }
 

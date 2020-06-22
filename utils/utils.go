@@ -10,7 +10,7 @@ var Version = ""
 
 func OpenAccount(path string) (*sdk.Account, error) {
 	ontSdk := sdk.NewOntologySdk()
-	wallet, err := ontSdk.OpenWallet("./wallet.dat")
+	wallet, err := ontSdk.OpenWallet(path)
 	if err != nil {
 		return nil, err
 	}
