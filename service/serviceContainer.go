@@ -11,7 +11,7 @@ import (
 type ServiceInf interface {
 	RegisterController(name string, c controller.ControllerInf) error
 	GetController(name string) (controller.ControllerInf, error)
-	GetControllers() (map[string]controller.ControllerInf, error)
+	GetControllers() (*list.List, error)
 	RemoveController(name string) error
 	Serv(message message.Message) (controller.ControllerResp, error)
 }
@@ -49,8 +49,13 @@ func (r ServiceResp) GetNextMessage() (message.Message, error) {
 
 type Service struct {
 	//store
-	Container list.List
+	Container *list.List
 }
+
+func NewService() *Service {
+	return &Service{Container:list.New()}
+}
+
 
 func (s *Service) RegisterController(c controller.ControllerInf) error {
 
@@ -69,7 +74,7 @@ func (s *Service) GetController(name string) (controller.ControllerInf, error) {
 	return nil, nil
 }
 
-func (s *Service) GetControllers() (list.List, error) {
+func (s *Service) GetControllers() (*list.List, error) {
 
 	return s.Container, nil
 }
@@ -85,6 +90,9 @@ func (s *Service) RemoveController(name string) error {
 
 	return nil
 }
+
+
+
 
 func (s *Service) Serv(message message.Message) (controller.ControllerResp, error) {
 

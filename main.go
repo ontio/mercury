@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/service"
 	"os"
 	"os/signal"
 	"runtime"
@@ -41,11 +43,31 @@ func startAgent(ctx *cli.Context) {
 	if err != nil {
 		panic(err)
 	}
+
+	serv := service.NewService()
+	serv.RegisterController(service.NewSyscontroller())
+	serv.RegisterController(service.NewCustomcontroller())
+	//test
+	content := make(map[string]interface{})
+	content["name"]="test"
+	content["id"]  = 1
+
+	msg := message.Message{MessageType:message.Invitation,Content:content}
+
+
+	resp, err := serv.Serv(msg)
+	if err != nil {
+		fmt.Printf("err:%s\n",err.Error())
+		return
+	}
+	fmt.Printf("resp:%v\n",resp)
+
 	middleware.Log.Infof("start agent svr%s",account.Address)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
 	}
+
 	signalHandle()
 }
 

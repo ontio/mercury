@@ -10,18 +10,24 @@ type Syscontroller struct {
 
 }
 
-func(s *Syscontroller)Name()string{
+func NewSyscontroller() Syscontroller{
+	s :=  Syscontroller{}
+	s.Initiate(nil)
+	return s
+}
+
+func(s Syscontroller)Name()string{
 	return "syscontroller"
 }
 
-func (s *Syscontroller)Initiate(param controller.ParameterInf)error {
-	fmt.Println("%s Initiate",s.Name())
+func (s Syscontroller)Initiate(param controller.ParameterInf)error {
+	fmt.Printf("%s Initiate\n",s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s *Syscontroller)Process(msg message.Message) (controller.ControllerResp, error){
-	fmt.Printf("%s Process:%v",s.Name(),msg)
+func (s Syscontroller)Process(msg message.Message) (controller.ControllerResp, error){
+	fmt.Printf("%s Process:%v\n",s.Name(),msg)
 	//todo add logic
 	switch msg.MessageType {
 	case message.Invitation:
@@ -45,4 +51,8 @@ func (s *Syscontroller)Process(msg message.Message) (controller.ControllerResp, 
 
 	resp := ServiceResp{}
 	return resp,nil
+}
+func (s Syscontroller)Shutdown() error {
+	fmt.Printf("%s shutdown\n",s.Name())
+	return nil
 }
