@@ -9,9 +9,12 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/micro/cli v0.2.0
+	github.com/kr/pretty v0.2.0 // indirect
 	github.com/ontio/ontology-crypto v1.0.7
 	github.com/ontio/ontology-go-sdk v1.11.1
 	github.com/spf13/cobra v1.0.0
 	github.com/urfave/cli v1.22.1
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
+
+replace launchpad.net/gocheck => github.com/go-check/check v0.0.0-20180628173108-788fd7840127
