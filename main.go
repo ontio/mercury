@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/config"
 	"os"
 	"os/signal"
 	"runtime"
@@ -10,7 +11,6 @@ import (
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
 	"git.ont.io/ontid/otf/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
 )
 
@@ -36,28 +36,17 @@ func main() {
 }
 
 func startAgent(ctx *cli.Context) {
-	r := gin.Default()
-	r.Use(middleware.LoggerToFile())
-	r.Use(gin.Recovery())
 	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH)
 	if err != nil {
 		panic(err)
 	}
-	v1 := r.Group("/api/v1")
-	{
-		v1.POST("/invitation", rest.Invite)
-		v1.POST("/connection", rest.Connect)
-		v1.POST("/connectionack",rest.ConnectAck)
-		v1.POST("/proposalcredential",rest.ProposalCredentialReq)
-		v1.POST("/sendcredential", rest.SendCredential)
-		v1.POST("/issuecredentail", rest.IssueCredential)
-		v1.POST("/credentialack",rest.CredentialAckInfo)
-		v1.POST("/requestproof", rest.RequestProof)
-		v1.POST("/presentproof", rest.PresentProof)
-		v1.POST("/presentationack",rest.PresentationACKInfo)
-	}
+	r := rest.InitRouter()
 	rest.NewService()
-	middleware.Log.Infof("start agent svr%s", account.Address)
+	cfg := config.Cfg{
+		Port :utils.DEFAULT_HTTP_PORT,
+		Ip :"",
+	}
+	middleware.Log.Infof("start agent svr%s,port:%s", account.Address,cfg.Port)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
