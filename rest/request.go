@@ -3,11 +3,11 @@ package rest
 type Invitation struct {
 	Type            string   `json:"@type"`
 	Id              string   `json:"@id"`
-	Lable           string   `json:"lable"`
+	Label           string   `json:"label"`
 	Did             string   `json:"did"`
 	RecipientKeys   []string `json:"recipientKeys"`
 	ServiceEndpoint string   `json:"serviceEndpoint"`
-	routingKeys     string   `json:"routingKeys"`
+	RoutingKeys     []string   `json:"routingKeys"`
 }
 
 type ConnectionRequest struct {

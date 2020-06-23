@@ -12,6 +12,7 @@ type ControllerResp interface {
 	GetInt64() (int64, error)
 	GetMap() (map[string]interface{}, error)
 	GetNextMessage() (message.Message, error)
+	GetOriginMessage()(message.Message,error)
 }
 
 type ControllerInf interface {
