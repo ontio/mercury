@@ -1,4 +1,4 @@
-package controller
+package service
 
 import "git.ont.io/ontid/otf/message"
 

@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"git.ont.io/ontid/otf/controller"
 	"git.ont.io/ontid/otf/message"
 )
 
@@ -19,13 +18,13 @@ func (s Customcontroller) Name() string {
 	return "customcontroller"
 }
 
-func (s Customcontroller) Initiate(param controller.ParameterInf) error {
+func (s Customcontroller) Initiate(param ParameterInf) error {
 	fmt.Printf("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s Customcontroller) Process(msg message.Message) (controller.ControllerResp, error) {
+func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
