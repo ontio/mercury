@@ -3,50 +3,52 @@ package middleware
 import (
 	"fmt"
 	"os"
-	"path"
 	"time"
 
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 )
 
 var Log *logrus.Logger
 func LoggerToFile() gin.HandlerFunc {
 	logFilePath := utils.DEFAULT_LOG_FILE_PATH
-	logFileName := utils.DEFAULT_LOG_FILE_NAME
-	fileName := path.Join(logFilePath, logFileName)
-	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	if err != nil {
+	if fi, err := os.Stat(logFilePath); err == nil {
+		if !fi.IsDir() {
+			fmt.Printf("open %s: not a directory", logFilePath)
+			panic(err)
+		}
+	} else if os.IsNotExist(err) {
+		if err := os.MkdirAll(logFilePath, 0766); err != nil {
+			fmt.Println("err", err)
+			panic(err)
+		}
+	} else {
 		fmt.Println("err", err)
+		panic(err)
+	}
+	nowTime := time.Now().Format("2006-01-02_15.04.05")
+	src, err := os.OpenFile(logFilePath+nowTime+"_Log.log", os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
 	}
 	Log = logrus.New()
 	Log.Out = src
 	Log.SetLevel(logrus.DebugLevel)
-
+	Log.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat:"2006-01-02 15:04:05",
+	})
 	logWriter, err := rotatelogs.New(
-		fileName+".%Y%m%d.log",
-		rotatelogs.WithLinkName(fileName),
+		logFilePath+nowTime+"_Log.log",
+		rotatelogs.WithLinkName(logFilePath),
 		rotatelogs.WithMaxAge(7*24*time.Hour),
 		rotatelogs.WithRotationTime(24*time.Hour),
 	)
-
-	writeMap := lfshook.WriterMap{
-		logrus.InfoLevel:  logWriter,
-		logrus.FatalLevel: logWriter,
-		logrus.DebugLevel: logWriter,
-		logrus.WarnLevel:  logWriter,
-		logrus.ErrorLevel: logWriter,
-		logrus.PanicLevel: logWriter,
+	if err != nil {
+		panic(err)
 	}
-
-	lfHook := lfshook.NewHook(writeMap, &logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-
-	Log.AddHook(lfHook)
+	logrus.SetOutput(logWriter)
 	return func(c *gin.Context) {
 		startTime := time.Now()
 		c.Next()
@@ -65,3 +67,9 @@ func LoggerToFile() gin.HandlerFunc {
 		}).Info()
 	}
 }
+
+type logFileWriter struct {
+	file *os.File
+	size int64
+}
+

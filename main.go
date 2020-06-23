@@ -61,8 +61,7 @@ func startAgent(ctx *cli.Context) {
 		return
 	}
 	fmt.Printf("resp:%v\n",resp)
-
-	middleware.Log.Infof("start agent svr%s",account.Address)
+	middleware.Log.Info("start agent svr%s",account.Address)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
