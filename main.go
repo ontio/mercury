@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/service"
 	"os"
 	"os/signal"
 	"runtime"
@@ -13,6 +11,9 @@ import (
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
+	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/rest"
+	"git.ont.io/ontid/otf/service"
 )
 
 func setupAPP() *cli.App {
@@ -39,9 +40,19 @@ func main() {
 func startAgent(ctx *cli.Context) {
 	r := gin.Default()
 	r.Use(middleware.LoggerToFile())
+	r.Use(gin.Recovery())
 	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH)
 	if err != nil {
 		panic(err)
+	}
+	v1 := r.Group("/api/v1")
+	{
+		v1.POST("/invitation", rest.Invite)
+		v1.POST("/connection", rest.Connect)
+		v1.POST("/sendcredential", rest.SendCredential)
+		v1.POST("/issuecredentail", rest.IssueCredential)
+		v1.POST("/requestproof", rest.RequestProof)
+		v1.POST("/presentproof", rest.PresentProof)
 	}
 
 	serv := service.NewService()

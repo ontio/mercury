@@ -7,8 +7,8 @@ import (
 
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/sirupsen/logrus"
 )
 
 var Log *logrus.Logger
@@ -38,7 +38,7 @@ func LoggerToFile() gin.HandlerFunc {
 	Log.Out = src
 	Log.SetLevel(logrus.DebugLevel)
 	Log.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat:"2006-01-02 15:04:05",
+		TimestampFormat: "2006-01-02 15:04:05",
 	})
 	logWriter, err := rotatelogs.New(
 		logFilePath+nowTime+"_Log.log",
@@ -73,4 +73,3 @@ type logFileWriter struct {
 	file *os.File
 	size int64
 }
-

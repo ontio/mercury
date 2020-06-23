@@ -50,7 +50,6 @@ type Service struct {
 	ServiceEndpoint string   `json:"serviceEndpoint"`
 }
 
-//=======connection Response
 type ConnectResponse struct {
 	Type   string `json:"@type"`
 	Id     string `json:"@id"`
@@ -117,13 +116,6 @@ type RequestCredential struct {
 	Id             string       `json:"@id"`
 	Comment        string       `json:"comment"`
 	RequestsAttach []Attachment `json:"requests_attach"`
-}
-
-type IssueCredential struct {
-	Type              string       `json:"@type"`
-	Id                string       `json:"@id"`
-	Comment           string       `json:"comment"`
-	CredentialsAttach []Attachment `json:"credentials_attach"`
 }
 
 type CredentialACK struct {
