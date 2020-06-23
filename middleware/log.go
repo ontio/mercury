@@ -12,6 +12,7 @@ import (
 )
 
 var Log *logrus.Logger
+
 func LoggerToFile() gin.HandlerFunc {
 	logFilePath := utils.DEFAULT_LOG_FILE_PATH
 	if fi, err := os.Stat(logFilePath); err == nil {

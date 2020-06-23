@@ -53,9 +53,8 @@ type Service struct {
 }
 
 func NewService() *Service {
-	return &Service{Container:list.New()}
+	return &Service{Container: list.New()}
 }
-
 
 func (s *Service) RegisterController(c controller.ControllerInf) error {
 
@@ -90,9 +89,6 @@ func (s *Service) RemoveController(name string) error {
 
 	return nil
 }
-
-
-
 
 func (s *Service) Serv(message message.Message) (controller.ControllerResp, error) {
 

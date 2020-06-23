@@ -49,19 +49,21 @@ func startAgent(ctx *cli.Context) {
 	serv.RegisterController(service.NewCustomcontroller())
 	//test
 	content := make(map[string]interface{})
-	content["name"]="test"
-	content["id"]  = 1
+	content["name"] = "test"
+	content["id"] = 1
 
-	msg := message.Message{MessageType:message.Invitation,Content:content}
-
+	msg := message.Message{MessageType: message.Invitation, Content: content}
 
 	resp, err := serv.Serv(msg)
 	if err != nil {
-		fmt.Printf("err:%s\n",err.Error())
+		fmt.Printf("err:%s\n", err.Error())
 		return
 	}
 	fmt.Printf("resp:%v\n",resp)
 	middleware.Log.Info("start agent svr%s",account.Address)
+	fmt.Printf("resp:%v\n", resp)
+
+	middleware.Log.Infof("start agent svr%s", account.Address)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)

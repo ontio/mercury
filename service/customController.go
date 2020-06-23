@@ -7,27 +7,26 @@ import (
 )
 
 type Customcontroller struct {
-
 }
 
-func NewCustomcontroller() Customcontroller{
-	s :=  Customcontroller{}
+func NewCustomcontroller() Customcontroller {
+	s := Customcontroller{}
 	s.Initiate(nil)
 	return s
 }
 
-func(s Customcontroller)Name()string{
+func (s Customcontroller) Name() string {
 	return "customcontroller"
 }
 
-func (s Customcontroller)Initiate(param controller.ParameterInf)error {
-	fmt.Printf("%s Initiate\n",s.Name())
+func (s Customcontroller) Initiate(param controller.ParameterInf) error {
+	fmt.Printf("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s Customcontroller)Process(msg message.Message) (controller.ControllerResp, error){
-	fmt.Printf("%s Process:%v\n",s.Name(),msg)
+func (s Customcontroller) Process(msg message.Message) (controller.ControllerResp, error) {
+	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
 	case message.Invitation:
@@ -50,9 +49,9 @@ func (s Customcontroller)Process(msg message.Message) (controller.ControllerResp
 	}
 
 	resp := ServiceResp{}
-	return resp,nil
+	return resp, nil
 }
-func (s Customcontroller)Shutdown() error {
-	fmt.Printf("%s shutdown\n",s.Name())
+func (s Customcontroller) Shutdown() error {
+	fmt.Printf("%s shutdown\n", s.Name())
 	return nil
 }

@@ -7,34 +7,35 @@ import (
 )
 
 type Syscontroller struct {
-
 }
 
-func NewSyscontroller() Syscontroller{
-	s :=  Syscontroller{}
+func NewSyscontroller() Syscontroller {
+	s := Syscontroller{}
 	s.Initiate(nil)
 	return s
 }
 
-func(s Syscontroller)Name()string{
+func (s Syscontroller) Name() string {
 	return "syscontroller"
 }
 
-func (s Syscontroller)Initiate(param controller.ParameterInf)error {
-	fmt.Printf("%s Initiate\n",s.Name())
+func (s Syscontroller) Initiate(param controller.ParameterInf) error {
+	fmt.Printf("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s Syscontroller)Process(msg message.Message) (controller.ControllerResp, error){
-	fmt.Printf("%s Process:%v\n",s.Name(),msg)
+func (s Syscontroller) Process(msg message.Message) (controller.ControllerResp, error) {
+	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
+	//for system
 	case message.Invitation:
 	case message.ConnectionRequest:
 	case message.ConnectionResponse:
 	case message.ConnectionACK:
 
+	//for custom
 	case message.ProposalCredential:
 	case message.OfferCredential:
 	case message.RequestCredential:
@@ -50,9 +51,9 @@ func (s Syscontroller)Process(msg message.Message) (controller.ControllerResp, e
 	}
 
 	resp := ServiceResp{}
-	return resp,nil
+	return resp, nil
 }
-func (s Syscontroller)Shutdown() error {
-	fmt.Printf("%s shutdown\n",s.Name())
+func (s Syscontroller) Shutdown() error {
+	fmt.Printf("%s shutdown\n", s.Name())
 	return nil
 }
