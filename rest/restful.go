@@ -11,12 +11,12 @@ import (
 
 func Invite(c *gin.Context) {
 	resp := Gin{C: c}
-	invite := &Invitation{}
+	invite := &message.Invitation{}
 	err := c.Bind(invite)
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 	}
-	data, err := SendMsg(message.Invitation, structs.Map(invite))
+	data, err := SendMsg(message.InvitationType, structs.Map(invite))
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 	}
@@ -25,12 +25,12 @@ func Invite(c *gin.Context) {
 
 func Connect(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &ConnectionRequest{}
+	req := &message.ConnectionRequest{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectionRequest err:%s", err)
 	}
-	data, err := SendMsg(message.ConnectionRequest, structs.Map(req))
+	data, err := SendMsg(message.ConnectionRequestType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("connect err:%s")
 	}
@@ -39,112 +39,112 @@ func Connect(c *gin.Context) {
 
 func ConnectAck(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &ConnectionACK{}
+	req := &message.ConnectionACK{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectAck err:%s", err)
 	}
-	data, err := SendMsg(message.ConnectionACK, structs.Map(req))
+	data, err := SendMsg(message.ConnectionACKType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("ConnectAck msg type:%d,err:%s", message.ConnectionACK, err)
+		middleware.Log.Errorf("ConnectAck msg type:%d,err:%s", message.ConnectionACKType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func ProposalCredentialReq(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &ProposalCredential{}
+	req := &message.ProposalCredential{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
 	}
-	data, err := SendMsg(message.ConnectionACK, structs.Map(req))
+	data, err := SendMsg(message.ConnectionACKType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.ConnectionACK, err)
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.ConnectionACKType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func SendCredential(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &RequestCredential{}
+	req := &message.RequestCredential{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
 	}
-	data, err := SendMsg(message.RequestCredential, structs.Map(req))
+	data, err := SendMsg(message.RequestCredentialType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("ProposalCredential msg type:%d,err:%s", message.RequestCredential, err)
+		middleware.Log.Errorf("ProposalCredential msg type:%d,err:%s", message.RequestCredentialType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func IssueCredential(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &OfferCredential{}
+	req := &message.OfferCredential{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential err:%s", err)
 	}
-	data, err := SendMsg(message.IssueCredential, structs.Map(req))
+	data, err := SendMsg(message.IssueCredentialType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("OfferCredential msg type:%d,err:%s", message.IssueCredential, err)
+		middleware.Log.Errorf("OfferCredential msg type:%d,err:%s", message.IssueCredentialType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func CredentialAckInfo(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &CredentialACK{}
+	req := &message.CredentialACK{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("CredentialAck err:%s", err)
 	}
-	data, err := SendMsg(message.CredentialACK, structs.Map(req))
+	data, err := SendMsg(message.CredentialACKType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("CredentialAck msg type:%d,err:%s", message.CredentialACK, err)
+		middleware.Log.Errorf("CredentialAck msg type:%d,err:%s", message.CredentialACKType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func RequestProof(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &RequestCredential{}
+	req := &message.RequestCredential{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("RequestCredential err:%s", err)
 	}
-	data, err := SendMsg(message.RequestPresentation, structs.Map(req))
+	data, err := SendMsg(message.RequestPresentationType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.RequestCredential, err)
+		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.RequestCredentialType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func PresentProof(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &Presentation{}
+	req := &message.Presentation{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("Presentation err:%s", err)
 	}
-	data, err := SendMsg(message.Presentation, structs.Map(req))
+	data, err := SendMsg(message.PresentationType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("Presentation msg type:%d,err:%s", message.Presentation, err)
+		middleware.Log.Errorf("Presentation msg type:%d,err:%s", message.PresentationType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }
 
 func PresentationACKInfo(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &PresentationACK{}
+	req := &message.PresentationACK{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK err:%s", err)
 	}
-	data, err := SendMsg(message.PresentationACK, structs.Map(req))
+	data, err := SendMsg(message.PresentationACKType, structs.Map(req))
 	if err != nil {
-		middleware.Log.Errorf("PresentationACK msg type:%d,err:%s", message.PresentationACK, err)
+		middleware.Log.Errorf("PresentationACK msg type:%d,err:%s", message.PresentationACKType, err)
 	}
 	resp.Response(http.StatusOK, 0, data)
 }

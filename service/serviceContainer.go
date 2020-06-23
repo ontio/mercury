@@ -46,10 +46,9 @@ func (r ServiceResp) GetNextMessage() (message.Message, error) {
 	return m, nil
 }
 
-func (r ServiceResp)GetOriginMessage()(message.Message, error){
-	return r.OriginalMessage,nil
+func (r ServiceResp) GetOriginMessage() (message.Message, error) {
+	return r.OriginalMessage, nil
 }
-
 
 type Service struct {
 	//store

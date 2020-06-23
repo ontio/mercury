@@ -3,20 +3,20 @@ package message
 type MessageType int
 
 const (
-	Invitation MessageType = iota
-	ConnectionRequest
-	ConnectionResponse
-	ConnectionACK
+	InvitationType MessageType = iota
+	ConnectionRequestType
+	ConnectionResponseType
+	ConnectionACKType
 
-	ProposalCredential
-	OfferCredential
-	RequestCredential
-	IssueCredential
-	CredentialACK
+	ProposalCredentialType
+	OfferCredentialType
+	RequestCredentialType
+	IssueCredentialType
+	CredentialACKType
 
-	RequestPresentation
-	Presentation
-	PresentationACK
+	RequestPresentationType
+	PresentationType
+	PresentationACKType
 )
 
 type Message struct {

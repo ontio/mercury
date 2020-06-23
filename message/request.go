@@ -1,4 +1,4 @@
-package rest
+package message
 
 type Invitation struct {
 	Type            string   `json:"@type"`
