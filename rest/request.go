@@ -94,11 +94,11 @@ type CredentialPreview struct {
 }
 
 type Attributre struct {
-	Name     string `json:"name"`
-	MimeType string `json:"mime_type"`
-	Value    string `json:"value"`
-	CredDefId          string            `json:"cred_def_id"`
-	referent string `json:"referent"`
+	Name      string `json:"name"`
+	MimeType  string `json:"mime_type"`
+	Value     string `json:"value"`
+	CredDefId string `json:"cred_def_id"`
+	referent  string `json:"referent"`
 }
 
 type Attachment struct {
@@ -126,36 +126,36 @@ type CredentialACK struct {
 
 //present proof
 type ProposPresentation struct {
-	Type    string `json:"@type"`
-	Id      string `json:"@id"`
-	Comment string `json:"comment"`
+	Type                 string              `json:"@type"`
+	Id                   string              `json:"@id"`
+	Comment              string              `json:"comment"`
 	PresentationProposal PresentationPreview `json:"presentation_proposal"`
 }
 
 type PresentationPreview struct {
-	Type    string `json:"@type"`
+	Type       string       `json:"@type"`
 	Attributes []Attributre `json:"attributes"`
-	Predicates Predicate `json:"predicates"`
+	Predicates Predicate    `json:"predicates"`
 }
 
 type Predicate struct {
-	Name string `json:"name"`
-	CredDefId          string            `json:"cred_def_id"`
+	Name      string `json:"name"`
+	CredDefId string `json:"cred_def_id"`
 	Predicate string `json:"predicate"`
 	Threshold string `json:"threshold"`
 }
 
 type RequestPresentation struct {
-	Type    string `json:"@type"`
-	Id      string `json:"@id"`
-	Comment string `json:"comment"`
+	Type                      string       `json:"@type"`
+	Id                        string       `json:"@id"`
+	Comment                   string       `json:"comment"`
 	RequestPresentationAttach []Attachment `json:"request_presentation_attach"`
 }
 
 type Presentation struct {
-	Type    string `json:"@type"`
-	Id      string `json:"@id"`
-	Comment string `json:"comment"`
+	Type               string       `json:"@type"`
+	Id                 string       `json:"@id"`
+	Comment            string       `json:"comment"`
 	PresentationAttach []Attachment `json:"presentation_attach"`
 }
 

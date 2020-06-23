@@ -7,10 +7,8 @@ import (
 	"runtime"
 	"syscall"
 
-	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
-	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
@@ -49,37 +47,21 @@ func startAgent(ctx *cli.Context) {
 	{
 		v1.POST("/invitation", rest.Invite)
 		v1.POST("/connection", rest.Connect)
+		v1.POST("/connectionack",rest.ConnectAck)
+		v1.POST("/proposalcredential",rest.ProposalCredentialReq)
 		v1.POST("/sendcredential", rest.SendCredential)
 		v1.POST("/issuecredentail", rest.IssueCredential)
+		v1.POST("/credentialack",rest.CredentialAckInfo)
 		v1.POST("/requestproof", rest.RequestProof)
 		v1.POST("/presentproof", rest.PresentProof)
+		v1.POST("/presentationack",rest.PresentationACKInfo)
 	}
-
-	serv := service.NewService()
-	serv.RegisterController(service.NewSyscontroller())
-	serv.RegisterController(service.NewCustomcontroller())
-	//test
-	content := make(map[string]interface{})
-	content["name"] = "test"
-	content["id"] = 1
-
-	msg := message.Message{MessageType: message.Invitation, Content: content}
-
-	resp, err := serv.Serv(msg)
-	if err != nil {
-		fmt.Printf("err:%s\n", err.Error())
-		return
-	}
-	fmt.Printf("resp:%v\n",resp)
-	middleware.Log.Info("start agent svr%s",account.Address)
-	fmt.Printf("resp:%v\n", resp)
-
+	rest.NewService()
 	middleware.Log.Infof("start agent svr%s", account.Address)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {
 		panic(err)
 	}
-
 	signalHandle()
 }
 
