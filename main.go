@@ -7,13 +7,13 @@ import (
 	"runtime"
 	"syscall"
 
+	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/rest"
+	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/rest"
-	"git.ont.io/ontid/otf/service"
 )
 
 func setupAPP() *cli.App {
