@@ -1,19 +1,23 @@
 package rest
 
 import (
+	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/service"
 	"github.com/gin-gonic/gin"
+	sdk "github.com/ontio/ontology-go-sdk"
+
 )
+
 
 var (
 	Svr *service.Service
 )
 
-func NewService() {
+func NewService(acct *sdk.Account,cfg *config.Cfg ) {
 	Svr := service.NewService()
-	Svr.RegisterController(service.NewSyscontroller())
+	Svr.RegisterController(service.NewSyscontroller(acct,cfg))
 	Svr.RegisterController(service.NewCustomcontroller())
 }
 
