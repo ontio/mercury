@@ -20,7 +20,8 @@ func setupAPP() *cli.App {
 	app.Action = startAgent
 	app.Flags = []cli.Flag{
 		utils.LogLevelFlag,
-		utils.LogDirFlag,
+		utils.HttpIpFlag,
+		utils.HttpPortFlag,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -41,13 +42,16 @@ func startAgent(ctx *cli.Context) {
 		panic(err)
 	}
 	r := rest.InitRouter()
+	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
+	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
 	cfg := &config.Cfg{
-		Port: utils.DEFAULT_HTTP_PORT,
-		Ip:   "0.0.0.0",
+		Port: port,
+		Ip:   ip,
 	}
 	rest.NewService(account, cfg)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
-	err = r.Run(utils.DEFAULT_HTTP_PORT)
+	startPort := ip + ":" + port
+	err = r.Run(startPort)
 	if err != nil {
 		panic(err)
 	}
