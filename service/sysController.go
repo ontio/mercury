@@ -1,14 +1,13 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"github.com/fatih/structs"
 	"github.com/google/uuid"
-	"github.com/itchyny/base58-go"
 	"github.com/ontio/ontology-crypto/signature"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -101,20 +100,12 @@ func (s Syscontroller) generateInvitation() (*message.Invitation, error) {
 	invitaion.Id = uuid.New().String()
 	//fixme to set a lable
 	invitaion.Label = s.account.Address.ToBase58()
-	invitaion.ServiceEndpoint = "http://ip:port"
+	invitaion.ServiceEndpoint = fmt.Sprintf("http://%s:%s",s.cfg.Ip,s.cfg.Port)
+	invitaion.Did = s.did.String()
+	addrbase58 := s.account.Address.ToBase58()
 
-	sigdata, err := s.sign([]byte(s.did.String() + invitaion.Id))
-	if err != nil {
-		return nil, err
-	}
-
-	receipkey, err := base58.BitcoinEncoding.Encode(sigdata)
-	if err != nil {
-		return nil, err
-	}
-
-	invitaion.RecipientKeys = []string{string(receipkey)}
-	invitaion.RoutingKeys = []string{string(receipkey)}
+	invitaion.RecipientKeys = []string{addrbase58}
+	invitaion.RoutingKeys = []string{addrbase58}
 
 	return invitaion, nil
 }
@@ -128,16 +119,5 @@ func (s Syscontroller) sign(data []byte) ([]byte, error) {
 }
 
 func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
-	jsonbytes, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	m := make(map[string]interface{})
-
-	err = json.Unmarshal(jsonbytes, m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
+	return structs.Map(v),nil
 }

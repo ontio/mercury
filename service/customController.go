@@ -29,6 +29,12 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 	//todo add logic
 	switch msg.MessageType {
 	case message.InvitationType:
+		resp := ServiceResp{}
+		//resp.OriginalMessage = msg
+		resp.Message = msg.Content
+		return resp,nil
+
+
 	case message.ConnectionRequestType:
 	case message.ConnectionResponseType:
 	case message.ConnectionACKType:
@@ -44,11 +50,11 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 	case message.PresentationACKType:
 
 	default:
-
+		resp := ServiceResp{}
+		return resp, nil
 	}
 
-	resp := ServiceResp{}
-	return resp, nil
+	return nil, nil
 }
 func (s Customcontroller) Shutdown() error {
 	fmt.Printf("%s shutdown\n", s.Name())

@@ -43,7 +43,7 @@ func startAgent(ctx *cli.Context) {
 	r := rest.InitRouter()
 	cfg := &config.Cfg{
 		Port: utils.DEFAULT_HTTP_PORT,
-		Ip:   "",
+		Ip:   "0.0.0.0",
 	}
 	rest.NewService(account, cfg)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
