@@ -24,13 +24,13 @@ type Syscontroller struct {
 	cfg     *config.Cfg
 }
 
-func NewSyscontroller(acct *sdk.Account,cfg *config.Cfg) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg) Syscontroller {
 
-	did := did.NewOntDID(cfg,acct)
+	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
-		account:acct,
-		did:did,
-		cfg:cfg,
+		account: acct,
+		did:     did,
+		cfg:     cfg,
 	}
 	s.Initiate(nil)
 	return s

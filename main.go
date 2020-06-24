@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"git.ont.io/ontid/otf/config"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 
+	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
 	"git.ont.io/ontid/otf/utils"
@@ -45,7 +45,7 @@ func startAgent(ctx *cli.Context) {
 		Port: utils.DEFAULT_HTTP_PORT,
 		Ip:   "",
 	}
-	rest.NewService(account,cfg)
+	rest.NewService(account, cfg)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	err = r.Run(utils.DEFAULT_HTTP_PORT)
 	if err != nil {

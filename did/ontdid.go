@@ -10,11 +10,10 @@ type OntDID struct {
 	account *sdk.Account
 }
 
-func NewOntDID(cfg *config.Cfg,acct *sdk.Account) *OntDID{
+func NewOntDID(cfg *config.Cfg, acct *sdk.Account) *OntDID {
 	//fixme use cfg to create OntDID
-	return &OntDID{account:acct}
+	return &OntDID{account: acct}
 }
-
 
 func (o *OntDID) ValidateDid(did string) bool {
 	return true

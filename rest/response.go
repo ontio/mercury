@@ -13,9 +13,10 @@ type Response struct {
 }
 
 // Response setting gin.JSON
-func (g *Gin) Response(httpCode, errCode int, data interface{}) {
+func (g *Gin) Response(httpCode, errCode int, msg string, data interface{}) {
 	g.C.JSON(httpCode, Response{
 		Code: errCode,
+		Msg:  msg,
 		Data: data,
 	})
 	return

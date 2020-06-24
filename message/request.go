@@ -7,7 +7,7 @@ type Invitation struct {
 	Did             string   `json:"did"`
 	RecipientKeys   []string `json:"recipientKeys"`
 	ServiceEndpoint string   `json:"serviceEndpoint"`
-	RoutingKeys     []string   `json:"routingKeys"`
+	RoutingKeys     []string `json:"routingKeys"`
 }
 
 type ConnectionRequest struct {

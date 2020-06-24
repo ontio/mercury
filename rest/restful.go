@@ -15,12 +15,16 @@ func Invite(c *gin.Context) {
 	err := c.Bind(invite)
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.InvitationType, structs.Map(invite))
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func Connect(c *gin.Context) {
@@ -29,12 +33,16 @@ func Connect(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectionRequest err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.ConnectionRequestType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("connect err:%s")
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func ConnectAck(c *gin.Context) {
@@ -43,12 +51,16 @@ func ConnectAck(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectAck err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.ConnectionACKType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("ConnectAck msg type:%d,err:%s", message.ConnectionACKType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func ProposalCredentialReq(c *gin.Context) {
@@ -57,12 +69,16 @@ func ProposalCredentialReq(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.ConnectionACKType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.ConnectionACKType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, err.Error(), data)
 }
 
 func SendCredential(c *gin.Context) {
@@ -71,12 +87,16 @@ func SendCredential(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.RequestCredentialType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential msg type:%d,err:%s", message.RequestCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func IssueCredential(c *gin.Context) {
@@ -85,12 +105,16 @@ func IssueCredential(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.IssueCredentialType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential msg type:%d,err:%s", message.IssueCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func CredentialAckInfo(c *gin.Context) {
@@ -99,12 +123,16 @@ func CredentialAckInfo(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("CredentialAck err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.CredentialACKType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("CredentialAck msg type:%d,err:%s", message.CredentialACKType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func RequestProof(c *gin.Context) {
@@ -113,12 +141,16 @@ func RequestProof(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("RequestCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.RequestPresentationType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.RequestCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func PresentProof(c *gin.Context) {
@@ -127,12 +159,16 @@ func PresentProof(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("Presentation err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.PresentationType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("Presentation msg type:%d,err:%s", message.PresentationType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func PresentationACKInfo(c *gin.Context) {
@@ -141,10 +177,14 @@ func PresentationACKInfo(c *gin.Context) {
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
 	data, err := SendMsg(message.PresentationACKType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK msg type:%d,err:%s", message.PresentationACKType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
 	}
-	resp.Response(http.StatusOK, 0, data)
+	resp.Response(http.StatusOK, 0, "", data)
 }

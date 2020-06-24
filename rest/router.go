@@ -7,17 +7,15 @@ import (
 	"git.ont.io/ontid/otf/service"
 	"github.com/gin-gonic/gin"
 	sdk "github.com/ontio/ontology-go-sdk"
-
 )
-
 
 var (
 	Svr *service.Service
 )
 
-func NewService(acct *sdk.Account,cfg *config.Cfg ) {
+func NewService(acct *sdk.Account, cfg *config.Cfg) {
 	Svr := service.NewService()
-	Svr.RegisterController(service.NewSyscontroller(acct,cfg))
+	Svr.RegisterController(service.NewSyscontroller(acct, cfg))
 	Svr.RegisterController(service.NewCustomcontroller())
 }
 
