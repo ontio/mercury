@@ -36,7 +36,7 @@ func Invite(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", utils.Base64Encode(jsonbytes))
 }
 
-func Connect(c *gin.Context) {
+func ConnectRequest(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionRequest{}
 	err := c.Bind(req)
@@ -53,6 +53,25 @@ func Connect(c *gin.Context) {
 	}
 	resp.Response(http.StatusOK, 0, "", data)
 }
+
+func ConnectResponse(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.ConnectResponse{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("ConnectResponse err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.ConnectionResponseType, structs.Map(req))
+	if err != nil {
+		middleware.Log.Errorf("connect err:%s")
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
 
 func ConnectAck(c *gin.Context) {
 	resp := Gin{C: c}

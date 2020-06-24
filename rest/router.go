@@ -26,7 +26,8 @@ func InitRouter() *gin.Engine {
 	v := r.Group("/api/v1")
 	{
 		v.POST("/invitation", Invite)
-		v.POST("/connection", Connect)
+		v.POST("/connectionrequest", ConnectRequest)
+		v.POST("/connectionresponse", ConnectResponse)
 		v.POST("/connectionack", ConnectAck)
 		v.POST("/proposalcredential", ProposalCredentialReq)
 		v.POST("/sendcredential", SendCredential)

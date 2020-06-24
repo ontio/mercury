@@ -73,6 +73,9 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}, nil
 
 	case message.ConnectionRequestType:
+		middleware.Log.Infof("resolve connection request")
+
+
 	case message.ConnectionResponseType:
 	case message.ConnectionACKType:
 
