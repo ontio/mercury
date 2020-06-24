@@ -19,14 +19,20 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.1 // indirect
 	github.com/micro/cli v0.2.0
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/ontio/ontology-crypto v1.0.7
 	github.com/ontio/ontology-go-sdk v1.11.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.2.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tebeka/strftime v0.1.4 // indirect
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli v1.22.4
+	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
+	golang.org/x/text v0.3.3 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
 
