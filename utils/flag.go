@@ -11,6 +11,7 @@ const (
 	DEFAULT_HTTP_PORT     = "8080"
 	DEFAULT_HTTP_IP       = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH = "./Log/"
+	DEFAULT_STORE_DIR     = "./db_otf/"
 )
 
 var (

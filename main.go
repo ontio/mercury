@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	store "git.ont.io/ontid/otf/store/leveldb"
 	"os"
 	"os/signal"
 	"runtime"
@@ -44,11 +45,15 @@ func startAgent(ctx *cli.Context) {
 	r := rest.InitRouter()
 	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
 	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
+	db, err := store.NewLevelDBStore(utils.DEFAULT_STORE_DIR)
+	if err != nil {
+		panic(err)
+	}
 	cfg := &config.Cfg{
 		Port: port,
 		Ip:   ip,
 	}
-	rest.NewService(account, cfg)
+	rest.NewService(account, cfg, db)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
 	err = r.Run(startPort)

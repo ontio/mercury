@@ -62,14 +62,14 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
-		jsonbytes ,err:= json.Marshal(invitation)
+		jsonbytes, err := json.Marshal(invitation)
 		if err != nil {
 			return nil, err
 		}
 		return ServiceResp{
 			OriginalMessage: msg,
 			Message:         m,
-			JsonBytes:jsonbytes,
+			JsonBytes:       jsonbytes,
 		}, nil
 
 	case message.ConnectionRequestType:
@@ -108,7 +108,7 @@ func (s Syscontroller) generateInvitation() (*message.Invitation, error) {
 	invitaion.Id = uuid.New().String()
 	//fixme to set a lable
 	invitaion.Label = s.account.Address.ToBase58()
-	invitaion.ServiceEndpoint = fmt.Sprintf("http://%s:%s",s.cfg.Ip,s.cfg.Port)
+	invitaion.ServiceEndpoint = fmt.Sprintf("http://%s:%s", s.cfg.Ip, s.cfg.Port)
 	invitaion.Did = s.did.String()
 	addrbase58 := s.account.Address.ToBase58()
 
@@ -127,5 +127,5 @@ func (s Syscontroller) sign(data []byte) ([]byte, error) {
 }
 
 func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
-	return structs.Map(v),nil
+	return structs.Map(v), nil
 }

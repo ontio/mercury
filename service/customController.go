@@ -33,8 +33,7 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 		//resp.OriginalMessage = msg
 		resp.Message = msg.Content
 		resp.JsonBytes = msg.JsonBytes
-		return resp,nil
-
+		return resp, nil
 
 	case message.ConnectionRequestType:
 	case message.ConnectionResponseType:

@@ -13,20 +13,14 @@ import (
 
 func Invite(c *gin.Context) {
 	resp := Gin{C: c}
-	//err := c.Bind(invite)
-	//if err != nil {
-	//	middleware.Log.Errorf("Invite err:%s", err)
-	//	resp.Response(http.StatusOK, 0, err.Error(), nil)
-	//	return
-	//}
-	data, err := SendMsg(message.InvitationType,nil)
+	data, err := SendMsg(message.InvitationType, nil)
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
 
-	jsonbytes,err := data.(service.ControllerResp).GetJsonbytes()
+	jsonbytes, err := data.(service.ControllerResp).GetJsonbytes()
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)

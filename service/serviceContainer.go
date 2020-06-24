@@ -52,8 +52,8 @@ func (r ServiceResp) GetOriginMessage() (message.Message, error) {
 	return r.OriginalMessage, nil
 }
 
-func (r ServiceResp)GetJsonbytes()([]byte,error){
-	return r.JsonBytes,nil
+func (r ServiceResp) GetJsonbytes() ([]byte, error) {
+	return r.JsonBytes, nil
 }
 
 type Service struct {
