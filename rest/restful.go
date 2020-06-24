@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/utils"
 	"net/http"
 
 	"git.ont.io/ontid/otf/message"
@@ -11,20 +13,27 @@ import (
 
 func Invite(c *gin.Context) {
 	resp := Gin{C: c}
-	invite := &message.Invitation{}
-	err := c.Bind(invite)
+	//err := c.Bind(invite)
+	//if err != nil {
+	//	middleware.Log.Errorf("Invite err:%s", err)
+	//	resp.Response(http.StatusOK, 0, err.Error(), nil)
+	//	return
+	//}
+	data, err := SendMsg(message.InvitationType,nil)
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	data, err := SendMsg(message.InvitationType, structs.Map(invite))
+
+	jsonbytes,err := data.(service.ControllerResp).GetJsonbytes()
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	resp.Response(http.StatusOK, 0, "", data)
+
+	resp.Response(http.StatusOK, 0, "", utils.Base64Encode(jsonbytes))
 }
 
 func Connect(c *gin.Context) {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/did"
@@ -61,10 +62,14 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		jsonbytes ,err:= json.Marshal(invitation)
+		if err != nil {
+			return nil, err
+		}
 		return ServiceResp{
 			OriginalMessage: msg,
 			Message:         m,
+			JsonBytes:jsonbytes,
 		}, nil
 
 	case message.ConnectionRequestType:

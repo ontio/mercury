@@ -22,4 +22,5 @@ const (
 type Message struct {
 	MessageType
 	Content map[string]interface{}
+	JsonBytes []byte
 }
