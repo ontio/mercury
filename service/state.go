@@ -5,9 +5,11 @@ import "git.ont.io/ontid/otf/message"
 type ConnectionState int
 
 const (
-	ConnectionInit ConnectionState = iota
+	InvitationInit ConnectionState = iota
+	InvitationUsed
+	ConnectionRequestSent
 	ConnectionRequestReceived
-	ConnectionResponseSent
+	ConnectionResponseReceived
 	ConnectionACKRec
 )
 

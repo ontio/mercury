@@ -15,11 +15,20 @@ type ConnectionRequest struct {
 	Id         string     `json:"@id,omitempty"`
 	Lable      string     `json:"lable,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
+	Thread     Thread     `json:"~thread,omitempty"`
 }
 
 type Connection struct {
 	Did       string `json:"did,omitempty"`
 	ServiceId string `json:"service_id,omitempty"`
+}
+
+// Thread thread data
+type Thread struct {
+	ID             string         `json:"thid,omitempty"`
+	PID            string         `json:"pthid,omitempty"`
+	SenderOrder    int            `json:"sender_order,omitempty"`
+	ReceivedOrders map[string]int `json:"received_orders,omitempty"`
 }
 
 //type DIDDoc struct {
@@ -55,10 +64,6 @@ type ConnectResponse struct {
 	Id         string     `json:"@id,omitempty"`
 	Thread     Thread     `json:"~thread,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
-}
-
-type Thread struct {
-	Thid string `json:"thid,omitempty"`
 }
 
 type GeneralACK struct {
