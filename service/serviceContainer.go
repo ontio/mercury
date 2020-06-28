@@ -18,7 +18,7 @@ type ServiceInf interface {
 type ServiceResp struct {
 	OriginalMessage message.Message
 	Message         interface{}
-	JsonBytes      []byte
+	JsonBytes       []byte
 }
 
 func (r ServiceResp) GetString() (string, error) {

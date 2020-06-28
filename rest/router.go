@@ -37,6 +37,7 @@ func InitRouter() *gin.Engine {
 		v.POST("/requestproof", RequestProof)
 		v.POST("/presentproof", PresentProof)
 		v.POST("/presentationack", PresentationACKInfo)
+		v.POST("/sendgeneralmsg", SendGeneralMsg)
 	}
 	return r
 }

@@ -17,10 +17,11 @@ const (
 	RequestPresentationType
 	PresentationType
 	PresentationACKType
+	GeneralMsgType
 )
 
 type Message struct {
 	MessageType
-	Content interface{}
+	Content   interface{}
 	JsonBytes []byte
 }

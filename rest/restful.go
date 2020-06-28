@@ -1,12 +1,12 @@
 package rest
 
 import (
-	"git.ont.io/ontid/otf/service"
-	"git.ont.io/ontid/otf/utils"
 	"net/http"
 
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/utils"
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 )
@@ -65,7 +65,6 @@ func ConnectResponse(c *gin.Context) {
 	}
 	resp.Response(http.StatusOK, 0, "", data)
 }
-
 
 func ConnectAck(c *gin.Context) {
 	resp := Gin{C: c}
@@ -205,6 +204,24 @@ func PresentationACKInfo(c *gin.Context) {
 	data, err := SendMsg(message.PresentationACKType, structs.Map(req))
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK msg type:%d,err:%s", message.PresentationACKType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func SendGeneralMsg(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.GeneralMsg{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("SendGeneralMsg err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.GeneralMsgType, structs.Map(req))
+	if err != nil {
+		middleware.Log.Errorf("SendGeneralMsg msg type:%d,err:%s", message.GeneralMsgType, err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}

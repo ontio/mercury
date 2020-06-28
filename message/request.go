@@ -164,3 +164,9 @@ type PresentationACK struct {
 	Id     string `json:"@id"`
 	Thread Thread `json:"~thread"`
 }
+
+type GeneralMsg struct {
+	Type string `json:"@type"`
+	Id   string `json:"@id"`
+	Data Data   `json:"data"`
+}
