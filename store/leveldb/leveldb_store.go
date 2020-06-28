@@ -1,16 +1,35 @@
 package store
 
 import (
+	"git.ont.io/ontid/otf/store"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 )
 
-type LevelDBStore struct {
+
+// Provider leveldb implementation of storage.Provider interface
+type Provider struct {
+	dbPath string
+	dbStore *levelDBStore
+}
+
+func NewProvider(dbPath string) *Provider {
+	return &Provider{
+		dbPath: dbPath,
+		dbStore: &levelDBStore{},
+	}
+}
+
+type levelDBStore struct {
 	db    *leveldb.DB
 	batch *leveldb.Batch
 }
 
-func NewLevelDBStore(path string) (*LevelDBStore, error) {
+func (p *Provider) OpenStore(path  string) (store.Store,error) {
+	return p.newLevelDBStore(path)
+}
+
+func (p *Provider) newLevelDBStore(path string) (*levelDBStore, error) {
 	db, err := leveldb.OpenFile(path, nil)
 	if _, corrupted := err.(*errors.ErrCorrupted); corrupted {
 		db, err = leveldb.RecoverFile(path, nil)
@@ -18,19 +37,23 @@ func NewLevelDBStore(path string) (*LevelDBStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &LevelDBStore{
+	return &levelDBStore{
 		db:    db,
 		batch: nil,
 	}, nil
 }
 
+func (p *Provider) Close() error {
+	return p.dbStore.Close()
+}
+
 //Put a key-value pair to leveldb
-func (self *LevelDBStore) Put(key []byte, value []byte) error {
+func (self *levelDBStore) Put(key []byte, value []byte) error {
 	return self.db.Put(key, value, nil)
 }
 
 //Get the value of a key from leveldb
-func (self *LevelDBStore) Get(key []byte) ([]byte, error) {
+func (self *levelDBStore) Get(key []byte) ([]byte, error) {
 	dat, err := self.db.Get(key, nil)
 	if err != nil {
 		return nil, err
@@ -39,38 +62,38 @@ func (self *LevelDBStore) Get(key []byte) ([]byte, error) {
 }
 
 //Has return whether the key is exist in leveldb
-func (self *LevelDBStore) Has(key []byte) (bool, error) {
+func (self *levelDBStore) Has(key []byte) (bool, error) {
 	return self.db.Has(key, nil)
 }
 
 //Delete the the in leveldb
-func (self *LevelDBStore) Delete(key []byte) error {
+func (self *levelDBStore) Delete(key []byte) error {
 	return self.db.Delete(key, nil)
 }
 
 //Close leveldb
-func (self *LevelDBStore) Close() error {
+func (self *levelDBStore) Close() error {
 	err := self.db.Close()
 	return err
 }
 
 //NewBatch start commit batch
-func (self *LevelDBStore) NewBatch() {
+func (self *levelDBStore) NewBatch() {
 	self.batch = new(leveldb.Batch)
 }
 
 //BatchPut put a key-value pair to leveldb batch
-func (self *LevelDBStore) BatchPut(key []byte, value []byte) {
+func (self *levelDBStore) BatchPut(key []byte, value []byte) {
 	self.batch.Put(key, value)
 }
 
 //BatchDelete delete a key to leveldb batch
-func (self *LevelDBStore) BatchDelete(key []byte) {
+func (self *levelDBStore) BatchDelete(key []byte) {
 	self.batch.Delete(key)
 }
 
 //BatchCommit commit batch to leveldb
-func (self *LevelDBStore) BatchCommit() error {
+func (self *levelDBStore) BatchCommit() error {
 	err := self.db.Write(self.batch, nil)
 	if err != nil {
 		return err

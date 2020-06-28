@@ -45,7 +45,8 @@ func startAgent(ctx *cli.Context) {
 	r := rest.InitRouter()
 	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
 	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
-	db, err := store.NewLevelDBStore(utils.DEFAULT_STORE_DIR)
+	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
+	db,err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
 	if err != nil {
 		panic(err)
 	}

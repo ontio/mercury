@@ -5,7 +5,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/service"
-	store "git.ont.io/ontid/otf/store/leveldb"
+	"git.ont.io/ontid/otf/store"
 	"github.com/gin-gonic/gin"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -14,7 +14,7 @@ var (
 	Svr *service.Service
 )
 
-func NewService(acct *sdk.Account, cfg *config.Cfg, db *store.LevelDBStore) {
+func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store) {
 	Svr = service.NewService()
 	Svr.RegisterController(service.NewSyscontroller(acct, cfg))
 	Svr.RegisterController(service.NewCustomcontroller())
