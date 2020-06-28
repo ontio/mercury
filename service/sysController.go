@@ -7,6 +7,7 @@ import (
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/store"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
 	"github.com/ontio/ontology-crypto/signature"
@@ -16,12 +17,14 @@ import (
 const (
 	Version        = "1.0"
 	InvitationSpec = "spec/connections/" + Version + "/invitation"
+	ConnectionKey  = "Connection"
 )
 
 type Syscontroller struct {
 	account *sdk.Account
 	did     did.Did
 	cfg     *config.Cfg
+	store   store.Store
 }
 
 func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg) Syscontroller {
@@ -74,6 +77,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 	case message.ConnectionRequestType:
 		middleware.Log.Infof("resolve connection request")
+		req := msg.Content.(message.ConnectionRequest)
 
 	case message.ConnectionResponseType:
 	case message.ConnectionACKType:
@@ -127,4 +131,17 @@ func (s Syscontroller) sign(data []byte) ([]byte, error) {
 
 func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 	return structs.Map(v), nil
+}
+
+
+func (s Syscontroller)SaveConnectionState(id string, state ConnectionState)error{
+	key := fmt.Sprintf("%s_%s",ConnectionKey,id)
+
+	switch state{
+	case ConnectionInit:
+	}
+
+	if v,_ := s.store.Get(key);v != nil  {
+		return fmt.Errorf("")
+	}
 }
