@@ -57,9 +57,9 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 	case message.InvitationType:
 		middleware.Log.Infof("resolve invitation")
 		//todo verify request
-		invitation ,ok:= msg.Content.(message.Invitation)
+		invitation, ok := msg.Content.(message.Invitation)
 		if !ok {
-			return nil,fmt.Errorf("message format is not correct")
+			return nil, fmt.Errorf("message format is not correct")
 		}
 		//set uuid to invitation id
 		invitation.Id = uuid.New().String()
@@ -87,15 +87,10 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		cr := msg.Content.(message.ConnectionRequest)
 		cr.Id = uuid.New().String()
 
-
-
-
 	case message.ConnectionRequestType:
 		//middleware.Log.Infof("resolve connection request")
 		//req := msg.Content.(message.ConnectionRequest)
 		//req.
-
-
 
 	case message.ConnectionResponseType:
 	case message.ConnectionACKType:
@@ -152,12 +147,12 @@ func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 
 func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 	key := fmt.Sprintf("%s_%s", ConnectionKey, iv.Id)
-	tmp,err :=s.store.Get(key)
-	if err != nil{
+	tmp, err := s.store.Get([]byte(key))
+	if err != nil {
 		return err
 	}
-	if tmp != nil{
-		return fmt.Errorf("invitation with id:%s existed",iv.Id)
+	if tmp != nil {
+		return fmt.Errorf("invitation with id:%s existed", iv.Id)
 	}
 
 	rec := InvitationRec{
@@ -165,11 +160,10 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 		State:      ConnectionInit,
 	}
 
-	bs ,err:= json.Marshal(rec)
-	if err != nil{
+	bs, err := json.Marshal(rec)
+	if err != nil {
 		return err
 	}
 
-	return s.store.Put(key,bs)
-
+	return s.store.Put([]byte(key), bs)
 }

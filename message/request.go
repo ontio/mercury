@@ -143,10 +143,10 @@ type CredentialACK struct {
 
 //present proof
 type ProposePresentation struct {
-	Type                 string              `json:"@type,omitempty"`
-	Id                   string              `json:"@id,omitempty"`
-	Comment              string              `json:"comment,omitempty"`
-	Formats []Format `json:"formats,omitempty"`
+	Type          string       `json:"@type,omitempty"`
+	Id            string       `json:"@id,omitempty"`
+	Comment       string       `json:"comment,omitempty"`
+	Formats       []Format     `json:"formats,omitempty"`
 	ProposeAttach []Attachment `json:"propose~attach,omitempty"`
 }
 
@@ -167,7 +167,7 @@ type RequestPresentation struct {
 	Type                      string       `json:"@type,omitempty"`
 	Id                        string       `json:"@id,omitempty"`
 	Comment                   string       `json:"comment,omitempty"`
-	Formats []Format `json:"formats,omitempty"`
+	Formats                   []Format     `json:"formats,omitempty"`
 	RequestPresentationAttach []Attachment `json:"request_presentation_attach,omitempty"`
 }
 
@@ -175,18 +175,16 @@ type Presentation struct {
 	Type               string       `json:"@type,omitempty"`
 	Id                 string       `json:"@id,omitempty"`
 	Comment            string       `json:"comment,omitempty"`
-	Formats []Format `json:"formats,omitempty"`
+	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
 }
 
-
-
 type BasicMessage struct {
-	Type string `json:"@type"`
-	Id   string `json:"@id"`
+	Type     string    `json:"@type"`
+	Id       string    `json:"@id"`
 	SendTime time.Time `json:"send_time"`
-	Content string `json:"content"`
-	I10n I10n `json:"~I10n"`
+	Content  string    `json:"content"`
+	I10n     I10n      `json:"~I10n"`
 }
 
 type I10n struct {

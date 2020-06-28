@@ -6,16 +6,15 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/errors"
 )
 
-
 // Provider leveldb implementation of storage.Provider interface
 type Provider struct {
-	dbPath string
+	dbPath  string
 	dbStore *levelDBStore
 }
 
 func NewProvider(dbPath string) *Provider {
 	return &Provider{
-		dbPath: dbPath,
+		dbPath:  dbPath,
 		dbStore: &levelDBStore{},
 	}
 }
@@ -25,7 +24,7 @@ type levelDBStore struct {
 	batch *leveldb.Batch
 }
 
-func (p *Provider) OpenStore(path  string) (store.Store,error) {
+func (p *Provider) OpenStore(path string) (store.Store, error) {
 	return p.newLevelDBStore(path)
 }
 

@@ -14,7 +14,7 @@ var (
 	Svr *service.Service
 )
 
-func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store) {
+func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *msgService) {
 	Svr = service.NewService()
 	Svr.RegisterController(service.NewSyscontroller(acct, cfg))
 	Svr.RegisterController(service.NewCustomcontroller())

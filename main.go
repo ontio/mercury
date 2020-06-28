@@ -46,7 +46,7 @@ func startAgent(ctx *cli.Context) {
 	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
 	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
 	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
-	db,err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
+	db, err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +54,8 @@ func startAgent(ctx *cli.Context) {
 		Port: port,
 		Ip:   ip,
 	}
-	rest.NewService(account, cfg, db)
+	msgSvr := rest.NewMessageService()
+	rest.NewService(account, cfg, db, msgSvr)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
 	err = r.Run(startPort)

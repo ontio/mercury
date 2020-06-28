@@ -13,10 +13,10 @@ const (
 
 type InvitationRec struct {
 	Invitation message.Invitation `json:"invitation"`
-	State ConnectionState `json:"state"`
+	State      ConnectionState    `json:"state"`
 }
 
 type ConnectionRequestRec struct {
 	ConnReq message.ConnectionRequest `json:"conn_req"`
-	State ConnectionState `json:"state"`
+	State   ConnectionState           `json:"state"`
 }

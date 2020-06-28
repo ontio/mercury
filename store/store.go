@@ -14,5 +14,5 @@ type Store interface {
 	// Get fetches the record based on key
 	Get(k []byte) ([]byte, error)
 	//check the record exist base on key
-	Has(k []byte) (bool,error)
+	Has(k []byte) (bool, error)
 }
