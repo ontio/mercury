@@ -68,7 +68,7 @@ func ConnectResponse(c *gin.Context) {
 
 func ConnectAck(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.ConnectionACK{}
+	req := &message.GeneralACK{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectAck err:%s", err)
@@ -194,7 +194,7 @@ func PresentProof(c *gin.Context) {
 
 func PresentationACKInfo(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.PresentationACK{}
+	req := &message.GeneralACK{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK err:%s", err)
@@ -212,7 +212,7 @@ func PresentationACKInfo(c *gin.Context) {
 
 func SendGeneralMsg(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.GeneralMsg{}
+	req := &message.BasicMessage{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("SendGeneralMsg err:%s", err)

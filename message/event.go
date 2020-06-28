@@ -4,6 +4,7 @@ type MessageType int
 
 const (
 	InvitationType MessageType = iota
+	SendConnectionRequestType
 	ConnectionRequestType
 	ConnectionResponseType
 	ConnectionACKType
