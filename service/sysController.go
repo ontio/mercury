@@ -110,9 +110,37 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//update connection to request received state
 		err = s.SaveConnectionRequest(req, ConnectionRequestReceived)
 		//send response outbound
+		res := new(message.ConnectResponse)
+		res.Id = uuid.New().String()
+		res.Thread = message.Thread{
+			ID:             req.Id,
+		}
+		//todo define the reponse type
+		res.Type = ""
+		res.Connection = req.Connection
+
+		//todo
+		//go outbound(res)
+		return nil,nil
 
 	case message.ConnectionResponseType:
+		middleware.Log.Infof("resolve connection response")
+		//req := msg.Content.(message.ConnectResponse)
+
+		//1. update connection request to receive response state
+
+		//2. create and save a connection object
+
+		//3. send ACK back
+
+
 	case message.ConnectionACKType:
+		middleware.Log.Infof("resolve ConnectionACK")
+		//req := msg.Content.(message.ConnectResponse)
+		//1. update connection request to receive ack state
+
+		//2. create and save a connection object
+
 
 	//for custom
 	case message.ProposalCredentialType:

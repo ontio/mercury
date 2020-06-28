@@ -10,7 +10,7 @@ const (
 	ConnectionRequestSent
 	ConnectionRequestReceived
 	ConnectionResponseReceived
-	ConnectionACKRec
+	ConnectionACKReceived
 )
 
 type InvitationRec struct {
