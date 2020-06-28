@@ -1,172 +1,194 @@
 package message
 
+import "time"
+
 type Invitation struct {
-	Type            string   `json:"@type"`
-	Id              string   `json:"@id"`
-	Label           string   `json:"label"`
-	Did             string   `json:"did"`
-	RecipientKeys   []string `json:"recipientKeys"`
-	ServiceEndpoint string   `json:"serviceEndpoint"`
-	RoutingKeys     []string `json:"routingKeys"`
+	Type      string `json:"@type,omitempty"`
+	Id        string `json:"@id,omitempty"`
+	Label     string `json:"label,omitempty"`
+	Did       string `json:"did,omitempty"`
+	ServiceId string `json:"service_id,omitempty"`
 }
 
 type ConnectionRequest struct {
-	Type       string     `json:"@type"`
-	Id         string     `json:"@id"`
-	Lable      string     `json:"lable"`
-	Connection Connection `json:"connection"`
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Lable      string     `json:"lable,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 type Connection struct {
-	Did    string `json:"did"`
-	DIDDoc DIDDoc `json:"diddoc"`
+	Did       string `json:"did,omitempty"`
+	ServiceId string `json:"service_id,omitempty"`
 }
 
-type DIDDoc struct {
-	Context   []string    `json:"@context"`
-	Id        string      `json:"id"`
-	PublicKey []PublicKey `json:"publicKey"`
-}
+//type DIDDoc struct {
+//	Context   []string    `json:"@context"`
+//	Id        string      `json:"id"`
+//	PublicKey []PublicKey `json:"publicKey"`
+//}
 
-type PublicKey struct {
-	Type            string           `json:"type"`
-	Id              string           `json:"id"`
-	Controller      string           `json:"controller"`
-	PublicKeyBase58 string           `json:"publicKeyBase58"`
-	Authentication  []Authentication `json:"authentication"`
-	Service         Service          `json:"service"`
-}
+//type PublicKey struct {
+//	Type            string           `json:"type"`
+//	Id              string           `json:"id"`
+//	Controller      string           `json:"controller"`
+//	PublicKeyBase58 string           `json:"publicKeyBase58"`
+//	Authentication  []Authentication `json:"authentication"`
+//	Service         Service          `json:"service"`
+//}
+//
+//type Authentication struct {
+//	Type      string `json:"type"`
+//	PublicKey string `json:"publicKey"`
+//}
 
-type Authentication struct {
-	Type      string `json:"type"`
-	PublicKey string `json:"publicKey"`
-}
-
-type Service struct {
-	Id              string   `json:"id"`
-	Type            string   `json:"type"`
-	Priority        int      `json:"priority"`
-	RecipientKeys   []string `json:"recipientKeys"`
-	ServiceEndpoint string   `json:"serviceEndpoint"`
-}
+//type Service struct {
+//	Id              string   `json:"id"`
+//	Type            string   `json:"type"`
+//	Priority        int      `json:"priority"`
+//	RecipientKeys   []string `json:"recipientKeys"`
+//	ServiceEndpoint string   `json:"serviceEndpoint"`
+//}
 
 type ConnectResponse struct {
-	Type   string `json:"@type"`
-	Id     string `json:"@id"`
-	Thread Thread `json:"~thread"`
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Thread     Thread     `json:"~thread,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 type Thread struct {
-	Thid       string     `json:"thid"`
-	Connection Connection `json:"connection"`
+	Thid string `json:"thid,omitempty"`
 }
 
-type ConnectionACK struct {
-	Type   string `json:"@type"`
-	Id     string `json:"@id"`
-	Thread Thread `json:"~thread"`
+type GeneralACK struct {
+	Type   string `json:"@type,omitempty"`
+	Id     string `json:"@id,omitempty"`
+	Thread Thread `json:"~thread,omitempty"`
+	Status string `json:"status,omitempty"`
 }
 
 //========issue credential
 type ProposalCredential struct {
-	Type               string            `json:"@type"`
-	Id                 string            `json:"@id"`
-	Comment            string            `json:"comment"`
-	CredentialProposal CredentialPreview `json:"credential_proposal"`
-	SchemaIssuerDid    string            `json:"schema_issuer_did"`
-	SchemaId           string            `json:"schema_id"`
-	SchemaVersion      string            `json:"schema_version"`
-	CredDefId          string            `json:"cred_def_id"`
-	IssuerDid          string            `json:"issuer_did"`
+	Type               string            `json:"@type,omitempty"`
+	Id                 string            `json:"@id,omitempty"`
+	Comment            string            `json:"comment,omitempty"`
+	CredentialProposal CredentialPreview `json:"credential_proposal,omitempty"`
 }
 
 type OfferCredential struct {
-	Type              string            `json:"@type"`
-	Id                string            `json:"@id"`
-	Comment           string            `json:"comment"`
-	CredentialPreview CredentialPreview `json:"credential_preview"`
-	OffersAttach      []Attachment      `json:"offers_attach"`
+	Type              string            `json:"@type,omitempty"`
+	Id                string            `json:"@id,omitempty"`
+	Comment           string            `json:"comment,omitempty"`
+	CredentialPreview CredentialPreview `json:"credential_preview,omitempty"`
+	OffersAttach      []Attachment      `json:"offers_attach,omitempty"`
 }
 
 type CredentialPreview struct {
-	Type       string       `json:"@type"`
-	Attributre []Attributre `json:"attributre"`
+	Type       string       `json:"@type,omitempty"`
+	Attributre []Attributre `json:"attributre,omitempty"`
 }
 
 type Attributre struct {
-	Name      string `json:"name"`
-	MimeType  string `json:"mime_type"`
-	Value     string `json:"value"`
-	CredDefId string `json:"cred_def_id"`
-	referent  string `json:"referent"`
+	Name      string `json:"name,omitempty"`
+	MimeType  string `json:"mime_type,omitempty"`
+	Value     string `json:"value,omitempty"`
+	CredDefId string `json:"cred_def_id,omitempty"`
+	referent  string `json:"referent,omitempty"`
 }
 
 type Attachment struct {
-	Id       string `json:"@id"`
-	MimeType string `json:"mime_type"`
-	Data     Data   `json:"data"`
+	Id          string    `json:"@id,omitempty"`
+	Description string    `json:"description,omitempty"`
+	FileName    string    `json:"filename,omitempty"`
+	MimeType    string    `json:"mime_type,omitempty"`
+	LastModTime time.Time `json:"lastmod_time,omitempty"`
+	ByteCount   int64     `json:"byte_count,omitempty"`
+	Data        Data      `json:"data,omitempty"`
 }
 
 type Data struct {
-	Base64 string `json:"base64"`
+	Sha256 string      `json:"sha256,omitempty"`
+	Links  []string    `json:"links,omitempty"`
+	Base64 string      `json:"base64,omitempty"`
+	JSON   interface{} `json:"json,omitempty"`
+}
+
+type Format struct {
+	AttachID string `json:"attach_id,omitempty"`
+	Format   string `json:"format,omitempty"`
 }
 
 type RequestCredential struct {
 	Type           string       `json:"@type"`
 	Id             string       `json:"@id"`
 	Comment        string       `json:"comment"`
+	Formats        []Format     `json:"formats,omitempty"`
 	RequestsAttach []Attachment `json:"requests_attach"`
 }
 
+type IssueCredential struct {
+	Type              string       `json:"@type,omitempty"`
+	Id                string       `json:"@id"`
+	Comment           string       `json:"comment,omitempty"`
+	Formats           []Format     `json:"formats,omitempty"`
+	CredentialsAttach []Attachment `json:"credentials~attach,omitempty"`
+}
+
 type CredentialACK struct {
-	Type   string `json:"@type"`
-	Id     string `json:"@id"`
-	Thread Thread `json:"~thread"`
+	Type   string `json:"@type,omitempty"`
+	Id     string `json:"@id,omitempty"`
+	Thread Thread `json:"~thread,omitempty"`
 }
 
 //present proof
-type ProposPresentation struct {
-	Type                 string              `json:"@type"`
-	Id                   string              `json:"@id"`
-	Comment              string              `json:"comment"`
-	PresentationProposal PresentationPreview `json:"presentation_proposal"`
+type ProposePresentation struct {
+	Type                 string              `json:"@type,omitempty"`
+	Id                   string              `json:"@id,omitempty"`
+	Comment              string              `json:"comment,omitempty"`
+	Formats []Format `json:"formats,omitempty"`
+	ProposeAttach []Attachment `json:"propose~attach,omitempty"`
 }
 
-type PresentationPreview struct {
-	Type       string       `json:"@type"`
-	Attributes []Attributre `json:"attributes"`
-	Predicates Predicate    `json:"predicates"`
-}
+//type PresentationPreview struct {
+//	Type       string       `json:"@type"`
+//	Attributes []Attributre `json:"attributes"`
+//	Predicates Predicate    `json:"predicates"`
+//}
 
-type Predicate struct {
-	Name      string `json:"name"`
-	CredDefId string `json:"cred_def_id"`
-	Predicate string `json:"predicate"`
-	Threshold string `json:"threshold"`
-}
+//type Predicate struct {
+//	Name      string `json:"name"`
+//	CredDefId string `json:"cred_def_id"`
+//	Predicate string `json:"predicate"`
+//	Threshold string `json:"threshold"`
+//}
 
 type RequestPresentation struct {
-	Type                      string       `json:"@type"`
-	Id                        string       `json:"@id"`
-	Comment                   string       `json:"comment"`
-	RequestPresentationAttach []Attachment `json:"request_presentation_attach"`
+	Type                      string       `json:"@type,omitempty"`
+	Id                        string       `json:"@id,omitempty"`
+	Comment                   string       `json:"comment,omitempty"`
+	Formats []Format `json:"formats,omitempty"`
+	RequestPresentationAttach []Attachment `json:"request_presentation_attach,omitempty"`
 }
 
 type Presentation struct {
-	Type               string       `json:"@type"`
-	Id                 string       `json:"@id"`
-	Comment            string       `json:"comment"`
-	PresentationAttach []Attachment `json:"presentation_attach"`
+	Type               string       `json:"@type,omitempty"`
+	Id                 string       `json:"@id,omitempty"`
+	Comment            string       `json:"comment,omitempty"`
+	Formats []Format `json:"formats,omitempty"`
+	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
 }
 
-type PresentationACK struct {
-	Type   string `json:"@type"`
-	Id     string `json:"@id"`
-	Thread Thread `json:"~thread"`
-}
 
-type GeneralMsg struct {
+
+type BasicMessage struct {
 	Type string `json:"@type"`
 	Id   string `json:"@id"`
-	Data Data   `json:"data"`
+	SendTime time.Time `json:"send_time"`
+	Content string `json:"content"`
+	I10n I10n `json:"~I10n"`
+}
+
+type I10n struct {
+	Locale string `json:"locale"`
 }

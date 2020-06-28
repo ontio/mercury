@@ -133,15 +133,14 @@ func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 	return structs.Map(v), nil
 }
 
+func (s Syscontroller) SaveConnectionState(id string, state ConnectionState) error {
+	key := fmt.Sprintf("%s_%s", ConnectionKey, id)
 
-func (s Syscontroller)SaveConnectionState(id string, state ConnectionState)error{
-	key := fmt.Sprintf("%s_%s",ConnectionKey,id)
-
-	switch state{
+	switch state {
 	case ConnectionInit:
 	}
 
-	if v,_ := s.store.Get(key);v != nil  {
+	if v, _ := s.store.Get(key); v != nil {
 		return fmt.Errorf("")
 	}
 }

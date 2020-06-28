@@ -8,4 +8,3 @@ const (
 	ConnectionResponseSent
 	ConnectionACKRec
 )
-
