@@ -7,7 +7,6 @@ import (
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
-	"git.ont.io/ontid/otf/rest"
 	"git.ont.io/ontid/otf/store"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
@@ -28,10 +27,10 @@ type Syscontroller struct {
 	did     did.Did
 	cfg     *config.Cfg
 	store   store.Store
-	msgsvr  *rest.MsgService
+	msgsvr  *MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store,msgsvr *rest.MsgService) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store,msgsvr *MsgService) Syscontroller {
 	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
@@ -149,9 +148,8 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//1. update connection request to receive response state
 		err := s.UpdateConnectionRequest(connid,ConnectionResponseReceived)
 		if err != nil {
-
+			return nil,err
 		}
-
 
 		//2. create and save a connection object
 
