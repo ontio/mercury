@@ -18,8 +18,14 @@ const (
 	Version           = "1.0"
 	InvitationSpec    = "spec/connections/" + Version + "/invitation"
 	ConnectionRequest = "spec/connections/" + Version + "/request"
-	InvitationKey     = "Invitation"
-	ConnectionKey     = "Connection"
+	ACK               = "spec/didcomm/" + Version + "/ack"
+
+	InvitationKey    = "Invitation"
+	ConnectionReqKey = "ConnectionReq"
+	ConnectionKey    = "Connection"
+
+	ACK_SUCCEED = "succeed"
+	ACK_FAILED  = "failed"
 )
 
 type Syscontroller struct {
@@ -157,16 +163,51 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}
 
 		//2. create and save a connection object
+		err = s.SaveConnection(req.Connection.Did, req.Connection.ServiceId)
+		if err != nil {
+			return nil, err
+		}
 
 		//3. send ACK back
-
+		ack := message.GeneralACK{
+			Type:   ACK,
+			Id:     uuid.New().String(),
+			Thread: message.Thread{ID: connid},
+			Status: ACK_SUCCEED,
+		}
+		outmsg := message.Message{
+			MessageType: message.ConnectionACKType,
+			Content:     ack,
+		}
+		err = s.msgsvr.HandleOutBound(outmsg)
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
 	case message.ConnectionACKType:
 		middleware.Log.Infof("resolve ConnectionACK")
-		//req := msg.Content.(message.ConnectResponse)
+		req := msg.Content.(message.GeneralACK)
 		//1. update connection request to receive ack state
-
+		if req.Status != ACK_SUCCEED {
+			//todo remove connectionreq when failed?
+			return nil, fmt.Errorf("got failed ACK ")
+		}
+		connid := req.Thread.ID
+		err := s.UpdateConnectionRequest(connid, ConnectionACKReceived)
+		if err != nil {
+			return nil, err
+		}
 		//2. create and save a connection object
+		cr, err := s.GetConnectionRequest(connid)
+		if err != nil {
+			return nil, err
+		}
 
+		err = s.SaveConnection(cr.ConnReq.Connection.Did, cr.ConnReq.Connection.ServiceId)
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
 	//for custom
 	case message.ProposalCredentialType:
 	case message.OfferCredentialType:
@@ -268,7 +309,7 @@ func (s Syscontroller) UpdateInvitation(id string, state ConnectionState) error 
 }
 
 func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, cr.Id))
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, cr.Id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -289,8 +330,22 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	return s.store.Put(key, bs)
 }
 
+func (s Syscontroller) GetConnectionRequest(id string) (*ConnectionRequestRec, error) {
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
+	data, err := s.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	cr := new(ConnectionRequestRec)
+	err = json.Unmarshal(data, cr)
+	if err != nil {
+		return nil, err
+	}
+	return cr, nil
+}
+
 func (s Syscontroller) UpdateConnectionRequest(id string, state ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, id))
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
@@ -311,4 +366,45 @@ func (s Syscontroller) UpdateConnectionRequest(id string, state ConnectionState)
 		return err
 	}
 	return s.store.Put(key, bts)
+}
+
+func (s Syscontroller) SaveConnection(theirDID string, serviceID string) error {
+	mydid := s.did.String()
+
+	cr := new(ConnectionRec)
+
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, mydid))
+	exist, err := s.store.Has(key)
+	if err != nil {
+		return err
+	}
+
+	if exist {
+		data, err := s.store.Get(key)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(data, cr)
+		if err != nil {
+			return err
+		}
+		cr.Connections[fmt.Sprintf("%s_%s", theirDID, serviceID)] = Connection{
+			TheirDID:  theirDID,
+			ServiceID: serviceID,
+		}
+	} else {
+		cr.OwnerDID = mydid
+		m := make(map[string]Connection)
+		m[fmt.Sprintf("%s_%s", theirDID, serviceID)] = Connection{
+			TheirDID:  theirDID,
+			ServiceID: serviceID,
+		}
+		cr.Connections = m
+	}
+	bts, err := json.Marshal(cr)
+	if err != nil {
+		return err
+	}
+	return s.store.Put(key, bts)
+
 }
