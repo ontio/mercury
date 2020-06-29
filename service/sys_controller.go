@@ -18,6 +18,7 @@ const (
 	Version           = "1.0"
 	InvitationSpec    = "spec/connections/" + Version + "/invitation"
 	ConnectionRequest = "spec/connections/" + Version + "/request"
+	ConnectionResponse = "spec/connections/" + Version + "/response"
 	ACK               = "spec/didcomm/" + Version + "/ack"
 
 	InvitationKey    = "Invitation"
@@ -135,7 +136,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			ID: req.Id,
 		}
 		//todo define the response type
-		res.Type = ConnectionRequest
+		res.Type = ConnectionResponse
 		res.Connection = req.Connection
 
 		outmsg := message.Message{
