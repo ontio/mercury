@@ -36,6 +36,9 @@ func Invite(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", utils.Base64Encode(jsonbytes))
 }
 
+func SendConnectionReq(c *gin.Context) {
+
+}
 func ConnectRequest(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionRequest{}

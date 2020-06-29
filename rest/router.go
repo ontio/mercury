@@ -14,7 +14,7 @@ var (
 	Svr *service.Service
 )
 
-func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *msgService) {
+func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *MsgService) {
 	Svr = service.NewService()
 	Svr.RegisterController(service.NewSyscontroller(acct, cfg, db))
 	Svr.RegisterController(service.NewCustomcontroller())
@@ -27,6 +27,7 @@ func InitRouter() *gin.Engine {
 	v := r.Group("/api/v1")
 	{
 		v.POST("/invitation", Invite)
+		v.POST("/sendconnectionreq",SendConnectionReq)
 		v.POST("/connectionrequest", ConnectRequest)
 		v.POST("/connectionresponse", ConnectResponse)
 		v.POST("/connectionack", ConnectAck)
