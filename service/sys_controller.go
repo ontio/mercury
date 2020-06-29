@@ -143,7 +143,10 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 	case message.ConnectionResponseType:
 		middleware.Log.Infof("resolve connection response")
-		req := msg.Content.(message.ConnectResponse)
+		if msg.Content == nil {
+			return nil, fmt.Errorf("message content is nil")
+		}
+		req := msg.Content.(*message.ConnectResponse)
 		connid := req.Thread.ID
 		//1. update connection request to receive response state
 		err := s.UpdateConnectionRequest(connid, ConnectionResponseReceived)
