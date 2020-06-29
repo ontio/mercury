@@ -22,3 +22,8 @@ type ConnectionRequestRec struct {
 	ConnReq message.ConnectionRequest `json:"conn_req"`
 	State   ConnectionState           `json:"state"`
 }
+
+type ConnectionRec struct {
+
+}
+
