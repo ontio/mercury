@@ -7,6 +7,7 @@ import (
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/rest"
 	"git.ont.io/ontid/otf/store"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
@@ -27,15 +28,17 @@ type Syscontroller struct {
 	did     did.Did
 	cfg     *config.Cfg
 	store   store.Store
+	msgsvr  *rest.MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store,msgsvr *rest.MsgService) Syscontroller {
 	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
 		did:     did,
 		cfg:     cfg,
 		store:   db,
+		msgsvr:msgsvr,
 	}
 	s.Initiate(nil)
 	return s
@@ -75,7 +78,9 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			return nil, err
 		}
 
-		return nil, nil
+		return ServiceResp{
+			Message: invitation,
+		}, nil
 	case message.SendConnectionRequestType:
 		//send connection req for agent
 		middleware.Log.Infof("resolve send connection request")
@@ -91,8 +96,11 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}
 
 		//send the connection req to target service endpoint
-		//go handleOutbound(cr)
-
+		msg.Content = cr
+		err = s.msgsvr.HandleOutBound(msg)
+		if err != nil{
+			return nil,err
+		}
 		//no need to pass incoming param
 		return nil, nil
 
@@ -121,18 +129,29 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			ID: req.Id,
 		}
 		//todo define the response type
-		res.Type = ""
+		res.Type = ConnectionRequest
 		res.Connection = req.Connection
 
-		//todo
-		//go outbound(res)
+		outmsg := message.Message{
+			MessageType: message.ConnectionResponseType,
+			Content:     res,
+		}
+		err = s.msgsvr.HandleOutBound(outmsg)
+		if err != nil{
+			return nil,err
+		}
 		return nil, nil
 
 	case message.ConnectionResponseType:
 		middleware.Log.Infof("resolve connection response")
-		//req := msg.Content.(message.ConnectResponse)
-
+		req := msg.Content.(message.ConnectResponse)
+		connid := req.Thread.ID
 		//1. update connection request to receive response state
+		err := s.UpdateConnectionRequest(connid,ConnectionResponseReceived)
+		if err != nil {
+
+		}
+
 
 		//2. create and save a connection object
 
