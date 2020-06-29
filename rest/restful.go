@@ -25,20 +25,33 @@ func Invite(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-
 	jsonbytes, err := data.(service.ControllerResp).GetJsonbytes()
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-
 	resp.Response(http.StatusOK, 0, "", utils.Base64Encode(jsonbytes))
 }
 
 func SendConnectionReq(c *gin.Context) {
-
+	resp := Gin{C: c}
+	req := &message.ConnectionRequest{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("Send ConnectionRequest err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.SendConnectionRequestType, req)
+	if err != nil {
+		middleware.Log.Errorf("Send Connection Req err:%s")
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
 }
+
 func ConnectRequest(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionRequest{}
