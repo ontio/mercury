@@ -17,6 +17,7 @@ import (
 const (
 	Version        = "1.0"
 	InvitationSpec = "spec/connections/" + Version + "/invitation"
+	ConnectionRequest = "spec/connections/" + Version + "/request"
 	InvitationKey  = "Invitation"
 	ConnectionKey  = "Connection"
 )
@@ -69,11 +70,6 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		invitation.Id = uuid.New().String()
 
 		//store the invitation
-		//jsonbytes, err := json.Marshal(invitation)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//save invitation
 		err := s.SaveInvitation(*invitation)
 		if err != nil {
 			return nil, err
@@ -124,7 +120,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		res.Thread = message.Thread{
 			ID: req.Id,
 		}
-		//todo define the reponse type
+		//todo define the response type
 		res.Type = ""
 		res.Connection = req.Connection
 
