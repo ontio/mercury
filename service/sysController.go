@@ -28,13 +28,13 @@ type Syscontroller struct {
 	store   store.Store
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg) Syscontroller {
-
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store) Syscontroller {
 	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
 		did:     did,
 		cfg:     cfg,
+		store:   db,
 	}
 	s.Initiate(nil)
 	return s
@@ -57,8 +57,11 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 	//for system
 	case message.InvitationType:
 		middleware.Log.Infof("resolve invitation")
+		if msg.Content == nil {
+			return nil, fmt.Errorf("message content is nil")
+		}
 		//todo verify request
-		invitation, ok := msg.Content.(message.Invitation)
+		invitation, ok := msg.Content.(*message.Invitation)
 		if !ok {
 			return nil, fmt.Errorf("message format is not correct")
 		}
@@ -71,7 +74,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//	return nil, err
 		//}
 		//save invitation
-		err := s.SaveInvitation(invitation)
+		err := s.SaveInvitation(*invitation)
 		if err != nil {
 			return nil, err
 		}
@@ -81,9 +84,12 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//send connection req for agent
 		middleware.Log.Infof("resolve send connection request")
 		//todo verify request
-		cr := msg.Content.(message.ConnectionRequest)
+		if msg.Content == nil {
+			return nil, fmt.Errorf("message content is nil")
+		}
+		cr := msg.Content.(*message.ConnectionRequest)
 		cr.Id = uuid.New().String()
-		err := s.SaveConnectionRequest(cr, ConnectionRequestSent)
+		err := s.SaveConnectionRequest(*cr, ConnectionRequestSent)
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +102,10 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 	case message.ConnectionRequestType:
 		middleware.Log.Infof("resolve connection request")
-		req := msg.Content.(message.ConnectionRequest)
+		if msg.Content == nil {
+			return nil, fmt.Errorf("message content is nil")
+		}
+		req := msg.Content.(*message.ConnectionRequest)
 		//ivid := req.Thread.ID
 		ivrc, err := s.GetInvitation(req.Thread.ID)
 		if err != nil {
@@ -108,12 +117,12 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			return nil, err
 		}
 		//update connection to request received state
-		err = s.SaveConnectionRequest(req, ConnectionRequestReceived)
+		err = s.SaveConnectionRequest(*req, ConnectionRequestReceived)
 		//send response outbound
 		res := new(message.ConnectResponse)
 		res.Id = uuid.New().String()
 		res.Thread = message.Thread{
-			ID:             req.Id,
+			ID: req.Id,
 		}
 		//todo define the reponse type
 		res.Type = ""
@@ -121,7 +130,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 		//todo
 		//go outbound(res)
-		return nil,nil
+		return nil, nil
 
 	case message.ConnectionResponseType:
 		middleware.Log.Infof("resolve connection response")
@@ -133,14 +142,12 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 		//3. send ACK back
 
-
 	case message.ConnectionACKType:
 		middleware.Log.Infof("resolve ConnectionACK")
 		//req := msg.Content.(message.ConnectResponse)
 		//1. update connection request to receive ack state
 
 		//2. create and save a connection object
-
 
 	//for custom
 	case message.ProposalCredentialType:

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	store "git.ont.io/ontid/otf/store/leveldb"
 	"os"
 	"os/signal"
 	"runtime"
@@ -11,6 +10,7 @@ import (
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
+	store "git.ont.io/ontid/otf/store/leveldb"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/micro/cli"
 )
@@ -42,7 +42,6 @@ func startAgent(ctx *cli.Context) {
 	if err != nil {
 		panic(err)
 	}
-	r := rest.InitRouter()
 	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
 	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
 	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
@@ -54,6 +53,7 @@ func startAgent(ctx *cli.Context) {
 		Port: port,
 		Ip:   ip,
 	}
+	r := rest.InitRouter()
 	msgSvr := rest.NewMessageService()
 	rest.NewService(account, cfg, db, msgSvr)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)

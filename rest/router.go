@@ -16,7 +16,7 @@ var (
 
 func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *msgService) {
 	Svr = service.NewService()
-	Svr.RegisterController(service.NewSyscontroller(acct, cfg))
+	Svr.RegisterController(service.NewSyscontroller(acct, cfg, db))
 	Svr.RegisterController(service.NewCustomcontroller())
 }
 
@@ -42,7 +42,7 @@ func InitRouter() *gin.Engine {
 	return r
 }
 
-func SendMsg(msgType message.MessageType, data map[string]interface{}) (interface{}, error) {
+func SendMsg(msgType message.MessageType, data interface{}) (interface{}, error) {
 	msg := message.Message{MessageType: msgType, Content: data}
 	resp, err := Svr.Serv(msg)
 	if err != nil {
