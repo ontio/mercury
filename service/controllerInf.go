@@ -11,7 +11,7 @@ type ControllerResp interface {
 	GetBytes() ([]byte, error)
 	GetInt64() (int64, error)
 	GetMap() (map[string]interface{}, error)
-	GetNextMessage() (message.Message, error)
+	GetMessage() (message.Message, error)
 	GetOriginMessage() (message.Message, error)
 	GetJsonbytes() ([]byte, error)
 }

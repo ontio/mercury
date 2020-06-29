@@ -40,7 +40,7 @@ func (r ServiceResp) GetMap() (map[string]interface{}, error) {
 	return nil, fmt.Errorf("not support")
 }
 
-func (r ServiceResp) GetNextMessage() (message.Message, error) {
+func (r ServiceResp) GetMessage() (message.Message, error) {
 	m := message.Message{}
 	m.MessageType = r.OriginalMessage.MessageType
 	m.Content = r.Message
@@ -100,7 +100,6 @@ func (s *Service) RemoveController(name string) error {
 }
 
 func (s *Service) Serv(message message.Message) (ControllerResp, error) {
-
 	m := message
 	for e := s.Container.Front(); e != nil; e = e.Next() {
 		c := e.Value.(ControllerInf)
@@ -108,15 +107,11 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 		if err != nil {
 			return tmpmsg, err
 		}
-		if e.Next() == nil {
-			return tmpmsg, nil
-		}
-
-		m, err = tmpmsg.GetNextMessage()
+		m, err = tmpmsg.GetMessage()
 		if err != nil {
 			return tmpmsg, err
 		}
 	}
 	//never reach here
-	return ServiceResp{}, nil
+	return ServiceResp{Message: m}, nil
 }

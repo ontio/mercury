@@ -15,11 +15,11 @@ import (
 )
 
 const (
-	Version        = "1.0"
-	InvitationSpec = "spec/connections/" + Version + "/invitation"
+	Version           = "1.0"
+	InvitationSpec    = "spec/connections/" + Version + "/invitation"
 	ConnectionRequest = "spec/connections/" + Version + "/request"
-	InvitationKey  = "Invitation"
-	ConnectionKey  = "Connection"
+	InvitationKey     = "Invitation"
+	ConnectionKey     = "Connection"
 )
 
 type Syscontroller struct {
@@ -30,14 +30,14 @@ type Syscontroller struct {
 	msgsvr  *MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store,msgsvr *MsgService) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *MsgService) Syscontroller {
 	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
 		did:     did,
 		cfg:     cfg,
 		store:   db,
-		msgsvr:msgsvr,
+		msgsvr:  msgsvr,
 	}
 	s.Initiate(nil)
 	return s
@@ -97,8 +97,8 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//send the connection req to target service endpoint
 		msg.Content = cr
 		err = s.msgsvr.HandleOutBound(msg)
-		if err != nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
 		//no need to pass incoming param
 		return nil, nil
@@ -136,8 +136,8 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			Content:     res,
 		}
 		err = s.msgsvr.HandleOutBound(outmsg)
-		if err != nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
 		return nil, nil
 
@@ -146,9 +146,9 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		req := msg.Content.(message.ConnectResponse)
 		connid := req.Thread.ID
 		//1. update connection request to receive response state
-		err := s.UpdateConnectionRequest(connid,ConnectionResponseReceived)
+		err := s.UpdateConnectionRequest(connid, ConnectionResponseReceived)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 
 		//2. create and save a connection object
