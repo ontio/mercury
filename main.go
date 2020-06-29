@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/service"
 	"os"
 	"os/signal"
 	"runtime"
@@ -54,7 +55,7 @@ func startAgent(ctx *cli.Context) {
 		Ip:   ip,
 	}
 	r := rest.InitRouter()
-	msgSvr := rest.NewMessageService()
+	msgSvr := service.NewMessageService()
 	rest.NewService(account, cfg, db, msgSvr)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
