@@ -45,13 +45,13 @@ func SendConnectionReq(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	data, err := SendMsg(message.SendConnectionRequestType, req)
+	_, err = SendMsg(message.SendConnectionRequestType, req)
 	if err != nil {
 		middleware.Log.Errorf("Send Connection Req err:%s")
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	resp.Response(http.StatusOK, 0, "", data)
+	resp.Response(http.StatusOK, 0, "", nil)
 }
 
 func ConnectRequest(c *gin.Context) {

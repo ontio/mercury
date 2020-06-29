@@ -31,7 +31,7 @@ func (m *MsgService) popMessage() {
 	for {
 		select {
 		case msg := <-m.msgQueue:
-			fmt.Println(":", msg)
+			fmt.Println("xiexie---------:", msg)
 		//todo send msg to other agent
 		case <-m.quitC:
 			return

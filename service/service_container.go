@@ -103,13 +103,16 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 	m := message
 	for e := s.Container.Front(); e != nil; e = e.Next() {
 		c := e.Value.(ControllerInf)
-		tmpmsg, err := c.Process(m)
+		msg, err := c.Process(m)
 		if err != nil {
-			return tmpmsg, err
+			return msg, err
 		}
-		m, err = tmpmsg.GetMessage()
+		if msg == nil {
+			return &ServiceResp{}, nil
+		}
+		m, err = msg.GetMessage()
 		if err != nil {
-			return tmpmsg, err
+			return msg, err
 		}
 	}
 	//never reach here
