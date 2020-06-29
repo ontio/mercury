@@ -100,6 +100,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
+		middleware.Log.Infof("SendConnectionReq:%v",cr)
 		//no need to pass incoming param
 		return nil, nil
 
@@ -139,6 +140,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
+		middleware.Log.Infof("ConnectionReq:%v",outmsg)
 		return nil, nil
 
 	case message.ConnectionResponseType:
