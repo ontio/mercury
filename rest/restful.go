@@ -216,7 +216,7 @@ func PresentProof(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
-func PresentationACKInfo(c *gin.Context) {
+func PresentationAckInfo(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.GeneralACK{}
 	err := c.Bind(req)

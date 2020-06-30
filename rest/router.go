@@ -6,6 +6,7 @@ import (
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -24,21 +25,21 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.LoggerToFile())
 	r.Use(gin.Recovery())
-	v := r.Group("/api/v1")
+	v := r.Group(utils.Group_Api_V1)
 	{
-		v.POST("/invitation", Invite)
-		v.POST("/sendconnectionreq", SendConnectionReq)
-		v.POST("/connectionrequest", ConnectRequest)
-		v.POST("/connectionresponse", ConnectResponse)
-		v.POST("/connectionack", ConnectAck)
-		v.POST("/proposalcredential", ProposalCredentialReq)
-		v.POST("/sendcredential", SendCredential)
-		v.POST("/issuecredentail", IssueCredential)
-		v.POST("/credentialack", CredentialAckInfo)
-		v.POST("/requestproof", RequestProof)
-		v.POST("/presentproof", PresentProof)
-		v.POST("/presentationack", PresentationACKInfo)
-		v.POST("/sendgeneralmsg", SendGeneralMsg)
+		v.POST(utils.Invite_Api, Invite)
+		v.POST(utils.SendConnectionReq_Api, SendConnectionReq)
+		v.POST(utils.ConnectRequest_Api, ConnectRequest)
+		v.POST(utils.ConnectResponse_Api, ConnectResponse)
+		v.POST(utils.ConnectAck_Api, ConnectAck)
+		v.POST(utils.ProposalCredentialReq_Api, ProposalCredentialReq)
+		v.POST(utils.SendCredential_Api, SendCredential)
+		v.POST(utils.IssueCredential_Api, IssueCredential)
+		v.POST(utils.CredentialAckInfo_Api, CredentialAckInfo)
+		v.POST(utils.RequestProof_Api, RequestProof)
+		v.POST(utils.PresentProof_Api, PresentProof)
+		v.POST(utils.PresentationAckInfo, PresentationAckInfo)
+		v.POST(utils.SendGeneralMsg, SendGeneralMsg)
 	}
 	return r
 }
