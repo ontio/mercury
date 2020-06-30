@@ -15,11 +15,11 @@ import (
 )
 
 const (
-	Version           = "1.0"
-	InvitationSpec    = "spec/connections/" + Version + "/invitation"
-	ConnectionRequest = "spec/connections/" + Version + "/request"
+	Version            = "1.0"
+	InvitationSpec     = "spec/connections/" + Version + "/invitation"
+	ConnectionRequest  = "spec/connections/" + Version + "/request"
 	ConnectionResponse = "spec/connections/" + Version + "/response"
-	ACK               = "spec/didcomm/" + Version + "/ack"
+	ACK                = "spec/didcomm/" + Version + "/ack"
 
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
@@ -107,7 +107,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
-		middleware.Log.Infof("SendConnectionReq:%v",cr)
+		middleware.Log.Infof("SendConnectionReq:%v", cr)
 		//no need to pass incoming param
 		return nil, nil
 
@@ -147,7 +147,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		if err != nil {
 			return nil, err
 		}
-		middleware.Log.Infof("ConnectionReq:%v",outmsg)
+		middleware.Log.Infof("ConnectionReq:%v", outmsg)
 		return nil, nil
 
 	case message.ConnectionResponseType:
@@ -209,6 +209,17 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			return nil, err
 		}
 		return nil, nil
+
+	case message.GeneralMsgType:
+		middleware.Log.Infof("resolve GeneralMsgType")
+		req := msg.Content.(message.BasicMessage)
+		data, err := json.Marshal(req)
+		if err != nil {
+			return nil, err
+		}
+		middleware.Log.Infof("we got a message: %s", data)
+		return nil, nil
+
 	//for custom
 	case message.ProposalCredentialType:
 	case message.OfferCredentialType:
