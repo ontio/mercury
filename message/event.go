@@ -22,7 +22,7 @@ const (
 )
 
 type Message struct {
-	MessageType
-	Content   interface{}
-	JsonBytes []byte
+	MessageType `json:"message_type"`
+	Content     interface{} `json:"content"`
+	JsonBytes   []byte      `json:"json_bytes,,omitempty"`
 }

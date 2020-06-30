@@ -74,7 +74,7 @@ func ConnectRequest(c *gin.Context) {
 
 func ConnectResponse(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.ConnectResponse{}
+	req := &message.ConnectionResponse{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("ConnectResponse err:%s", err)

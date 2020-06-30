@@ -55,7 +55,8 @@ func startAgent(ctx *cli.Context) {
 		Ip:   ip,
 	}
 	r := rest.InitRouter()
-	msgSvr := service.NewMessageService()
+	ontvdri := service.NewOntVDRI()
+	msgSvr := service.NewMessageService(ontvdri)
 	rest.NewService(account, cfg, db, msgSvr)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port

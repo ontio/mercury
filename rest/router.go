@@ -51,5 +51,5 @@ func SendMsg(msgType message.MessageType, data interface{}) (interface{}, error)
 		middleware.Log.Errorf("err:%s", err)
 		return nil, err
 	}
-	return resp, nil
+	return resp.GetMessage()
 }

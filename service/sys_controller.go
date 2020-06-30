@@ -66,7 +66,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 	switch msg.MessageType {
 	//for system
 	case message.InvitationType:
-		middleware.Log.Infof("resolve invitation")
+		fmt.Println("resolve invitation")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
@@ -87,38 +87,47 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		return ServiceResp{
 			Message: invitation,
 		}, nil
-	case message.SendConnectionRequestType:
-		//send connection req for agent
-		middleware.Log.Infof("resolve send connection request")
-		//todo verify request
-		if msg.Content == nil {
-			return nil, fmt.Errorf("message content is nil")
-		}
-		cr := msg.Content.(*message.ConnectionRequest)
-		cr.Id = uuid.New().String()
-		err := s.SaveConnectionRequest(*cr, ConnectionRequestSent)
-		if err != nil {
-			return nil, err
-		}
 
-		//send the connection req to target service endpoint
-		msg.Content = cr
-		err = s.msgsvr.HandleOutBound(msg)
-		if err != nil {
-			return nil, err
-		}
-		middleware.Log.Infof("SendConnectionReq:%v", cr)
-		//no need to pass incoming param
-		return nil, nil
+	//not in use anymore
+	//case message.SendConnectionRequestType:
+	//	//send connection req for agent
+	//	fmt.Println("resolve send connection request")
+	//	//todo verify request
+	//	if msg.Content == nil {
+	//		return nil, fmt.Errorf("message content is nil")
+	//	}
+	//	cr := msg.Content.(*message.ConnectionRequest)
+	//	cr.Id = uuid.New().String()
+	//	err := s.SaveConnectionRequest(*cr, ConnectionRequestSent)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	//send the connection req to target service endpoint
+	//	msg.Content = cr
+	//	msg.MessageType = message.ConnectionRequestType
+	//	jsonbytes,err := json.Marshal(msg)
+	//	if err != nil{
+	//		return nil,err
+	//	}
+	//	msg.JsonBytes = jsonbytes
+	//
+	//	err = s.msgsvr.HandleOutBound(msg)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	middleware.Log.Infof("SendConnectionReq:%v", cr)
+	//	//no need to pass incoming param
+	//	return nil, nil
 
 	case message.ConnectionRequestType:
-		middleware.Log.Infof("resolve connection request")
+		fmt.Println("resolve connection request")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
 		req := msg.Content.(*message.ConnectionRequest)
 		//ivid := req.Thread.ID
-		ivrc, err := s.GetInvitation(req.Thread.ID)
+		ivrc, err := s.GetInvitation(req.InvitationId)
 		if err != nil {
 			return nil, err
 		}
@@ -130,20 +139,27 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//update connection to request received state
 		err = s.SaveConnectionRequest(*req, ConnectionRequestReceived)
 		//send response outbound
-		res := new(message.ConnectResponse)
+		res := new(message.ConnectionResponse)
 		res.Id = uuid.New().String()
 		res.Thread = message.Thread{
 			ID: req.Id,
 		}
 		//todo define the response type
 		res.Type = ConnectionResponse
-		res.Connection = req.Connection
+		//self conn
+		res.Connection = message.Connection{
+			Did:       ivrc.Invitation.Did,
+			ServiceId: ivrc.Invitation.ServiceId,
+		}
 
 		outmsg := message.Message{
 			MessageType: message.ConnectionResponseType,
 			Content:     res,
 		}
-		err = s.msgsvr.HandleOutBound(outmsg)
+		err = s.msgsvr.HandleOutBound(OutboundMsg{
+			Msg:  outmsg,
+			Conn: req.Connection,
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -151,20 +167,20 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		return nil, nil
 
 	case message.ConnectionResponseType:
-		middleware.Log.Infof("resolve connection response")
+		fmt.Println("resolve connection response")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
-		req := msg.Content.(*message.ConnectResponse)
+		req := msg.Content.(*message.ConnectionResponse)
 		connid := req.Thread.ID
 		//1. update connection request to receive response state
-		err := s.UpdateConnectionRequest(connid, ConnectionResponseReceived)
-		if err != nil {
-			return nil, err
-		}
+		//err := s.UpdateConnectionRequest(connid, ConnectionResponseReceived)
+		//if err != nil {
+		//	return nil, err
+		//}
 
 		//2. create and save a connection object
-		err = s.SaveConnection(req.Connection.Did, req.Connection.ServiceId)
+		err := s.SaveConnection(req.Connection.Did, req.Connection.ServiceId)
 		if err != nil {
 			return nil, err
 		}
@@ -176,18 +192,28 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			Thread: message.Thread{ID: connid},
 			Status: ACK_SUCCEED,
 		}
+
+		jsonbytes, err := json.Marshal(ack)
+		if err != nil {
+			return nil, err
+		}
+
 		outmsg := message.Message{
 			MessageType: message.ConnectionACKType,
 			Content:     ack,
+			JsonBytes:   jsonbytes,
 		}
-		err = s.msgsvr.HandleOutBound(outmsg)
+		err = s.msgsvr.HandleOutBound(OutboundMsg{
+			Msg:  outmsg,
+			Conn: req.Connection,
+		})
 		if err != nil {
 			return nil, err
 		}
 		return nil, nil
 	case message.ConnectionACKType:
-		middleware.Log.Infof("resolve ConnectionACK")
-		req := msg.Content.(message.GeneralACK)
+		fmt.Println("resolve ConnectionACK")
+		req := msg.Content.(*message.GeneralACK)
 		//1. update connection request to receive ack state
 		if req.Status != ACK_SUCCEED {
 			//todo remove connectionreq when failed?
@@ -211,13 +237,13 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		return nil, nil
 
 	case message.GeneralMsgType:
-		middleware.Log.Infof("resolve GeneralMsgType")
+		fmt.Println("resolve GeneralMsgType")
 		req := msg.Content.(message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
 			return nil, err
 		}
-		middleware.Log.Infof("we got a message: %s", data)
+		fmt.Println("we got a message: %s", data)
 		return nil, nil
 
 	//for custom
@@ -401,16 +427,16 @@ func (s Syscontroller) SaveConnection(theirDID string, serviceID string) error {
 		if err != nil {
 			return err
 		}
-		cr.Connections[fmt.Sprintf("%s_%s", theirDID, serviceID)] = Connection{
-			TheirDID:  theirDID,
-			ServiceID: serviceID,
+		cr.Connections[fmt.Sprintf("%s_%s", theirDID, serviceID)] = message.Connection{
+			Did:       theirDID,
+			ServiceId: serviceID,
 		}
 	} else {
 		cr.OwnerDID = mydid
-		m := make(map[string]Connection)
-		m[fmt.Sprintf("%s_%s", theirDID, serviceID)] = Connection{
-			TheirDID:  theirDID,
-			ServiceID: serviceID,
+		m := make(map[string]message.Connection)
+		m[fmt.Sprintf("%s_%s", theirDID, serviceID)] = message.Connection{
+			Did:       theirDID,
+			ServiceId: serviceID,
 		}
 		cr.Connections = m
 	}

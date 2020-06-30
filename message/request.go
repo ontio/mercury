@@ -13,9 +13,10 @@ type Invitation struct {
 type ConnectionRequest struct {
 	Type       string     `json:"@type,omitempty"`
 	Id         string     `json:"@id,omitempty"`
-	Lable      string     `json:"lable,omitempty"`
+	Label      string     `json:"label,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
-	Thread     Thread     `json:"~thread,omitempty"`
+	//Thread     Thread     `json:"~thread,omitempty"`
+	InvitationId string `json:"invitation_id"`
 }
 
 type Connection struct {
@@ -59,7 +60,7 @@ type Thread struct {
 //	ServiceEndpoint string   `json:"serviceEndpoint"`
 //}
 
-type ConnectResponse struct {
+type ConnectionResponse struct {
 	Type       string     `json:"@type,omitempty"`
 	Id         string     `json:"@id,omitempty"`
 	Thread     Thread     `json:"~thread,omitempty"`
