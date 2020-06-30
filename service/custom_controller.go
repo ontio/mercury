@@ -32,7 +32,7 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 		message.ConnectionRequestType,
 		message.ConnectionResponseType,
 		message.ConnectionACKType:
-		return s.skipmessage(msg)
+		return skipmessage(msg)
 
 	case message.ProposalCredentialType:
 	case message.OfferCredentialType:
