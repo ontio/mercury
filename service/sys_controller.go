@@ -19,6 +19,7 @@ const (
 	ConnectionRequest  = "spec/connections/" + Version + "/request"
 	ConnectionResponse = "spec/connections/" + Version + "/response"
 	ACK                = "spec/didcomm/" + Version + "/ack"
+	BasicMsg           = "spec/didcomm/" + Version + "/generalmessage"
 
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
@@ -219,7 +220,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}
 		err = s.msgsvr.HandleOutBound(OutboundMsg{
 			Msg:  outmsg,
-			Conn: req.Connection,
+			Conn: ack.Connection,
 		})
 		if err != nil {
 			return nil, err
@@ -258,7 +259,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 	case message.SendGeneralMsgType:
 		fmt.Println("resolve SendGeneralMsgType")
-		req := msg.Content.(message.BasicMessage)
+		req := msg.Content.(*message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
 			fmt.Printf("err on Marshal:%s\n", err.Error())
@@ -271,9 +272,14 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			fmt.Printf("err on GetConnection:%s\n", err.Error())
 			return nil, err
 		}
+		req.Type = BasicMsg
+		req.Id = uuid.New().String()
 
 		om := OutboundMsg{
-			Msg:  msg,
+			Msg: message.Message{
+				MessageType: message.SendGeneralMsgType,
+				Content:     req,
+			},
 			Conn: conn,
 		}
 		err = s.msgsvr.HandleOutBound(om)
@@ -285,13 +291,13 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 
 	case message.ReceiveGeneralMsgType:
 		fmt.Println("resolve ReceiveGeneralMsgType")
-		req := msg.Content.(message.BasicMessage)
+		req := msg.Content.(*message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
 			fmt.Printf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
-		fmt.Println("we got a message: %s", data)
+		fmt.Printf("we got a message: %s\n", data)
 		return nil, nil
 
 	//for custom
