@@ -17,6 +17,7 @@ const (
 	PresentProof_Api          = "/presentproof"
 	PresentationAckInfo       = "/presentationack"
 	SendGeneralMsg            = "/sendgeneralmsg"
+	ReceiveGeneralMsg         = "/receivegeneralmsg"
 )
 
 func GetApiName(msgType message.MessageType) string {
@@ -46,8 +47,8 @@ func GetApiName(msgType message.MessageType) string {
 		return Group_Api_V1 + PresentProof_Api
 	case message.PresentationACKType:
 		return Group_Api_V1 + PresentationAckInfo
-	case message.GeneralMsgType:
-		return Group_Api_V1 + SendGeneralMsg
+	case message.SendGeneralMsgType:
+		return Group_Api_V1 + ReceiveGeneralMsg
 	default:
 		return Group_Api_V1
 	}

@@ -20,8 +20,10 @@ type ConnectionRequest struct {
 }
 
 type Connection struct {
-	Did       string `json:"did,omitempty"`
-	ServiceId string `json:"service_id,omitempty"`
+	MyDid          string `json:"my_did,omitempty"`
+	TheirDid       string `json:"their_did"`
+	MyServiceId    string `json:"my_service_id,omitempty"`
+	TheirServiceId string `json:"their_service_id"`
 }
 
 // Thread thread data
@@ -68,10 +70,11 @@ type ConnectionResponse struct {
 }
 
 type GeneralACK struct {
-	Type   string `json:"@type,omitempty"`
-	Id     string `json:"@id,omitempty"`
-	Thread Thread `json:"~thread,omitempty"`
-	Status string `json:"status,omitempty"`
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Thread     Thread     `json:"~thread,omitempty"`
+	Status     string     `json:"status,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 //========issue credential
@@ -186,11 +189,12 @@ type Presentation struct {
 }
 
 type BasicMessage struct {
-	Type     string    `json:"@type"`
-	Id       string    `json:"@id"`
-	SendTime time.Time `json:"send_time"`
-	Content  string    `json:"content"`
-	I10n     I10n      `json:"~I10n"`
+	Type       string     `json:"@type"`
+	Id         string     `json:"@id"`
+	SendTime   time.Time  `json:"send_time"`
+	Content    string     `json:"content"`
+	I10n       I10n       `json:"~I10n"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 type I10n struct {

@@ -243,9 +243,27 @@ func SendGeneralMsg(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	data, err := SendMsg(message.GeneralMsgType, req)
+	data, err := SendMsg(message.SendGeneralMsgType, req)
 	if err != nil {
-		middleware.Log.Errorf("SendGeneralMsg msg type:%d,err:%s", message.GeneralMsgType, err)
+		middleware.Log.Errorf("SendGeneralMsg msg type:%d,err:%s", message.SendGeneralMsgType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func ReceiveGeneralMsg(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.BasicMessage{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("ReceiveGeneralMsg err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.ReceiveGeneralMsgType, req)
+	if err != nil {
+		middleware.Log.Errorf("SendGeneralMsg msg type:%d,err:%s", message.ReceiveGeneralMsgType, err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}

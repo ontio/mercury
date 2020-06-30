@@ -18,7 +18,8 @@ const (
 	RequestPresentationType
 	PresentationType
 	PresentationACKType
-	GeneralMsgType
+	SendGeneralMsgType
+	ReceiveGeneralMsgType
 )
 
 type Message struct {

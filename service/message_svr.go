@@ -86,11 +86,11 @@ func (m *MsgService) HttpPostData(url, data string) error {
 
 func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
 
-	doc, err := m.vdri.GetDIDDoc(msg.Conn.Did)
+	doc, err := m.vdri.GetDIDDoc(msg.Conn.TheirDid)
 	if err != nil {
 		return "", err
 	}
-	endpoint, err := doc.GetServicePoint(msg.Conn.ServiceId)
+	endpoint, err := doc.GetServicePoint(msg.Conn.TheirServiceId)
 	if err != nil {
 		return "", err
 	}

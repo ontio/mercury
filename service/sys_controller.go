@@ -6,7 +6,6 @@ import (
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/store"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
@@ -129,15 +128,21 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//ivid := req.Thread.ID
 		ivrc, err := s.GetInvitation(req.InvitationId)
 		if err != nil {
+			fmt.Printf("err on GetInvitation:%s\n", err.Error())
 			return nil, err
 		}
 		//update invitation to used state
 		err = s.UpdateInvitation(ivrc.Invitation.Id, InvitationUsed)
 		if err != nil {
+			fmt.Printf("err on UpdateInvitation:%s\n", err.Error())
 			return nil, err
 		}
 		//update connection to request received state
 		err = s.SaveConnectionRequest(*req, ConnectionRequestReceived)
+		if err != nil {
+			fmt.Printf("err on SaveConnectionRequest:%s\n", err.Error())
+			return nil, err
+		}
 		//send response outbound
 		res := new(message.ConnectionResponse)
 		res.Id = uuid.New().String()
@@ -148,8 +153,10 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		res.Type = ConnectionResponse
 		//self conn
 		res.Connection = message.Connection{
-			Did:       ivrc.Invitation.Did,
-			ServiceId: ivrc.Invitation.ServiceId,
+			MyDid:          ivrc.Invitation.Did,
+			MyServiceId:    ivrc.Invitation.ServiceId,
+			TheirDid:       req.Connection.MyDid,
+			TheirServiceId: req.Connection.TheirServiceId,
 		}
 
 		outmsg := message.Message{
@@ -161,9 +168,12 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			Conn: req.Connection,
 		})
 		if err != nil {
+			if err != nil {
+				fmt.Printf("err on HandleOutBound:%s\n", err.Error())
+				return nil, err
+			}
 			return nil, err
 		}
-		middleware.Log.Infof("ConnectionReq:%v", outmsg)
 		return nil, nil
 
 	case message.ConnectionResponseType:
@@ -180,8 +190,12 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		//}
 
 		//2. create and save a connection object
-		err := s.SaveConnection(req.Connection.Did, req.Connection.ServiceId)
+		err := s.SaveConnection(req.Connection.TheirDid,
+			req.Connection.TheirServiceId,
+			req.Connection.MyDid,
+			req.Connection.MyServiceId)
 		if err != nil {
+			fmt.Printf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -191,17 +205,17 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			Id:     uuid.New().String(),
 			Thread: message.Thread{ID: connid},
 			Status: ACK_SUCCEED,
-		}
-
-		jsonbytes, err := json.Marshal(ack)
-		if err != nil {
-			return nil, err
+			Connection: message.Connection{
+				MyDid:          req.Connection.TheirDid,
+				TheirDid:       req.Connection.MyDid,
+				MyServiceId:    req.Connection.TheirServiceId,
+				TheirServiceId: req.Connection.MyServiceId,
+			},
 		}
 
 		outmsg := message.Message{
 			MessageType: message.ConnectionACKType,
 			Content:     ack,
-			JsonBytes:   jsonbytes,
 		}
 		err = s.msgsvr.HandleOutBound(OutboundMsg{
 			Msg:  outmsg,
@@ -222,25 +236,59 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		connid := req.Thread.ID
 		err := s.UpdateConnectionRequest(connid, ConnectionACKReceived)
 		if err != nil {
+			fmt.Printf("err on UpdateConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 		//2. create and save a connection object
 		cr, err := s.GetConnectionRequest(connid)
 		if err != nil {
+			fmt.Printf("err on GetConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 
-		err = s.SaveConnection(cr.ConnReq.Connection.Did, cr.ConnReq.Connection.ServiceId)
+		err = s.SaveConnection(cr.ConnReq.Connection.TheirDid,
+			cr.ConnReq.Connection.TheirServiceId,
+			cr.ConnReq.Connection.MyDid,
+			cr.ConnReq.Connection.MyServiceId)
 		if err != nil {
+			fmt.Printf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
 		}
 		return nil, nil
 
-	case message.GeneralMsgType:
-		fmt.Println("resolve GeneralMsgType")
+	case message.SendGeneralMsgType:
+		fmt.Println("resolve SendGeneralMsgType")
 		req := msg.Content.(message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
+			fmt.Printf("err on Marshal:%s\n", err.Error())
+			return nil, err
+		}
+		fmt.Println("we got a message: %s", data)
+
+		conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid, req.Connection.TheirServiceId)
+		if err != nil {
+			fmt.Printf("err on GetConnection:%s\n", err.Error())
+			return nil, err
+		}
+
+		om := OutboundMsg{
+			Msg:  msg,
+			Conn: conn,
+		}
+		err = s.msgsvr.HandleOutBound(om)
+		if err != nil {
+			fmt.Printf("err on HandleOutBound:%s\n", err.Error())
+			return nil, err
+		}
+		return nil, nil
+
+	case message.ReceiveGeneralMsgType:
+		fmt.Println("resolve ReceiveGeneralMsgType")
+		req := msg.Content.(message.BasicMessage)
+		data, err := json.Marshal(req)
+		if err != nil {
+			fmt.Printf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
 		fmt.Println("we got a message: %s", data)
@@ -407,12 +455,11 @@ func (s Syscontroller) UpdateConnectionRequest(id string, state ConnectionState)
 	return s.store.Put(key, bts)
 }
 
-func (s Syscontroller) SaveConnection(theirDID string, serviceID string) error {
-	mydid := s.did.String()
+func (s Syscontroller) SaveConnection(myDID, myServiceId, theirDID, theirServiceID string) error {
 
 	cr := new(ConnectionRec)
 
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, mydid))
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
 	exist, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -427,16 +474,18 @@ func (s Syscontroller) SaveConnection(theirDID string, serviceID string) error {
 		if err != nil {
 			return err
 		}
-		cr.Connections[fmt.Sprintf("%s_%s", theirDID, serviceID)] = message.Connection{
-			Did:       theirDID,
-			ServiceId: serviceID,
+		cr.Connections[fmt.Sprintf("%s_%s", theirDID, theirServiceID)] = message.Connection{
+			MyDid:          myDID,
+			MyServiceId:    myServiceId,
+			TheirDid:       theirDID,
+			TheirServiceId: theirServiceID,
 		}
 	} else {
-		cr.OwnerDID = mydid
+		cr.OwnerDID = myDID
 		m := make(map[string]message.Connection)
-		m[fmt.Sprintf("%s_%s", theirDID, serviceID)] = message.Connection{
-			Did:       theirDID,
-			ServiceId: serviceID,
+		m[fmt.Sprintf("%s_%s", theirDID, theirServiceID)] = message.Connection{
+			TheirDid:       theirDID,
+			TheirServiceId: theirServiceID,
 		}
 		cr.Connections = m
 	}
@@ -445,5 +494,23 @@ func (s Syscontroller) SaveConnection(theirDID string, serviceID string) error {
 		return err
 	}
 	return s.store.Put(key, bts)
+}
 
+func (s Syscontroller) GetConnection(myDID, theirDID, theirServiceID string) (message.Connection, error) {
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
+	data, err := s.store.Get(key)
+	if err != nil {
+		return message.Connection{}, err
+	}
+	cr := new(ConnectionRec)
+	err = json.Unmarshal(data, cr)
+	if err != nil {
+		return message.Connection{}, err
+	}
+	c, ok := cr.Connections[fmt.Sprintf("%s_%s", theirDID, theirServiceID)]
+	if !ok {
+		return message.Connection{}, fmt.Errorf("connection not found!")
+	}
+
+	return c, nil
 }
