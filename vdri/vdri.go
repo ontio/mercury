@@ -5,5 +5,5 @@ type VDRI interface {
 }
 
 type CommonDIDDoc interface {
-	GetServicePoint() string
+	GetServicePoint(serviceid string) string
 }

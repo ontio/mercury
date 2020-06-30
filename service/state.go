@@ -39,9 +39,6 @@ type ServiceDoc struct {
 	ServiceEndpoint string `json:"service_endpoint"`
 }
 
-func (s ServiceDoc) GetServicePoint() string {
-	return s.ServiceEndpoint
-}
 
 type DIDDoc struct {
 	Context        []string    `json:"@context"`
@@ -50,9 +47,20 @@ type DIDDoc struct {
 	Authentication interface{} `json:"authentication"`
 	Controller     interface{} `json:"controller"`
 	Recovery       interface{} `json:"recovery"`
-	Service        ServiceDoc  `json:"service"`
+	Service        []ServiceDoc  `json:"service"`
 	Attribute      interface{} `json:"attribute"`
 	Created        interface{} `json:"created"`
 	Updated        interface{} `json:"updated"`
 	Proof          interface{} `json:"proof"`
+}
+
+func (d DIDDoc) GetServicePoint(serviceID string) string {
+
+	for _,s := range d.Service{
+		if s.ServiceID == serviceID{
+			return s.ServiceEndpoint
+		}
+	}
+
+	return ""
 }
