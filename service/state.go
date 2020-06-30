@@ -39,6 +39,10 @@ type ServiceDoc struct {
 	ServiceEndpoint string `json:"service_endpoint"`
 }
 
+func (s ServiceDoc) GetServicePoint() string {
+	return s.ServiceEndpoint
+}
+
 type DIDDoc struct {
 	Context        []string    `json:"@context"`
 	Id             string      `json:"id"`
