@@ -28,16 +28,11 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
-	case message.InvitationType:
-		resp := ServiceResp{}
-		//resp.OriginalMessage = msg
-		resp.Message = msg.Content
-		resp.JsonBytes = msg.JsonBytes
-		return resp, nil
-
-	case message.ConnectionRequestType:
-	case message.ConnectionResponseType:
-	case message.ConnectionACKType:
+	case message.InvitationType,
+		message.ConnectionRequestType,
+		message.ConnectionResponseType,
+		message.ConnectionACKType:
+		return s.skipmessage(msg)
 
 	case message.ProposalCredentialType:
 	case message.OfferCredentialType:

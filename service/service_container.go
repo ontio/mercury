@@ -118,3 +118,11 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 	//never reach here
 	return ServiceResp{Message: m}, nil
 }
+
+func skipmessage(msg message.Message) (ControllerResp, error) {
+	resp := ServiceResp{}
+	//resp.OriginalMessage = msg
+	resp.Message = msg.Content
+	resp.JsonBytes = msg.JsonBytes
+	return resp, nil
+}

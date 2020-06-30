@@ -221,16 +221,17 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		return nil, nil
 
 	//for custom
-	case message.ProposalCredentialType:
-	case message.OfferCredentialType:
-	case message.RequestCredentialType:
-	case message.IssueCredentialType:
-	case message.CredentialACKType:
+	case message.ProposalCredentialType,
+		message.OfferCredentialType,
+		message.RequestCredentialType,
+		message.IssueCredentialType,
+		message.CredentialACKType:
+		return skipmessage(msg)
 
-	case message.RequestPresentationType:
-	case message.PresentationType:
-	case message.PresentationACKType:
-
+	case message.RequestPresentationType,
+		message.PresentationType,
+		message.PresentationACKType:
+		return skipmessage(msg)
 	default:
 
 	}
