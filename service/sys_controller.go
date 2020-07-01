@@ -157,7 +157,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			MyDid:          ivrc.Invitation.Did,
 			MyServiceId:    ivrc.Invitation.ServiceId,
 			TheirDid:       req.Connection.MyDid,
-			TheirServiceId: req.Connection.TheirServiceId,
+			TheirServiceId: req.Connection.MyServiceId,
 		}
 
 		outmsg := message.Message{
