@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/did"
+	"git.ont.io/ontid/otf/vdri/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"

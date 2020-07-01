@@ -40,7 +40,7 @@ type Doc struct {
 
 func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
-		return nil, fmt.Errorf("")
+		return nil, fmt.Errorf("ontsdk is nil")
 	}
 	data, err := ontSdk.Native.OntId.GetDocumentJson(did)
 	if err != nil {
@@ -56,7 +56,7 @@ func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
 
 func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
-		return nil, fmt.Errorf("")
+		return nil, fmt.Errorf("ontsdk is nil")
 	}
 	data, err := ontSdk.Native.OntId.GetDocumentJson(did)
 	if err != nil {
