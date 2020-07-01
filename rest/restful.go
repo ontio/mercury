@@ -108,6 +108,24 @@ func ConnectAck(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
+func SendProposalCredentialReq(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.ProposalCredential{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.SendProposalCredentialType, req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.SendProposalCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, err.Error(), data)
+}
+
 func ProposalCredentialReq(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ProposalCredential{}
@@ -117,16 +135,33 @@ func ProposalCredentialReq(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	data, err := SendMsg(message.ConnectionACKType, req)
+	data, err := SendMsg(message.ProposalCredentialType, req)
 	if err != nil {
-		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.ConnectionACKType, err)
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.ProposalCredentialType, err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
 	resp.Response(http.StatusOK, 0, err.Error(), data)
 }
 
-func SendCredential(c *gin.Context) {
+func SendRequestCredential(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.RequestCredential{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.SendRequestCredentialType, req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredential msg type:%d,err:%s", message.SendRequestCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+func RequestCredential(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.RequestCredential{}
 	err := c.Bind(req)
