@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	Version            = "1.0"
-	InvitationSpec     = "spec/connections/" + Version + "/invitation"
-	ConnectionRequest  = "spec/connections/" + Version + "/request"
-	ConnectionResponse = "spec/connections/" + Version + "/response"
-	ACK                = "spec/didcomm/" + Version + "/ack"
-	BasicMsg           = "spec/didcomm/" + Version + "/generalmessage"
+	Version                = "1.0"
+	InvitationSpec         = "spec/connections/" + Version + "/invitation"
+	ConnectionRequestSpec  = "spec/connections/" + Version + "/request"
+	ConnectionResponseSpec = "spec/connections/" + Version + "/response"
+	ConnectionACKSpec      = "spec/connections/" + Version + "/ack"
+	BasicMsgSpec           = "spec/didcomm/" + Version + "/generalmessage"
 
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
@@ -155,7 +155,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			ID: req.Id,
 		}
 		//todo define the response type
-		res.Type = ConnectionResponse
+		res.Type = ConnectionResponseSpec
 		//self conn
 		res.Connection = message.Connection{
 			MyDid:          ivrc.Invitation.Did,
@@ -205,8 +205,8 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 
 		//3. send ACK back
-		ack := message.GeneralACK{
-			Type:   ACK,
+		ack := message.ConnectionACK{
+			Type:   ConnectionACKSpec,
 			Id:     uuid.New().String(),
 			Thread: message.Thread{ID: connid},
 			Status: ACK_SUCCEED,
@@ -232,7 +232,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		return nil, nil
 	case message.ConnectionACKType:
 		fmt.Println("resolve ConnectionACK")
-		req := msg.Content.(*message.GeneralACK)
+		req := msg.Content.(*message.ConnectionACK)
 		//1. update connection request to receive ack state
 		if req.Status != ACK_SUCCEED {
 			//todo remove connectionreq when failed?
@@ -276,7 +276,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			fmt.Printf("err on GetConnection:%s\n", err.Error())
 			return nil, err
 		}
-		req.Type = BasicMsg
+		req.Type = BasicMsgSpec
 		req.Id = uuid.New().String()
 
 		om := service.OutboundMsg{

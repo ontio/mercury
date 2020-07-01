@@ -3,9 +3,12 @@ package service
 import (
 	"fmt"
 	"git.ont.io/ontid/otf/message"
+	"time"
 )
 
 type ConnectionState int
+type CredentialState int
+type RequestCredentialState int
 
 const (
 	InvitationInit ConnectionState = iota
@@ -14,6 +17,12 @@ const (
 	ConnectionRequestReceived
 	ConnectionResponseReceived
 	ConnectionACKReceived
+
+	RequestCredentialReceived RequestCredentialState = iota
+	RequestCredentialResolved
+
+	CredentialIssued CredentialState = iota
+	CredentialReceive
 )
 
 type InvitationRec struct {
@@ -31,10 +40,17 @@ type ConnectionRec struct {
 	Connections map[string]message.Connection
 }
 
-//type Connection struct {
-//	TheirDID  string `json:"their_did"`
-//	ServiceID string `json:"service_id"`
-//}
+type RequestCredentialRec struct {
+	RequesterDID      string                    `json:"requester_did"`
+	RequestCredential message.RequestCredential `json:"request_credential"`
+	State             RequestCredentialState    `json:"state"`
+}
+
+type CredentialRec struct {
+	OwnerDID   string                  `json:"owner_did"`
+	Credential message.IssueCredential `json:"credential"`
+	Timestamp  time.Time               `json:"timestamp"`
+}
 
 type ServiceDoc struct {
 	ServiceID       string `json:"service_id"`

@@ -69,7 +69,22 @@ type ConnectionResponse struct {
 	Connection Connection `json:"connection,omitempty"`
 }
 
-type GeneralACK struct {
+type ConnectionACK struct {
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Thread     Thread     `json:"~thread,omitempty"`
+	Status     string     `json:"status,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
+}
+
+type CredentialACK struct {
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Thread     Thread     `json:"~thread,omitempty"`
+	Status     string     `json:"status,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
+}
+type PresentationACK struct {
 	Type       string     `json:"@type,omitempty"`
 	Id         string     `json:"@id,omitempty"`
 	Thread     Thread     `json:"~thread,omitempty"`
@@ -83,6 +98,7 @@ type ProposalCredential struct {
 	Id                 string            `json:"@id,omitempty"`
 	Comment            string            `json:"comment,omitempty"`
 	CredentialProposal CredentialPreview `json:"credential_proposal,omitempty"`
+	Connection         Connection        `json:"connection,omitempty"`
 }
 
 type OfferCredential struct {
@@ -91,6 +107,8 @@ type OfferCredential struct {
 	Comment           string            `json:"comment,omitempty"`
 	CredentialPreview CredentialPreview `json:"credential_preview,omitempty"`
 	OffersAttach      []Attachment      `json:"offers_attach,omitempty"`
+	Connection        Connection        `json:"connection,omitempty"`
+	Thread            Thread            `json:"~thread,omitempty"`
 }
 
 type CredentialPreview struct {
@@ -134,6 +152,7 @@ type RequestCredential struct {
 	Comment        string       `json:"comment"`
 	Formats        []Format     `json:"formats,omitempty"`
 	RequestsAttach []Attachment `json:"requests_attach"`
+	Connection     Connection   `json:"connection,omitempty"`
 }
 
 type IssueCredential struct {
@@ -142,12 +161,8 @@ type IssueCredential struct {
 	Comment           string       `json:"comment,omitempty"`
 	Formats           []Format     `json:"formats,omitempty"`
 	CredentialsAttach []Attachment `json:"credentials~attach,omitempty"`
-}
-
-type CredentialACK struct {
-	Type   string `json:"@type,omitempty"`
-	Id     string `json:"@id,omitempty"`
-	Thread Thread `json:"~thread,omitempty"`
+	Connection        Connection   `json:"connection,omitempty"`
+	Thread            Thread       `json:"~thread,omitempty"`
 }
 
 //present proof
