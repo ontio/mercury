@@ -193,6 +193,7 @@ type RequestPresentation struct {
 	Comment                   string       `json:"comment,omitempty"`
 	Formats                   []Format     `json:"formats,omitempty"`
 	RequestPresentationAttach []Attachment `json:"request_presentation_attach,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 type Presentation struct {
@@ -201,6 +202,7 @@ type Presentation struct {
 	Comment            string       `json:"comment,omitempty"`
 	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
 }
 
 type BasicMessage struct {

@@ -232,9 +232,9 @@ func CredentialAckInfo(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
-func RequestProof(c *gin.Context) {
+func RequestPresentation(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.RequestCredential{}
+	req := &message.RequestPresentation{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("RequestCredential err:%s", err)
@@ -250,7 +250,25 @@ func RequestProof(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
-func PresentProof(c *gin.Context) {
+func SendRequestPresentation(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.RequestPresentation{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("RequestPresentationType err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.RequestPresentationType, req)
+	if err != nil {
+		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.RequestPresentationType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func Presentation(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.Presentation{}
 	err := c.Bind(req)

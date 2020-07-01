@@ -17,9 +17,11 @@ const (
 	IssueCredentialType
 	CredentialACKType
 
+	SendPresentationType
 	RequestPresentationType
 	PresentationType
 	PresentationACKType
+
 	SendGeneralMsgType
 	ReceiveGeneralMsgType
 )
