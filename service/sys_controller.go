@@ -166,7 +166,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}
 		err = s.msgsvr.HandleOutBound(OutboundMsg{
 			Msg:  outmsg,
-			Conn: req.Connection,
+			Conn: res.Connection,
 		})
 		if err != nil {
 			if err != nil {
