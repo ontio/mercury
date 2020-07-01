@@ -47,9 +47,9 @@ func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
 		return nil, err
 	}
 	doc := &Doc{}
-	err = json.Unmarshal(data,&doc)
+	err = json.Unmarshal(data, &doc)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	return doc, nil
 }
@@ -63,13 +63,13 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 		return nil, err
 	}
 	doc := &Doc{}
-	err = json.Unmarshal(data,&doc)
+	err = json.Unmarshal(data, &doc)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
-	addrs := make([]string,0)
-	for _,endPoint := range doc.Service {
-		addrs = append(addrs,endPoint.ServiceEndpoint)
+	addrs := make([]string, 0)
+	for _, endPoint := range doc.Service {
+		addrs = append(addrs, endPoint.ServiceEndpoint)
 	}
-	return addrs,nil
+	return addrs, nil
 }

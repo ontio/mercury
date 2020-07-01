@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/vdri/did"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/vdri/did"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"time"
@@ -63,23 +63,23 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	switch msg.MessageType {
 	case message.SendProposalCredentialType:
 		fmt.Printf("resolve SendProposalCredentialType")
-		req := msg.Content.(message.ProposalCredential)
-		
+		req := msg.Content.(*message.ProposalCredential)
+
 		outMsg := service.OutboundMsg{
-			Msg:  message.Message{
-				MessageType:message.ProposalCredentialType,
-				Content:req,
+			Msg: message.Message{
+				MessageType: message.ProposalCredentialType,
+				Content:     req,
 			},
 			Conn: req.Connection,
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
-		if err != nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
 
 	case message.ProposalCredentialType:
 		fmt.Printf("resolve ProposalCredentialType")
-		req := msg.Content.(message.ProposalCredential)
+		req := msg.Content.(*message.ProposalCredential)
 		//todo deal with the proposal, do we need store the proposal???
 		fmt.Printf("proposal is %v\n", req)
 
@@ -113,41 +113,39 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 	case message.OfferCredentialType:
 		fmt.Printf("resolve ProposalCredentialType")
-		req := msg.Content.(message.OfferCredential)
+		req := msg.Content.(*message.OfferCredential)
 		fmt.Printf("req:%v\n", req)
 		//todo save the offer in store
-		err := s.SaveOfferCredential(req.Thread.ID,req)
+		err := s.SaveOfferCredential(req.Thread.ID, req)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		//
 
 	case message.SendRequestCredentialType:
 		fmt.Printf("resolve SendRequestCredentialType")
-		req := msg.Content.(message.RequestCredential)
+		req := msg.Content.(*message.RequestCredential)
 		outMsg := service.OutboundMsg{
-			Msg:  message.Message{
-				MessageType:message.ProposalCredentialType,
-				Content:req,
+			Msg: message.Message{
+				MessageType: message.RequestCredentialType,
+				Content:     req,
 			},
 			Conn: req.Connection,
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
-		if err != nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
-
-
 
 	case message.RequestCredentialType:
 		fmt.Printf("resolve RequestCredentialType")
-		req := msg.Content.(message.RequestCredential)
+		req := msg.Content.(*message.RequestCredential)
 
 		//todo deal with the request
 		fmt.Printf("request is %v\n", req)
 
 		//todo store the request
-		err := s.SaveRequestCredential(req.Id, req)
+		err := s.SaveRequestCredential(req.Id, *req)
 		if err != nil {
 			fmt.Printf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
@@ -180,17 +178,17 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 	case message.IssueCredentialType:
 		fmt.Printf("resolve IssueCredentialType")
-		req := msg.Content.(message.IssueCredential)
+		req := msg.Content.(*message.IssueCredential)
 
 		//store the credential
-		err := s.SaveCredential(req.Thread.ID, req)
+		err := s.SaveCredential(req.Thread.ID, *req)
 		if err != nil {
 			fmt.Printf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
 		}
 
-		ack := message.ConnectionACK{
-			Type: ConnectionACKSpec,
+		ack := message.CredentialACK{
+			Type: CredentialACKSpec,
 			Id:   uuid.New().String(),
 			Thread: message.Thread{
 				ID: req.Thread.ID,
@@ -214,7 +212,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 	case message.CredentialACKType:
 		fmt.Printf("resolve IssueCredentialType")
-		req := msg.Content.(message.CredentialACK)
+		req := msg.Content.(*message.CredentialACK)
 		reqid := req.Thread.ID
 
 		err := s.UpdateRequestCredential(reqid, service.RequestCredentialResolved)
@@ -239,8 +237,8 @@ func (s CredentialController) Shutdown() error {
 	return nil
 }
 
-func (s CredentialController) SaveOfferCredential(id string ,propsal message.OfferCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s",OfferCredentialKey,id))
+func (s CredentialController) SaveOfferCredential(id string, propsal *message.OfferCredential) error {
+	key := []byte(fmt.Sprintf("%s_%s", OfferCredentialKey, id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err

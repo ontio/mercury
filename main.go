@@ -43,7 +43,7 @@ func main() {
 func startAgent(ctx *cli.Context) {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(utils.GetFlagName(utils.ChainAddrFlag)))
-	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH,ontSdk)
+	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH, ontSdk)
 	if err != nil {
 		panic(err)
 	}

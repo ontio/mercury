@@ -8,7 +8,7 @@ import (
 
 var Version = ""
 
-func OpenAccount(path string,ontSdk *sdk.OntologySdk) (*sdk.Account, error) {
+func OpenAccount(path string, ontSdk *sdk.OntologySdk) (*sdk.Account, error) {
 	wallet, err := ontSdk.OpenWallet(path)
 	if err != nil {
 		return nil, err

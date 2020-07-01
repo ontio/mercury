@@ -11,6 +11,7 @@ const (
 	ConnectAck_Api                = "/connectionack"
 	SendProposalCredentialReq_Api = "/sendproposalcredential"
 	ProposalCredentialReq_Api     = "/proposalcredential"
+	OfferCredential_Api           = "/offercredential"
 	SendRequestCredential_Api     = "/sendrequestcredential"
 	RequestCredential_Api         = "/requestcredential"
 	IssueCredential_Api           = "/issuecredentail"
@@ -37,6 +38,7 @@ func GetApiName(msgType message.MessageType) string {
 	case message.ProposalCredentialType:
 		return Group_Api_V1 + ProposalCredentialReq_Api
 	case message.OfferCredentialType:
+		return Group_Api_V1 + OfferCredential_Api
 	case message.RequestCredentialType:
 		return Group_Api_V1 + RequestCredential_Api
 	case message.IssueCredentialType:

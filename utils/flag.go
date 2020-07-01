@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	DEFAULT_WALLET_PATH   = "./wallet.dat"
-	DEFAULT_LOG_LEVEL     = 1
-	DEFAULT_HTTP_PORT     = "8080"
-	DEFAULT_HTTP_IP       = "127.0.0.1"
-	DEFAULT_LOG_FILE_PATH = "./Log/"
-	DEFAULT_STORE_DIR     = "./db_otf/"
+	DEFAULT_WALLET_PATH      = "./wallet.dat"
+	DEFAULT_LOG_LEVEL        = 1
+	DEFAULT_HTTP_PORT        = "8080"
+	DEFAULT_HTTP_IP          = "127.0.0.1"
+	DEFAULT_LOG_FILE_PATH    = "./Log/"
+	DEFAULT_STORE_DIR        = "./db_otf/"
 	DEFAULT_BLOCK_CHAIN_ADDR = "127.0.0.1:20334"
 )
 
@@ -32,7 +32,7 @@ var (
 		Value: DEFAULT_HTTP_IP,
 	}
 	ChainAddrFlag = cli.StringFlag{
-		Name: "chain-addr",
+		Name:  "chain-addr",
 		Usage: "Set block chain rpc addr default:127.0.0.1:20334",
 		Value: DEFAULT_BLOCK_CHAIN_ADDR,
 	}

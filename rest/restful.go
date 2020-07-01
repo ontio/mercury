@@ -123,7 +123,24 @@ func SendProposalCredentialReq(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	resp.Response(http.StatusOK, 0, err.Error(), data)
+	resp.Response(http.StatusOK, 0, "", data)
+}
+func OfferCredential(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.OfferCredential{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("OfferCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.OfferCredentialType, req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.OfferCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func ProposalCredentialReq(c *gin.Context) {
@@ -141,7 +158,7 @@ func ProposalCredentialReq(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	resp.Response(http.StatusOK, 0, err.Error(), data)
+	resp.Response(http.StatusOK, 0, "", data)
 }
 
 func SendRequestCredential(c *gin.Context) {
@@ -149,13 +166,13 @@ func SendRequestCredential(c *gin.Context) {
 	req := &message.RequestCredential{}
 	err := c.Bind(req)
 	if err != nil {
-		middleware.Log.Errorf("ProposalCredential err:%s", err)
+		middleware.Log.Errorf("SendRequestCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
 	data, err := SendMsg(message.SendRequestCredentialType, req)
 	if err != nil {
-		middleware.Log.Errorf("ProposalCredential msg type:%d,err:%s", message.SendRequestCredentialType, err)
+		middleware.Log.Errorf("SendRequestCredential msg type:%d,err:%s", message.SendRequestCredentialType, err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
@@ -181,7 +198,7 @@ func RequestCredential(c *gin.Context) {
 
 func IssueCredential(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.OfferCredential{}
+	req := &message.IssueCredential{}
 	err := c.Bind(req)
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential err:%s", err)

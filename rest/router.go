@@ -35,6 +35,7 @@ func InitRouter() *gin.Engine {
 		v.POST(utils.ConnectAck_Api, ConnectAck)
 
 		v.POST(utils.SendProposalCredentialReq_Api, SendProposalCredentialReq)
+		v.POST(utils.OfferCredential_Api, OfferCredential)
 		v.POST(utils.ProposalCredentialReq_Api, ProposalCredentialReq)
 		v.POST(utils.SendRequestCredential_Api, SendRequestCredential)
 		v.POST(utils.RequestCredential_Api, RequestCredential)
