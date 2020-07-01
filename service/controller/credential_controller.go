@@ -22,6 +22,7 @@ const (
 
 	CredentialKey        = "Credential"
 	RequestCredentialKey = "RequestCredential"
+	OfferCredentialKey   = "OfferCredential"
 )
 
 type CredentialController struct {
@@ -32,10 +33,18 @@ type CredentialController struct {
 	msgsvr  *service.MsgService
 }
 
-func NewCredentialController() CredentialController {
-	s := CredentialController{}
+func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) CredentialController {
+	did := did.NewOntDID(cfg, acct)
+	s := CredentialController{
+		account: acct,
+		did:     did,
+		cfg:     cfg,
+		store:   db,
+		msgsvr:  msgsvr,
+	}
 	s.Initiate(nil)
 	return s
+
 }
 
 func (s CredentialController) Name() string {
@@ -52,11 +61,21 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
-	//case message.InvitationType,
-	//	message.ConnectionRequestType,
-	//	message.ConnectionResponseType,
-	//	message.ConnectionACKType:
-	//	return service.Skipmessage(msg)
+	case message.SendProposalCredentialType:
+		fmt.Printf("resolve SendProposalCredentialType")
+		req := msg.Content.(message.ProposalCredential)
+		
+		outMsg := service.OutboundMsg{
+			Msg:  message.Message{
+				MessageType:message.ProposalCredentialType,
+				Content:req,
+			},
+			Conn: req.Connection,
+		}
+		err := s.msgsvr.HandleOutBound(outMsg)
+		if err != nil{
+			return nil,err
+		}
 
 	case message.ProposalCredentialType:
 		fmt.Printf("resolve ProposalCredentialType")
@@ -97,7 +116,28 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		req := msg.Content.(message.OfferCredential)
 		fmt.Printf("req:%v\n", req)
 		//todo save the offer in store
+		err := s.SaveOfferCredential(req.Thread.ID,req)
+		if err != nil {
+			return nil,err
+		}
 		//
+
+	case message.SendRequestCredentialType:
+		fmt.Printf("resolve SendRequestCredentialType")
+		req := msg.Content.(message.RequestCredential)
+		outMsg := service.OutboundMsg{
+			Msg:  message.Message{
+				MessageType:message.ProposalCredentialType,
+				Content:req,
+			},
+			Conn: req.Connection,
+		}
+		err := s.msgsvr.HandleOutBound(outMsg)
+		if err != nil{
+			return nil,err
+		}
+
+
 
 	case message.RequestCredentialType:
 		fmt.Printf("resolve RequestCredentialType")
@@ -196,6 +236,24 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 }
 func (s CredentialController) Shutdown() error {
 	fmt.Printf("%s shutdown\n", s.Name())
+	return nil
+}
+
+func (s CredentialController) SaveOfferCredential(id string ,propsal message.OfferCredential) error {
+	key := []byte(fmt.Sprintf("%s_%s",OfferCredentialKey,id))
+	b, err := s.store.Has(key)
+	if err != nil {
+		return err
+	}
+	if b {
+		return fmt.Errorf("id:%s already exist\n", id)
+	}
+
+	data, err := json.Marshal(propsal)
+	if err != nil {
+		return err
+	}
+	return s.store.Put(key, data)
 	return nil
 }
 

@@ -52,6 +52,8 @@ type CredentialRec struct {
 	Timestamp  time.Time               `json:"timestamp"`
 }
 
+
+
 type ServiceDoc struct {
 	ServiceID       string `json:"service_id"`
 	ServiceType     string `json:"service_type"`

@@ -21,9 +21,10 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 			Controller:     nil,
 			Recovery:       nil,
 			Service: []ServiceDoc{{
-				ServiceID:       "did:ont:serviceid1",
-				ServiceType:     "ontdid",
-				ServiceEndpoint: "http://192.168.1.114:8080",
+				ServiceID:   "did:ont:serviceid1",
+				ServiceType: "ontdid",
+				//ServiceEndpoint: "http://192.168.1.114:8080",
+				ServiceEndpoint: "http://0.0.0.0:8080",
 			}},
 			Attribute: nil,
 			Created:   nil,
@@ -42,7 +43,8 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 			Service: []ServiceDoc{{
 				ServiceID:       "did:ont:serviceid2",
 				ServiceType:     "ontdid",
-				ServiceEndpoint: "http://192.168.2.235:8080",
+				ServiceEndpoint: "http://0.0.0.0:8080",
+				//ServiceEndpoint: "http://192.168.2.235:8080",
 			}},
 			Attribute: nil,
 			Created:   nil,

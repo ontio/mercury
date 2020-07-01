@@ -121,7 +121,7 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 
 func Skipmessage(msg message.Message) (ControllerResp, error) {
 	resp := ServiceResp{}
-	//resp.OriginalMessage = msg
+	resp.OriginalMessage = msg
 	resp.Message = msg.Content
 	resp.JsonBytes = msg.JsonBytes
 	return resp, nil

@@ -19,7 +19,7 @@ var (
 func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService) {
 	Svr = service.NewService()
 	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr))
-	//Svr.RegisterController(service.NewCustomcontroller())
+	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr))
 }
 
 func InitRouter() *gin.Engine {
@@ -33,13 +33,17 @@ func InitRouter() *gin.Engine {
 		v.POST(utils.ConnectRequest_Api, ConnectRequest)
 		v.POST(utils.ConnectResponse_Api, ConnectResponse)
 		v.POST(utils.ConnectAck_Api, ConnectAck)
+
 		v.POST(utils.ProposalCredentialReq_Api, ProposalCredentialReq)
-		v.POST(utils.SendCredential_Api, SendCredential)
+		v.POST(utils.ProposalCredentialReq_Api, ProposalCredentialReq)
+		v.POST(utils.SendRequestCredential_Api, SendCredential)
 		v.POST(utils.IssueCredential_Api, IssueCredential)
 		v.POST(utils.CredentialAckInfo_Api, CredentialAckInfo)
+
 		v.POST(utils.RequestProof_Api, RequestProof)
 		v.POST(utils.PresentProof_Api, PresentProof)
 		v.POST(utils.PresentationAckInfo, PresentationAckInfo)
+
 		v.POST(utils.SendGeneralMsg, SendGeneralMsg)
 		v.POST(utils.ReceiveGeneralMsg, ReceiveGeneralMsg)
 	}

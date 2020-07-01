@@ -188,11 +188,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 		req := msg.Content.(*message.ConnectionResponse)
 		connid := req.Thread.ID
-		//1. update connection request to receive response state
-		//err := s.UpdateConnectionRequest(connid, ConnectionResponseReceived)
-		//if err != nil {
-		//	return nil, err
-		//}
 
 		//2. create and save a connection object
 		err := s.SaveConnection(req.Connection.TheirDid,
@@ -206,16 +201,11 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 
 		//3. send ACK back
 		ack := message.ConnectionACK{
-			Type:   ConnectionACKSpec,
-			Id:     uuid.New().String(),
-			Thread: message.Thread{ID: connid},
-			Status: ACK_SUCCEED,
-			Connection: message.Connection{
-				MyDid:          req.Connection.TheirDid,
-				TheirDid:       req.Connection.MyDid,
-				MyServiceId:    req.Connection.TheirServiceId,
-				TheirServiceId: req.Connection.MyServiceId,
-			},
+			Type:       ConnectionACKSpec,
+			Id:         uuid.New().String(),
+			Thread:     message.Thread{ID: connid},
+			Status:     ACK_SUCCEED,
+			Connection: service.ReverseConnection(req.Connection),
 		}
 
 		outmsg := message.Message{
@@ -304,18 +294,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		fmt.Printf("we got a message: %s\n", data)
 		return nil, nil
 
-	//for custom
-	//case message.ProposalCredentialType,
-	//	message.OfferCredentialType,
-	//	message.RequestCredentialType,
-	//	message.IssueCredentialType,
-	//	message.CredentialACKType:
-	//	return service.Skipmessage(msg)
-	//
-	//case message.RequestPresentationType,
-	//	message.PresentationType,
-	//	message.PresentationACKType:
-	//	return service.Skipmessage(msg)
 	default:
 		return service.Skipmessage(msg)
 	}

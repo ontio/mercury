@@ -3,21 +3,23 @@ package utils
 import "git.ont.io/ontid/otf/message"
 
 const (
-	Group_Api_V1              = "/api/v1"
-	Invite_Api                = "/invitation"
-	SendConnectionReq_Api     = "/sendconnectionreq"
-	ConnectRequest_Api        = "/connectionrequest"
-	ConnectResponse_Api       = "/connectionresponse"
-	ConnectAck_Api            = "/connectionack"
-	ProposalCredentialReq_Api = "/proposalcredential"
-	SendCredential_Api        = "/sendcredential"
-	IssueCredential_Api       = "/issuecredentail"
-	CredentialAckInfo_Api     = "/credentialack"
-	RequestProof_Api          = "/requestproof"
-	PresentProof_Api          = "/presentproof"
-	PresentationAckInfo       = "/presentationack"
-	SendGeneralMsg            = "/sendgeneralmsg"
-	ReceiveGeneralMsg         = "/receivegeneralmsg"
+	Group_Api_V1                  = "/api/v1"
+	Invite_Api                    = "/invitation"
+	SendConnectionReq_Api         = "/sendconnectionreq"
+	ConnectRequest_Api            = "/connectionrequest"
+	ConnectResponse_Api           = "/connectionresponse"
+	ConnectAck_Api                = "/connectionack"
+	SendProposalCredentialReq_Api = "/sendproposalcredential"
+	ProposalCredentialReq_Api     = "/proposalcredential"
+	SendRequestCredential_Api     = "/sendrequestcredential"
+	RequestCredential_Api         = "/requestcredential"
+	IssueCredential_Api           = "/issuecredentail"
+	CredentialAckInfo_Api         = "/credentialack"
+	RequestProof_Api              = "/requestproof"
+	PresentProof_Api              = "/presentproof"
+	PresentationAckInfo           = "/presentationack"
+	SendGeneralMsg                = "/sendgeneralmsg"
+	ReceiveGeneralMsg             = "/receivegeneralmsg"
 )
 
 func GetApiName(msgType message.MessageType) string {
@@ -36,7 +38,7 @@ func GetApiName(msgType message.MessageType) string {
 		return Group_Api_V1 + ProposalCredentialReq_Api
 	case message.OfferCredentialType:
 	case message.RequestCredentialType:
-		return Group_Api_V1 + SendCredential_Api
+		return Group_Api_V1 + RequestCredential_Api
 	case message.IssueCredentialType:
 		return Group_Api_V1 + IssueCredential_Api
 	case message.CredentialACKType:

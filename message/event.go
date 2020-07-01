@@ -9,8 +9,10 @@ const (
 	ConnectionResponseType
 	ConnectionACKType
 
+	SendProposalCredentialType
 	ProposalCredentialType
 	OfferCredentialType
+	SendRequestCredentialType
 	RequestCredentialType
 	IssueCredentialType
 	CredentialACKType
