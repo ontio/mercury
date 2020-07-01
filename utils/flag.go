@@ -12,6 +12,7 @@ const (
 	DEFAULT_HTTP_IP       = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH = "./Log/"
 	DEFAULT_STORE_DIR     = "./db_otf/"
+	DEFAULT_BLOCK_CHAIN_ADDR = "127.0.0.1:20334"
 )
 
 var (
@@ -29,6 +30,11 @@ var (
 		Name:  "rest-ip",
 		Usage: "Set http rest ip addr default:127.0.0.1",
 		Value: DEFAULT_HTTP_IP,
+	}
+	ChainAddrFlag = cli.StringFlag{
+		Name: "chain-addr",
+		Usage: "Set block chain rpc addr default:127.0.0.1:20334",
+		Value: DEFAULT_BLOCK_CHAIN_ADDR,
 	}
 )
 

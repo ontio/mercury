@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"git.ont.io/ontid/otf/service"
+	sdk "github.com/ontio/ontology-go-sdk"
 	"os"
 	"os/signal"
 	"runtime"
@@ -24,6 +25,7 @@ func setupAPP() *cli.App {
 		utils.LogLevelFlag,
 		utils.HttpIpFlag,
 		utils.HttpPortFlag,
+		utils.ChainAddrFlag,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -39,7 +41,9 @@ func main() {
 }
 
 func startAgent(ctx *cli.Context) {
-	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH)
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(utils.GetFlagName(utils.ChainAddrFlag)))
+	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH,ontSdk)
 	if err != nil {
 		panic(err)
 	}
