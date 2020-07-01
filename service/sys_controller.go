@@ -132,18 +132,21 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			fmt.Printf("err on GetInvitation:%s\n", err.Error())
 			return nil, err
 		}
-		//update invitation to used state
-		err = s.UpdateInvitation(ivrc.Invitation.Id, InvitationUsed)
-		if err != nil {
-			fmt.Printf("err on UpdateInvitation:%s\n", err.Error())
-			return nil, err
-		}
+
 		//update connection to request received state
 		err = s.SaveConnectionRequest(*req, ConnectionRequestReceived)
 		if err != nil {
 			fmt.Printf("err on SaveConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
+
+		//update invitation to used state
+		err = s.UpdateInvitation(ivrc.Invitation.Id, InvitationUsed)
+		if err != nil {
+			fmt.Printf("err on UpdateInvitation:%s\n", err.Error())
+			return nil, err
+		}
+
 		//send response outbound
 		res := new(message.ConnectionResponse)
 		res.Id = uuid.New().String()
