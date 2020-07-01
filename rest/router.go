@@ -5,6 +5,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/service/controller"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ var (
 
 func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService) {
 	Svr = service.NewService()
-	Svr.RegisterController(service.NewSyscontroller(acct, cfg, db, msgSvr))
+	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr))
 	//Svr.RegisterController(service.NewCustomcontroller())
 }
 

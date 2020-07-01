@@ -119,7 +119,7 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 	return ServiceResp{Message: m}, nil
 }
 
-func skipmessage(msg message.Message) (ControllerResp, error) {
+func Skipmessage(msg message.Message) (ControllerResp, error) {
 	resp := ServiceResp{}
 	//resp.OriginalMessage = msg
 	resp.Message = msg.Content

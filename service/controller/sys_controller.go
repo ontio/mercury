@@ -1,4 +1,4 @@
-package service
+package controller
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/did"
 	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
@@ -34,10 +35,10 @@ type Syscontroller struct {
 	did     did.Did
 	cfg     *config.Cfg
 	store   store.Store
-	msgsvr  *MsgService
+	msgsvr  *service.MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *MsgService) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
 	did := did.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
@@ -54,13 +55,13 @@ func (s Syscontroller) Name() string {
 	return "syscontroller"
 }
 
-func (s Syscontroller) Initiate(param ParameterInf) error {
+func (s Syscontroller) Initiate(param service.ParameterInf) error {
 	fmt.Printf("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
+func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, error) {
 	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
@@ -84,7 +85,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			return nil, err
 		}
 
-		return ServiceResp{
+		return service.ServiceResp{
 			Message: invitation,
 		}, nil
 
@@ -134,14 +135,14 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		}
 
 		//update connection to request received state
-		err = s.SaveConnectionRequest(*req, ConnectionRequestReceived)
+		err = s.SaveConnectionRequest(*req, service.ConnectionRequestReceived)
 		if err != nil {
 			fmt.Printf("err on SaveConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 
 		//update invitation to used state
-		err = s.UpdateInvitation(ivrc.Invitation.Id, InvitationUsed)
+		err = s.UpdateInvitation(ivrc.Invitation.Id, service.InvitationUsed)
 		if err != nil {
 			fmt.Printf("err on UpdateInvitation:%s\n", err.Error())
 			return nil, err
@@ -167,7 +168,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			MessageType: message.ConnectionResponseType,
 			Content:     res,
 		}
-		err = s.msgsvr.HandleOutBound(OutboundMsg{
+		err = s.msgsvr.HandleOutBound(service.OutboundMsg{
 			Msg:  outmsg,
 			Conn: res.Connection,
 		})
@@ -221,7 +222,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			MessageType: message.ConnectionACKType,
 			Content:     ack,
 		}
-		err = s.msgsvr.HandleOutBound(OutboundMsg{
+		err = s.msgsvr.HandleOutBound(service.OutboundMsg{
 			Msg:  outmsg,
 			Conn: ack.Connection,
 		})
@@ -238,7 +239,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 			return nil, fmt.Errorf("got failed ACK ")
 		}
 		connid := req.Thread.ID
-		err := s.UpdateConnectionRequest(connid, ConnectionACKReceived)
+		err := s.UpdateConnectionRequest(connid, service.ConnectionACKReceived)
 		if err != nil {
 			fmt.Printf("err on UpdateConnectionRequest:%s\n", err.Error())
 			return nil, err
@@ -278,7 +279,7 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		req.Type = BasicMsg
 		req.Id = uuid.New().String()
 
-		om := OutboundMsg{
+		om := service.OutboundMsg{
 			Msg: message.Message{
 				MessageType: message.SendGeneralMsgType,
 				Content:     req,
@@ -304,22 +305,22 @@ func (s Syscontroller) Process(msg message.Message) (ControllerResp, error) {
 		return nil, nil
 
 	//for custom
-	case message.ProposalCredentialType,
-		message.OfferCredentialType,
-		message.RequestCredentialType,
-		message.IssueCredentialType,
-		message.CredentialACKType:
-		return skipmessage(msg)
-
-	case message.RequestPresentationType,
-		message.PresentationType,
-		message.PresentationACKType:
-		return skipmessage(msg)
+	//case message.ProposalCredentialType,
+	//	message.OfferCredentialType,
+	//	message.RequestCredentialType,
+	//	message.IssueCredentialType,
+	//	message.CredentialACKType:
+	//	return service.Skipmessage(msg)
+	//
+	//case message.RequestPresentationType,
+	//	message.PresentationType,
+	//	message.PresentationACKType:
+	//	return service.Skipmessage(msg)
 	default:
-
+		return service.Skipmessage(msg)
 	}
 
-	resp := ServiceResp{}
+	resp := service.ServiceResp{}
 	return resp, nil
 }
 func (s Syscontroller) Shutdown() error {
@@ -352,9 +353,9 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 		return fmt.Errorf("invitation with id:%s existed", iv.Id)
 	}
 
-	rec := InvitationRec{
+	rec := service.InvitationRec{
 		Invitation: iv,
-		State:      InvitationInit,
+		State:      service.InvitationInit,
 	}
 
 	bs, err := json.Marshal(rec)
@@ -365,14 +366,14 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 	return s.store.Put([]byte(key), bs)
 }
 
-func (s Syscontroller) GetInvitation(id string) (*InvitationRec, error) {
+func (s Syscontroller) GetInvitation(id string) (*service.InvitationRec, error) {
 	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
 	}
 
-	rec := new(InvitationRec)
+	rec := new(service.InvitationRec)
 
 	err = json.Unmarshal(data, rec)
 	if err != nil {
@@ -381,13 +382,13 @@ func (s Syscontroller) GetInvitation(id string) (*InvitationRec, error) {
 	return rec, nil
 }
 
-func (s Syscontroller) UpdateInvitation(id string, state ConnectionState) error {
+func (s Syscontroller) UpdateInvitation(id string, state service.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
 	}
-	rec := new(InvitationRec)
+	rec := new(service.InvitationRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
@@ -404,7 +405,7 @@ func (s Syscontroller) UpdateInvitation(id string, state ConnectionState) error 
 	return s.store.Put(key, bts)
 }
 
-func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state ConnectionState) error {
+func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state service.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, cr.Id))
 	b, err := s.store.Has(key)
 	if err != nil {
@@ -413,7 +414,7 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	if b {
 		return fmt.Errorf("connection request with id:%s existed", cr.Id)
 	}
-	rec := ConnectionRequestRec{
+	rec := service.ConnectionRequestRec{
 		ConnReq: cr,
 		State:   state,
 	}
@@ -426,13 +427,13 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	return s.store.Put(key, bs)
 }
 
-func (s Syscontroller) GetConnectionRequest(id string) (*ConnectionRequestRec, error) {
+func (s Syscontroller) GetConnectionRequest(id string) (*service.ConnectionRequestRec, error) {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
 	}
-	cr := new(ConnectionRequestRec)
+	cr := new(service.ConnectionRequestRec)
 	err = json.Unmarshal(data, cr)
 	if err != nil {
 		return nil, err
@@ -440,13 +441,13 @@ func (s Syscontroller) GetConnectionRequest(id string) (*ConnectionRequestRec, e
 	return cr, nil
 }
 
-func (s Syscontroller) UpdateConnectionRequest(id string, state ConnectionState) error {
+func (s Syscontroller) UpdateConnectionRequest(id string, state service.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
 	}
-	rec := new(ConnectionRequestRec)
+	rec := new(service.ConnectionRequestRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
@@ -466,7 +467,7 @@ func (s Syscontroller) UpdateConnectionRequest(id string, state ConnectionState)
 
 func (s Syscontroller) SaveConnection(myDID, myServiceId, theirDID, theirServiceID string) error {
 
-	cr := new(ConnectionRec)
+	cr := new(service.ConnectionRec)
 
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
 	exist, err := s.store.Has(key)
@@ -511,7 +512,7 @@ func (s Syscontroller) GetConnection(myDID, theirDID, theirServiceID string) (me
 	if err != nil {
 		return message.Connection{}, err
 	}
-	cr := new(ConnectionRec)
+	cr := new(service.ConnectionRec)
 	err = json.Unmarshal(data, cr)
 	if err != nil {
 		return message.Connection{}, err

@@ -1,8 +1,9 @@
-package service
+package controller
 
 import (
 	"fmt"
 	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/service"
 )
 
 type Customcontroller struct {
@@ -18,13 +19,13 @@ func (s Customcontroller) Name() string {
 	return "customcontroller"
 }
 
-func (s Customcontroller) Initiate(param ParameterInf) error {
+func (s Customcontroller) Initiate(param service.ParameterInf) error {
 	fmt.Printf("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
-func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
+func (s Customcontroller) Process(msg message.Message) (service.ControllerResp, error) {
 	fmt.Printf("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
@@ -32,7 +33,7 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 		message.ConnectionRequestType,
 		message.ConnectionResponseType,
 		message.ConnectionACKType:
-		return skipmessage(msg)
+		return service.Skipmessage(msg)
 
 	case message.ProposalCredentialType:
 	case message.OfferCredentialType:
@@ -45,7 +46,7 @@ func (s Customcontroller) Process(msg message.Message) (ControllerResp, error) {
 	case message.PresentationACKType:
 
 	default:
-		resp := ServiceResp{}
+		resp := service.ServiceResp{}
 		return resp, nil
 	}
 
