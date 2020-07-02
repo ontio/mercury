@@ -2,9 +2,6 @@ package main
 
 import (
 	"fmt"
-	"git.ont.io/ontid/otf/service"
-	"git.ont.io/ontid/otf/vdri/ontdid"
-	sdk "github.com/ontio/ontology-go-sdk"
 	"os"
 	"os/signal"
 	"runtime"
@@ -13,9 +10,12 @@ import (
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
+	"git.ont.io/ontid/otf/service"
 	store "git.ont.io/ontid/otf/store/leveldb"
 	"git.ont.io/ontid/otf/utils"
-	"github.com/micro/cli"
+	"git.ont.io/ontid/otf/vdri/ontdid"
+	sdk "github.com/ontio/ontology-go-sdk"
+	"github.com/urfave/cli"
 )
 
 func setupAPP() *cli.App {
@@ -27,6 +27,9 @@ func setupAPP() *cli.App {
 		utils.HttpIpFlag,
 		utils.HttpPortFlag,
 		utils.ChainAddrFlag,
+	}
+	app.Commands = []cli.Command{
+		utils.DidCommand,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())

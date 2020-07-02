@@ -13,6 +13,10 @@ const (
 	DEFAULT_LOG_FILE_PATH    = "./Log/"
 	DEFAULT_STORE_DIR        = "./db_otf/"
 	DEFAULT_BLOCK_CHAIN_ADDR = "127.0.0.1:20334"
+	DEFAULT_RPC_URL          = "127.0.0.1:20336"
+	MIN_TRANSACTION_GAS      = 20000
+	DEFAULT_GAS_PRICE        = 2500
+	DEFAULT_WALLET_FILE_NAME = "./wallet.dat"
 )
 
 var (
@@ -35,6 +39,26 @@ var (
 		Name:  "chain-addr",
 		Usage: "Set block chain rpc addr default:127.0.0.1:20334",
 		Value: DEFAULT_BLOCK_CHAIN_ADDR,
+	}
+	RPCPortFlag = cli.StringFlag{
+		Name:  "rpcport",
+		Usage: "Json rpc server listening port `<number>`",
+		Value: DEFAULT_RPC_URL,
+	}
+	TransactionGasPriceFlag = cli.Uint64Flag{
+		Name:  "gasprice",
+		Usage: "Gas price of transaction",
+		Value: DEFAULT_GAS_PRICE,
+	}
+	TransactionGasLimitFlag = cli.Uint64Flag{
+		Name:  "gaslimit",
+		Usage: "Gas limit of the transaction",
+		Value: MIN_TRANSACTION_GAS,
+	}
+	WalletFileFlag = cli.StringFlag{
+		Name:  "wallet,w",
+		Value: DEFAULT_WALLET_FILE_NAME,
+		Usage: "Wallet `<file>`",
 	}
 )
 

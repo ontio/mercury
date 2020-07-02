@@ -38,30 +38,6 @@ type Doc struct {
 	Proof          interface{}
 }
 
-func NewDID(ontSdk *sdk.OntologySdk, acc *sdk.Account) (string, error) {
-	did, err := sdk.GenerateID()
-	if err != nil {
-		return "", err
-	}
-	err = RegisterDid(did, ontSdk, acc)
-	if err != nil {
-		return "", err
-	}
-	return did, nil
-}
-
-func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account) error {
-	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
-		return fmt.Errorf("ontsdk is nil")
-	}
-	txHash, err := ontSdk.Native.OntId.RegIDWithPublicKey(100, 100, acc, did, acc)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("did:%v,hash:%v", did, txHash.ToHexString())
-	return nil
-}
-
 func ValidateDid(did string) bool {
 	return sdk.VerifyID(did)
 }
