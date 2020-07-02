@@ -19,6 +19,24 @@ var DidCommand = cli.Command{
 	},
 }
 
+var AddServiceCommand = cli.Command{
+	Name:        "addsvr",
+	Usage:       "add service endpoint",
+	Description: "Use Did add service endpoint",
+	Action:      addservice,
+	Flags: []cli.Flag{
+		RPCPortFlag,
+		TransactionGasPriceFlag,
+		TransactionGasLimitFlag,
+		WalletFileFlag,
+		DidFlag,
+		ServiceIdFlag,
+		TypeFlag,
+		ServiceEndPointFlag,
+		IndexFlag,
+	},
+}
+
 func newdid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(GetFlagName(RPCPortFlag)))
@@ -37,6 +55,31 @@ func newdid(ctx *cli.Context) error {
 	return nil
 }
 
+func addservice(ctx *cli.Context) error {
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(GetFlagName(RPCPortFlag)))
+	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
+	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
+	did := ctx.GlobalString(GetFlagName(DidFlag))
+	optionFile := checkFileName(ctx)
+	acc, err := OpenAccount(optionFile, ontSdk)
+	if err != nil {
+		return fmt.Errorf("open account err:%s", err)
+	}
+	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
+		return fmt.Errorf("ontsdk is nil")
+	}
+	serviceId := ctx.GlobalString(GetFlagName(ServiceEndPointFlag))
+	type_ := ctx.GlobalString(GetFlagName(TypeFlag))
+	serviceEndpoint := ctx.GlobalString(GetFlagName(ServiceEndPointFlag))
+	index := ctx.Uint64(GetFlagName(IndexFlag))
+	txHash, err := ontSdk.Native.OntId.AddService(gasPrice, gasLimit, acc, did, []byte(serviceId), []byte(type_), []byte(serviceEndpoint), uint32(index), acc)
+	if err != nil {
+		return fmt.Errorf("add service err:%s", err)
+	}
+	fmt.Printf("txHash:%v\n", txHash.ToHexString())
+	return nil
+}
 func checkFileName(ctx *cli.Context) string {
 	if ctx.IsSet(GetFlagName(WalletFileFlag)) {
 		return ctx.String(GetFlagName(WalletFileFlag))
@@ -66,6 +109,6 @@ func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account, gasPrice
 	if err != nil {
 		return err
 	}
-	fmt.Printf("did:%v,hash:%v", did, txHash.ToHexString())
+	fmt.Printf("did:%v,hash:%v\n", did, txHash.ToHexString())
 	return nil
 }

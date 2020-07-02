@@ -6,17 +6,22 @@ import (
 )
 
 const (
-	DEFAULT_WALLET_PATH      = "./wallet.dat"
-	DEFAULT_LOG_LEVEL        = 1
-	DEFAULT_HTTP_PORT        = "8080"
-	DEFAULT_HTTP_IP          = "127.0.0.1"
-	DEFAULT_LOG_FILE_PATH    = "./Log/"
-	DEFAULT_STORE_DIR        = "./db_otf/"
-	DEFAULT_BLOCK_CHAIN_ADDR = "127.0.0.1:20334"
-	DEFAULT_RPC_URL          = "127.0.0.1:20336"
-	MIN_TRANSACTION_GAS      = 20000
-	DEFAULT_GAS_PRICE        = 2500
-	DEFAULT_WALLET_FILE_NAME = "./wallet.dat"
+	DEFAULT_WALLET_PATH       = "./wallet.dat"
+	DEFAULT_LOG_LEVEL         = 1
+	DEFAULT_HTTP_PORT         = "8080"
+	DEFAULT_HTTP_IP           = "127.0.0.1"
+	DEFAULT_LOG_FILE_PATH     = "./Log/"
+	DEFAULT_STORE_DIR         = "./db_otf/"
+	DEFAULT_BLOCK_CHAIN_ADDR  = "127.0.0.1:20334"
+	DEFAULT_RPC_URL           = "127.0.0.1:20336"
+	MIN_TRANSACTION_GAS       = 20000
+	DEFAULT_GAS_PRICE         = 2500
+	DEFAULT_WALLET_FILE_NAME  = "./wallet.dat"
+	DEFAULT_DID               = ""
+	DEFAULT_SERVICE_ID        = ""
+	DEFAULT_TYPE              = ""
+	DEFAULT_SERVICE_END_POINT = ""
+	DEFAULT_INDEX             = 0
 )
 
 var (
@@ -59,6 +64,31 @@ var (
 		Name:  "wallet,w",
 		Value: DEFAULT_WALLET_FILE_NAME,
 		Usage: "Wallet `<file>`",
+	}
+	DidFlag = cli.StringFlag{
+		Name:  "did",
+		Usage: "did value",
+		Value: DEFAULT_DID,
+	}
+	ServiceIdFlag = cli.StringFlag{
+		Name:  "service_id",
+		Usage: "service id",
+		Value: DEFAULT_SERVICE_ID,
+	}
+	TypeFlag = cli.StringFlag{
+		Name:  "type",
+		Usage: "type value",
+		Value: DEFAULT_TYPE,
+	}
+	ServiceEndPointFlag = cli.StringFlag{
+		Name:  "endpoint",
+		Usage: "service end point",
+		Value: DEFAULT_SERVICE_END_POINT,
+	}
+	IndexFlag = cli.Uint64Flag{
+		Name:  "index",
+		Usage: "index number",
+		Value: DEFAULT_INDEX,
 	}
 )
 
