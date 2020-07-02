@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/vdri/ontdid"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"os"
 	"os/signal"
@@ -59,7 +60,7 @@ func startAgent(ctx *cli.Context) {
 		Ip:   ip,
 	}
 	r := rest.InitRouter()
-	ontvdri := service.NewOntVDRI()
+	ontvdri := ontdid.NewOntVDRI()
 	msgSvr := service.NewMessageService(ontvdri)
 	rest.NewService(account, cfg, db, msgSvr)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)

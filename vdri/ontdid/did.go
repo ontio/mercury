@@ -58,7 +58,7 @@ func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("did:%v,hash:%v",did, txHash.ToHexString())
+	fmt.Printf("did:%v,hash:%v", did, txHash.ToHexString())
 	return nil
 }
 
