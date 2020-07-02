@@ -7,7 +7,6 @@ import (
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/vdri"
-	ontdid "git.ont.io/ontid/otf/vdri/ontdid"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
@@ -19,8 +18,7 @@ type PresentationController struct {
 	msgsvr  *service.MsgService
 }
 
-func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) PresentationController {
-	did := ontdid.NewOntDID(cfg, acct)
+func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) PresentationController {
 	p := PresentationController{
 		account: acct,
 		did:     did,
@@ -59,8 +57,8 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 			Conn: req.Connection,
 		}
 		err := p.msgsvr.HandleOutBound(outMsg)
-		if err != nil{
-			return nil,err
+		if err != nil {
+			return nil, err
 		}
 
 	case message.RequestPresentationType:

@@ -18,8 +18,8 @@ var (
 
 func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService) {
 	Svr = service.NewService()
-	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr))
-	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr))
+	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr, nil))
+	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr, nil))
 }
 
 func InitRouter() *gin.Engine {

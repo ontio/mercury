@@ -3,15 +3,15 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/vdri"
-	ontdid "git.ont.io/ontid/otf/vdri/ontdid"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
-	"time"
 )
 
 const (
@@ -34,8 +34,7 @@ type CredentialController struct {
 	msgsvr  *service.MsgService
 }
 
-func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) CredentialController {
-	did := ontdid.NewOntDID(cfg, acct)
+func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) CredentialController {
 	s := CredentialController{
 		account: acct,
 		did:     did,

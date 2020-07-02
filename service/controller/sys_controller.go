@@ -7,12 +7,11 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/vdri"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
 	"github.com/ontio/ontology-crypto/signature"
 	sdk "github.com/ontio/ontology-go-sdk"
-	"git.ont.io/ontid/otf/vdri"
-	"git.ont.io/ontid/otf/vdri/ontdid"
 )
 
 const (
@@ -39,8 +38,7 @@ type Syscontroller struct {
 	msgsvr  *service.MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
-	did := ontdid.NewOntDID(cfg, acct)
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) Syscontroller {
 	s := Syscontroller{
 		account: acct,
 		did:     did,

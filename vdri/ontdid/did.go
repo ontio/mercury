@@ -3,8 +3,6 @@ package ontdid
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/config"
-	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
@@ -40,31 +38,31 @@ type Doc struct {
 	Proof          interface{}
 }
 
-type OntDID struct {
-	account *sdk.Account
+func NewDID(ontSdk *sdk.OntologySdk, acc *sdk.Account) (string, error) {
+	did, err := sdk.GenerateID()
+	if err != nil {
+		return "", err
+	}
+	err = RegisterDid(did, ontSdk, acc)
+	if err != nil {
+		return "", err
+	}
+	return did, nil
 }
 
-func NewOntDID(cfg *config.Cfg, acct *sdk.Account) *OntDID {
-	//fixme use cfg to create OntDID
-	return &OntDID{account: acct}
+func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account) error {
+	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
+		return fmt.Errorf("ontsdk is nil")
+	}
+	_, err := ontSdk.Native.OntId.RegIDWithPublicKey(100, 100, acc, did, acc)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (o *OntDID) ValidateDid(did string) bool {
-	return true
-}
-
-func (o *OntDID) NewDid() string {
-	//fixme
-	return "ontdid:ont:testdid" + uuid.New().String()
-}
-
-func (o *OntDID) GetDidType() string {
-	return "test"
-}
-
-func (o *OntDID) String() string {
-	//fixme
-	return "ontdid:ont:" + o.account.Address.ToBase58()
+func ValidateDid(did string) bool {
+	return sdk.VerifyID(did)
 }
 
 func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
