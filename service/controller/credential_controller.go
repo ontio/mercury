@@ -23,21 +23,21 @@ const (
 
 type CredentialController struct {
 	account *sdk.Account
-	did     vdri.Did
-	cfg     *config.Cfg
-	store   store.Store
-	msgsvr  *service.MsgService
-	vdri    vdri.VDRI
+	//did     vdri.Did
+	cfg    *config.Cfg
+	store  store.Store
+	msgsvr *service.MsgService
+	vdri   vdri.VDRI
 }
 
-func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did, v vdri.VDRI) CredentialController {
+func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) CredentialController {
 	s := CredentialController{
 		account: acct,
-		did:     did,
-		cfg:     cfg,
-		store:   db,
-		msgsvr:  msgsvr,
-		vdri:    v,
+		//did:     did,
+		cfg:    cfg,
+		store:  db,
+		msgsvr: msgsvr,
+		vdri:   v,
 	}
 	s.Initiate(nil)
 	return s

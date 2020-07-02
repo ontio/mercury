@@ -22,21 +22,21 @@ const (
 
 type PresentationController struct {
 	account *sdk.Account
-	did     vdri.Did
-	cfg     *config.Cfg
-	store   store.Store
-	msgsvr  *service.MsgService
-	vdri    vdri.VDRI
+	//did     vdri.Did
+	cfg    *config.Cfg
+	store  store.Store
+	msgsvr *service.MsgService
+	vdri   vdri.VDRI
 }
 
-func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did, v vdri.VDRI) PresentationController {
+func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) PresentationController {
 	p := PresentationController{
 		account: acct,
-		did:     did,
-		cfg:     cfg,
-		store:   db,
-		msgsvr:  msgsvr,
-		vdri:    v,
+		//did:     did,
+		cfg:    cfg,
+		store:  db,
+		msgsvr: msgsvr,
+		vdri:   v,
 	}
 	p.Initiate(nil)
 	return p

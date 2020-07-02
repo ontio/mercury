@@ -26,19 +26,19 @@ const (
 
 type Syscontroller struct {
 	account *sdk.Account
-	did     vdri.Did
-	cfg     *config.Cfg
-	store   store.Store
-	msgsvr  *service.MsgService
+	//did     vdri.Did
+	cfg    *config.Cfg
+	store  store.Store
+	msgsvr *service.MsgService
 }
 
-func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) Syscontroller {
+func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
 	s := Syscontroller{
 		account: acct,
-		did:     did,
-		cfg:     cfg,
-		store:   db,
-		msgsvr:  msgsvr,
+		//did:     did,
+		cfg:    cfg,
+		store:  db,
+		msgsvr: msgsvr,
 	}
 	s.Initiate(nil)
 	return s
