@@ -5,14 +5,17 @@ import (
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/vdri"
 	"github.com/google/uuid"
+	sdk "github.com/ontio/ontology-go-sdk"
+
 )
 
 //todo use sdk query from smart contract
 type OntVDRI struct {
+	ontSdk *sdk.OntologySdk
 }
 
-func NewOntVDRI() *OntVDRI {
-	return &OntVDRI{}
+func NewOntVDRI(ontsdk *sdk.OntologySdk) *OntVDRI {
+	return &OntVDRI{ontSdk:ontsdk}
 }
 
 func (ontVdri *OntVDRI) OfferCredential(req *message.ProposalCredential) (*message.OfferCredential, error) {
