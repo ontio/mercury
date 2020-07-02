@@ -259,9 +259,9 @@ func SendRequestPresentation(c *gin.Context) {
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
-	data, err := SendMsg(message.RequestPresentationType, req)
+	data, err := SendMsg(message.SendRequestPresentationType, req)
 	if err != nil {
-		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.RequestPresentationType, err)
+		middleware.Log.Errorf("RequestCredential msg type:%d,err:%s", message.SendRequestPresentationType, err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}

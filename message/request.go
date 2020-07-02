@@ -203,6 +203,7 @@ type Presentation struct {
 	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
 	Connection         Connection   `json:"connection,omitempty"`
+	Thread             Thread       `json:"~thread,omitempty"`
 }
 
 type BasicMessage struct {

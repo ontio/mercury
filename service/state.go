@@ -9,6 +9,7 @@ import (
 type ConnectionState int
 type CredentialState int
 type RequestCredentialState int
+type RequestPresentationState int
 
 const (
 	InvitationInit ConnectionState = iota
@@ -23,6 +24,9 @@ const (
 
 	CredentialIssued CredentialState = iota
 	CredentialReceive
+
+	RequestPresentationReceived RequestPresentationState = iota
+	RequestPresentationResolved
 )
 
 type InvitationRec struct {
@@ -56,6 +60,18 @@ type ServiceDoc struct {
 	ServiceID       string `json:"service_id"`
 	ServiceType     string `json:"service_type"`
 	ServiceEndpoint string `json:"service_endpoint"`
+}
+
+type RequestPresentationRec struct {
+	RequesterDID       string                      `json:"requester_did"`
+	RerquestPrentation message.RequestPresentation `json:"rerquest_prentation"`
+	State              RequestPresentationState    `json:"state"`
+}
+
+type PresentationRec struct {
+	OwnerDID     string               `json:"owner_did"`
+	Presentation message.Presentation `json:"presentation"`
+	Timestamp    time.Time            `json:"timestamp"`
 }
 
 type DIDDoc struct {

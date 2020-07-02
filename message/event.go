@@ -17,7 +17,7 @@ const (
 	IssueCredentialType
 	CredentialACKType
 
-	SendPresentationType
+	SendRequestPresentationType
 	RequestPresentationType
 	PresentationType
 	PresentationACKType

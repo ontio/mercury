@@ -16,7 +16,7 @@ const (
 	RequestCredential_Api         = "/requestcredential"
 	IssueCredential_Api           = "/issuecredentail"
 	CredentialAckInfo_Api         = "/credentialack"
-	SendRequestPresentation_Api   = "/sendRequestPresentation"
+	SendRequestPresentation_Api   = "/sendrequestpresentation"
 	RequestPresentation_Api       = "/requestpresentation"
 	Presentation_Api              = "/presentproof"
 	PresentationAckInfo           = "/presentationack"
