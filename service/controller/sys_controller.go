@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri"
 	"github.com/fatih/structs"
-	"github.com/google/uuid"
 	"github.com/ontio/ontology-crypto/signature"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -48,18 +49,18 @@ func (s Syscontroller) Name() string {
 }
 
 func (s Syscontroller) Initiate(param service.ParameterInf) error {
-	fmt.Printf("%s Initiate\n", s.Name())
+	middleware.Log.Infof("%s Initiate\n", s.Name())
 	//todo add logic
 	return nil
 }
 
 func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, error) {
-	fmt.Printf("%s Process:%v\n", s.Name(), msg)
+	middleware.Log.Infof("%s Process:%v\n", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
 	//for system
 	case message.InvitationType:
-		fmt.Println("resolve invitation")
+		middleware.Log.Infof("resolve invitation")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
@@ -69,7 +70,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, fmt.Errorf("message format is not correct")
 		}
 		//set uuid to invitation id
-		invitation.Id = uuid.New().String()
+		//invitation.Id = utils.GenUUID()
 
 		//store the invitation
 		err := s.SaveInvitation(*invitation)
@@ -81,40 +82,8 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			Message: invitation,
 		}, nil
 
-	//not in use anymore
-	//case message.SendConnectionRequestType:
-	//	//send connection req for agent
-	//	fmt.Println("resolve send connection request")
-	//	//todo verify request
-	//	if msg.Content == nil {
-	//		return nil, fmt.Errorf("message content is nil")
-	//	}
-	//	cr := msg.Content.(*message.ConnectionRequest)
-	//	cr.Id = uuid.New().String()
-	//	err := s.SaveConnectionRequest(*cr, ConnectionRequestSent)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	//send the connection req to target service endpoint
-	//	msg.Content = cr
-	//	msg.MessageType = message.ConnectionRequestType
-	//	jsonbytes,err := json.Marshal(msg)
-	//	if err != nil{
-	//		return nil,err
-	//	}
-	//	msg.JsonBytes = jsonbytes
-	//
-	//	err = s.msgsvr.HandleOutBound(msg)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	middleware.Log.Infof("SendConnectionReq:%v", cr)
-	//	//no need to pass incoming param
-	//	return nil, nil
-
 	case message.ConnectionRequestType:
-		fmt.Println("resolve connection request")
+		middleware.Log.Infof("resolve connection request")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
@@ -122,27 +91,27 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		//ivid := req.Thread.ID
 		ivrc, err := s.GetInvitation(req.InvitationId)
 		if err != nil {
-			fmt.Printf("err on GetInvitation:%s\n", err.Error())
+			middleware.Log.Infof("err on GetInvitation:%s\n", err.Error())
 			return nil, err
 		}
 
 		//update connection to request received state
 		err = s.SaveConnectionRequest(*req, service.ConnectionRequestReceived)
 		if err != nil {
-			fmt.Printf("err on SaveConnectionRequest:%s\n", err.Error())
+			middleware.Log.Infof("err on SaveConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 
 		//update invitation to used state
 		err = s.UpdateInvitation(ivrc.Invitation.Id, service.InvitationUsed)
 		if err != nil {
-			fmt.Printf("err on UpdateInvitation:%s\n", err.Error())
+			middleware.Log.Infof("err on UpdateInvitation:%s\n", err.Error())
 			return nil, err
 		}
 
 		//send response outbound
 		res := new(message.ConnectionResponse)
-		res.Id = uuid.New().String()
+		res.Id = utils.GenUUID()
 		res.Thread = message.Thread{
 			ID: req.Id,
 		}
@@ -166,7 +135,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		})
 		if err != nil {
 			if err != nil {
-				fmt.Printf("err on HandleOutBound:%s\n", err.Error())
+				middleware.Log.Errorf("err on HandleOutBound:%s\n", err.Error())
 				return nil, err
 			}
 			return nil, err
@@ -174,7 +143,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		return nil, nil
 
 	case message.ConnectionResponseType:
-		fmt.Println("resolve connection response")
+		middleware.Log.Infof("resolve connection response")
 		if msg.Content == nil {
 			return nil, fmt.Errorf("message content is nil")
 		}
@@ -187,14 +156,14 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			req.Connection.MyDid,
 			req.Connection.MyServiceId)
 		if err != nil {
-			fmt.Printf("err on SaveConnection:%s\n", err.Error())
+			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
 		}
 
 		//3. send ACK back
 		ack := message.ConnectionACK{
 			Type:       vdri.ConnectionACKSpec,
-			Id:         uuid.New().String(),
+			Id:         utils.GenUUID(),
 			Thread:     message.Thread{ID: connid},
 			Status:     ACK_SUCCEED,
 			Connection: service.ReverseConnection(req.Connection),
@@ -213,7 +182,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 		return nil, nil
 	case message.ConnectionACKType:
-		fmt.Println("resolve ConnectionACK")
+		middleware.Log.Infof("resolve ConnectionACK")
 		req := msg.Content.(*message.ConnectionACK)
 		//1. update connection request to receive ack state
 		if req.Status != ACK_SUCCEED {
@@ -223,13 +192,13 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		connid := req.Thread.ID
 		err := s.UpdateConnectionRequest(connid, service.ConnectionACKReceived)
 		if err != nil {
-			fmt.Printf("err on UpdateConnectionRequest:%s\n", err.Error())
+			middleware.Log.Errorf("err on UpdateConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 		//2. create and save a connection object
 		cr, err := s.GetConnectionRequest(connid)
 		if err != nil {
-			fmt.Printf("err on GetConnectionRequest:%s\n", err.Error())
+			middleware.Log.Errorf("err on GetConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -238,28 +207,28 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			cr.ConnReq.Connection.MyDid,
 			cr.ConnReq.Connection.MyServiceId)
 		if err != nil {
-			fmt.Printf("err on SaveConnection:%s\n", err.Error())
+			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
 		}
 		return nil, nil
 
 	case message.SendGeneralMsgType:
-		fmt.Println("resolve SendGeneralMsgType")
+		middleware.Log.Infof("resolve SendGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
-			fmt.Printf("err on Marshal:%s\n", err.Error())
+			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
-		fmt.Println("we got a message: %s", data)
+		middleware.Log.Infof("we got a message: %s", data)
 
 		conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid, req.Connection.TheirServiceId)
 		if err != nil {
-			fmt.Printf("err on GetConnection:%s\n", err.Error())
+			middleware.Log.Errorf("err on GetConnection:%s\n", err.Error())
 			return nil, err
 		}
 		req.Type = vdri.BasicMsgSpec
-		req.Id = uuid.New().String()
+		req.Id = utils.GenUUID()
 
 		om := service.OutboundMsg{
 			Msg: message.Message{
@@ -270,20 +239,20 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 		err = s.msgsvr.HandleOutBound(om)
 		if err != nil {
-			fmt.Printf("err on HandleOutBound:%s\n", err.Error())
+			middleware.Log.Errorf("err on HandleOutBound:%s\n", err.Error())
 			return nil, err
 		}
 		return nil, nil
 
 	case message.ReceiveGeneralMsgType:
-		fmt.Println("resolve ReceiveGeneralMsgType")
+		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
 		data, err := json.Marshal(req)
 		if err != nil {
-			fmt.Printf("err on Marshal:%s\n", err.Error())
+			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
-		fmt.Printf("we got a message: %s\n", data)
+		middleware.Log.Infof("we got a message: %s\n", data)
 		return nil, nil
 
 	default:
@@ -294,7 +263,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	return resp, nil
 }
 func (s Syscontroller) Shutdown() error {
-	fmt.Printf("%s shutdown\n", s.Name())
+	middleware.Log.Infof("%s shutdown\n", s.Name())
 	return nil
 }
 

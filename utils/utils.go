@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -39,4 +40,8 @@ func ClearPasswd(passwd []byte) {
 	for i := 0; i < size; i++ {
 		passwd[i] = 0
 	}
+}
+
+func GenUUID() string {
+	return uuid.New().String()
 }

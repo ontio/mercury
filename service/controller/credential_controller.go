@@ -3,6 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/utils"
 	"time"
 
 	"git.ont.io/ontid/otf/config"
@@ -10,7 +12,6 @@ import (
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/vdri"
-	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
@@ -48,17 +49,17 @@ func (s CredentialController) Name() string {
 }
 
 func (s CredentialController) Initiate(param service.ParameterInf) error {
-	fmt.Printf("%s Initiate\n", s.Name())
+	middleware.Log.Infof("%s Initiate", s.Name())
 	//todo add logic
 	return nil
 }
 
 func (s CredentialController) Process(msg message.Message) (service.ControllerResp, error) {
-	fmt.Printf("%s Process:%v\n", s.Name(), msg)
+	middleware.Log.Infof("%s Process:%v", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
 	case message.SendProposalCredentialType:
-		fmt.Printf("resolve SendProposalCredentialType")
+		middleware.Log.Infof("resolve SendProposalCredentialType")
 		req := msg.Content.(*message.ProposalCredential)
 
 		outMsg := service.OutboundMsg{
@@ -70,19 +71,20 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
+			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.ProposalCredentialType:
-		fmt.Printf("resolve ProposalCredentialType")
+		middleware.Log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.ProposalCredential)
 		//todo deal with the proposal, do we need store the proposal???
-		fmt.Printf("proposal is %v\n", req)
+		middleware.Log.Infof("proposal is %v", req)
 
 		//for sample only
 		offer := new(message.OfferCredential)
 		offer.Type = vdri.OfferCredentialSpec
-		offer.Id = uuid.New().String()
+		offer.Id = utils.GenUUID()
 		offer.Connection = service.ReverseConnection(req.Connection)
 		offer.CredentialPreview = message.CredentialPreview{Type: "sample", Attributre: []message.Attributre{message.Attributre{
 			Name:     "name1",
@@ -103,23 +105,23 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 		err := s.msgsvr.HandleOutBound(outerMsg)
 		if err != nil {
-			fmt.Printf("error on HandleOutBound :%s\n", err.Error())
+			middleware.Log.Errorf("error on HandleOutBound :%s", err.Error())
 			return nil, err
 		}
 
 	case message.OfferCredentialType:
-		fmt.Printf("resolve ProposalCredentialType")
+		middleware.Log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.OfferCredential)
-		fmt.Printf("req:%v\n", req)
 		//todo save the offer in store
 		err := s.SaveOfferCredential(req.Thread.ID, req)
 		if err != nil {
+			middleware.Log.Errorf("error on SaveOfferCredential:%s", err.Error())
 			return nil, err
 		}
 		//
 
 	case message.SendRequestCredentialType:
-		fmt.Printf("resolve SendRequestCredentialType")
+		middleware.Log.Infof("resolve SendRequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
 		outMsg := service.OutboundMsg{
 			Msg: message.Message{
@@ -130,26 +132,23 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
+			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.RequestCredentialType:
-		fmt.Printf("resolve RequestCredentialType")
+		middleware.Log.Infof("resolve RequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
 
-		//todo deal with the request
-		fmt.Printf("request is %v\n", req)
-
-		//todo store the request
 		err := s.SaveRequestCredential(req.Id, *req)
 		if err != nil {
-			fmt.Printf("error on SaveRequestCredential:%s\n", err.Error())
+			middleware.Log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 		credential, err := s.vdri.IssueCredential(req)
 		if err != nil {
-			fmt.Printf("error on IssueCredential:%s\n", err.Error())
+			middleware.Log.Errorf("error on IssueCredential:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -163,24 +162,24 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 		err = s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			fmt.Printf("error on HandleOutBound:%s\n", err.Error())
+			middleware.Log.Errorf("error on HandleOutBound:%s\n", err.Error())
 			return nil, err
 		}
 
 	case message.IssueCredentialType:
-		fmt.Printf("resolve IssueCredentialType")
+		middleware.Log.Infof("resolve IssueCredentialType")
 		req := msg.Content.(*message.IssueCredential)
 
 		//store the credential
 		err := s.SaveCredential(req.Thread.ID, *req)
 		if err != nil {
-			fmt.Printf("error on SaveCredential:%s\n", err.Error())
+			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 		ack := message.CredentialACK{
 			Type: vdri.CredentialACKSpec,
-			Id:   uuid.New().String(),
+			Id:   utils.GenUUID(),
 			Thread: message.Thread{
 				ID: req.Thread.ID,
 			},
@@ -197,18 +196,18 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err = s.msgsvr.HandleOutBound(outmsg)
 		if err != nil {
-			fmt.Printf("error on SaveCredential:%s\n", err.Error())
+			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 	case message.CredentialACKType:
-		fmt.Printf("resolve IssueCredentialType")
+		middleware.Log.Infof("resolve IssueCredentialType")
 		req := msg.Content.(*message.CredentialACK)
 		reqid := req.Thread.ID
 
 		err := s.UpdateRequestCredential(reqid, service.RequestCredentialResolved)
 		if err != nil {
-			fmt.Printf("error on UpdateRequestCredential:%s\n", err.Error())
+			middleware.Log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -219,7 +218,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	return nil, nil
 }
 func (s CredentialController) Shutdown() error {
-	fmt.Printf("%s shutdown\n", s.Name())
+	middleware.Log.Infof("%s shutdown\n", s.Name())
 	return nil
 }
 

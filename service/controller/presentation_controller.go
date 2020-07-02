@@ -3,7 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
+	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/utils"
 	"time"
 
 	"git.ont.io/ontid/otf/config"
@@ -43,7 +44,7 @@ func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Stor
 }
 
 func (p PresentationController) Initiate(param service.ParameterInf) error {
-	fmt.Printf("%s Initiate\n", p.Name())
+	middleware.Log.Infof("%s Initiate", p.Name())
 	//todo add logic
 	return nil
 }
@@ -53,16 +54,16 @@ func (p PresentationController) Name() string {
 }
 
 func (s PresentationController) Shutdown() error {
-	fmt.Printf("%s shutdown\n", s.Name())
+	middleware.Log.Infof("%s shutdown\n", s.Name())
 	return nil
 }
 
 func (p PresentationController) Process(msg message.Message) (service.ControllerResp, error) {
-	fmt.Printf("%s Process:%v\n", p.Name(), msg)
+	middleware.Log.Infof("%s Process:%v\n", p.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
 	case message.SendRequestPresentationType:
-		fmt.Printf("resolve SendPresentationType\n")
+		middleware.Log.Infof("resolve SendPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
 
 		outMsg := service.OutboundMsg{
@@ -74,29 +75,23 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err := p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
+			middleware.Log.Errorf("error on HandleOutBound :%s", err.Error())
 			return nil, err
 		}
 
 	case message.RequestPresentationType:
-		fmt.Printf("resolve RequestPresentationType\n")
+		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
-
-		//presentation := new(message.Presentation)
-		//presentation.Type = vdri.PresentationProofSpec
-		//presentation.Comment = "sample presentation"
-		//presentation.Connection = service.ReverseConnection(req.Connection)
-		//presentation.Thread = message.Thread{
-		//	ID: req.Id,
-		//}
 
 		presentation, err := p.vdri.PresentProof(req)
 		if err != nil {
-			fmt.Printf("errors on PresentProof :%s\n", err.Error())
+			middleware.Log.Errorf("errors on PresentProof :%s", err.Error())
 			return nil, err
 		}
 
 		err = p.SaveRequestPresentation(req.Id, *req)
 		if err != nil {
+			middleware.Log.Errorf("error on SaveRequestPresentation:%s", err.Error())
 			return nil, err
 		}
 
@@ -109,10 +104,11 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err = p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
+			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 	case message.PresentationType:
-		fmt.Printf("resolve RequestPresentationType\n")
+		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.Presentation)
 
 		err := p.SavePresentation(req.Thread.ID, *req)
@@ -120,7 +116,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 			return nil, err
 		}
 		ack := new(message.PresentationACK)
-		ack.Id = uuid.New().String()
+		ack.Id = utils.GenUUID()
 		ack.Thread = req.Thread
 		ack.Connection = service.ReverseConnection(req.Connection)
 		ack.Type = vdri.PresentationACKSpec
@@ -135,22 +131,22 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err = p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
+			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.PresentationACKType:
-		fmt.Printf("resolve PresentationACKType\n")
+		middleware.Log.Infof("resolve PresentationACKType")
 		req := msg.Content.(*message.PresentationACK)
 
 		err := p.UpdateRequestPresentaion(req.Thread.ID, service.RequestPresentationReceived)
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("ack received")
+		middleware.Log.Infof("ack received")
 
 	default:
 		return service.Skipmessage(msg)
-
 	}
 
 	return nil, nil
