@@ -6,20 +6,21 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
-	"git.ont.io/ontid/otf/vdri/ontdid"
+	"git.ont.io/ontid/otf/vdri"
+	ontdid "git.ont.io/ontid/otf/vdri/ontdid"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
 type PresentationController struct {
 	account *sdk.Account
-	did     did.Did
+	did     vdri.Did
 	cfg     *config.Cfg
 	store   store.Store
 	msgsvr  *service.MsgService
 }
 
 func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) PresentationController {
-	did := did.NewOntDID(cfg, acct)
+	did := ontdid.NewOntDID(cfg, acct)
 	p := PresentationController{
 		account: acct,
 		did:     did,
