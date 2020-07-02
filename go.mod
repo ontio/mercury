@@ -15,12 +15,11 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.1 // indirect
-	github.com/micro/cli v0.2.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/ontio/ontology-crypto v1.0.7
-	github.com/ontio/ontology-go-sdk v1.11.2
+	github.com/ontio/ontology-go-sdk v1.11.3
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.2.0
 	github.com/syndtr/goleveldb v1.0.0
