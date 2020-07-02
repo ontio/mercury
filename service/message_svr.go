@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/utils"
+	"git.ont.io/ontid/otf/vdri"
 	"net/http"
 	"strings"
 
@@ -16,7 +17,7 @@ type MsgService struct {
 	msgQueue chan OutboundMsg
 	client   *http.Client
 	quitC    chan struct{}
-	vdri     VDRI
+	vdri     vdri.VDRI
 }
 
 type OutboundMsg struct {
@@ -24,7 +25,7 @@ type OutboundMsg struct {
 	Conn message.Connection
 }
 
-func NewMessageService(vdri VDRI) *MsgService {
+func NewMessageService(vdri vdri.VDRI) *MsgService {
 	ms := &MsgService{
 		msgQueue: make(chan OutboundMsg, 64),
 		client:   &http.Client{},

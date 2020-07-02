@@ -221,11 +221,6 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 			return nil, err
 		}
 
-	//case message.RequestPresentationType,
-	//	message.PresentationType,
-	//	message.PresentationACKType:
-	//	return service.Skipmessage(msg)
-
 	default:
 		return service.Skipmessage(msg)
 	}

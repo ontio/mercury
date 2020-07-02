@@ -1,5 +1,7 @@
 package service
 
+import "git.ont.io/ontid/otf/vdri"
+
 //todo use sdk query from smart contract
 type OntVDRI struct {
 }
@@ -8,7 +10,7 @@ func NewOntVDRI() *OntVDRI {
 	return &OntVDRI{}
 }
 
-func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
+func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 
 	//todo implement
 	//only for test
