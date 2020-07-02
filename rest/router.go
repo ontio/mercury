@@ -8,6 +8,7 @@ import (
 	"git.ont.io/ontid/otf/service/controller"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/utils"
+	"git.ont.io/ontid/otf/vdri"
 	"github.com/gin-gonic/gin"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -16,12 +17,12 @@ var (
 	Svr *service.Service
 )
 
-func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService) {
+func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService, v vdri.VDRI) {
 	Svr = service.NewService()
 	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr, nil))
-	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr, nil))
+	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr, nil, v))
 
-	Svr.RegisterController(controller.NewPresentationController(acct, cfg, db, msgSvr, nil))
+	Svr.RegisterController(controller.NewPresentationController(acct, cfg, db, msgSvr, nil, v))
 }
 
 func InitRouter() *gin.Engine {

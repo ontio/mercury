@@ -15,10 +15,6 @@ import (
 )
 
 const (
-	RequestPresentationSpec = "spec/present-proof/" + Version + "/request-presentation"
-	PresentationProofSpec   = "spec/present-proof/" + Version + "/presentation"
-	PresentationACKSpec     = "spec/present-proof/" + Version + "/ack"
-
 	RequestPresentationKey = "RequestPresentation"
 	PresentationKey        = "Presentation"
 )
@@ -29,15 +25,17 @@ type PresentationController struct {
 	cfg     *config.Cfg
 	store   store.Store
 	msgsvr  *service.MsgService
+	vdri    vdri.VDRI
 }
 
-func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) PresentationController {
+func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did, v vdri.VDRI) PresentationController {
 	p := PresentationController{
 		account: acct,
 		did:     did,
 		cfg:     cfg,
 		store:   db,
 		msgsvr:  msgsvr,
+		vdri:    v,
 	}
 	p.Initiate(nil)
 	return p
@@ -83,14 +81,21 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		fmt.Printf("resolve RequestPresentationType\n")
 		req := msg.Content.(*message.RequestPresentation)
 
-		presentation := new(message.Presentation)
-		presentation.Type = PresentationProofSpec
-		presentation.Comment = "sample presentation"
-		presentation.Connection = service.ReverseConnection(req.Connection)
-		presentation.Thread = message.Thread{
-			ID: req.Id,
+		//presentation := new(message.Presentation)
+		//presentation.Type = vdri.PresentationProofSpec
+		//presentation.Comment = "sample presentation"
+		//presentation.Connection = service.ReverseConnection(req.Connection)
+		//presentation.Thread = message.Thread{
+		//	ID: req.Id,
+		//}
+
+		presentation, err := p.vdri.PresentProof(req)
+		if err != nil {
+			fmt.Printf("errors on PresentProof :%s\n", err.Error())
+			return nil, err
 		}
-		err := p.SaveRequestPresentation(req.Id, *req)
+
+		err = p.SaveRequestPresentation(req.Id, *req)
 		if err != nil {
 			return nil, err
 		}
@@ -118,7 +123,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		ack.Id = uuid.New().String()
 		ack.Thread = req.Thread
 		ack.Connection = service.ReverseConnection(req.Connection)
-		ack.Type = PresentationACKSpec
+		ack.Type = vdri.PresentationACKSpec
 		ack.Status = ACK_SUCCEED
 
 		outMsg := service.OutboundMsg{

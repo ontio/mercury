@@ -15,12 +15,6 @@ import (
 )
 
 const (
-	ProposalCredentialSpec = "spec/issue-credential/" + Version + "/propose-credential"
-	OfferCredentialSpec    = "spec/issue-credential/" + Version + "/offer-credential"
-	RequestCredentialSpec  = "spec/issue-credential/" + Version + "/request-credential"
-	IssueCredentialSpec    = "spec/issue-credential/" + Version + "/issue-credential"
-	CredentialACKSpec      = "spec/issue-credential/" + Version + "/ack"
-
 	CredentialKey        = "Credential"
 	RequestCredentialKey = "RequestCredential"
 	OfferCredentialKey   = "OfferCredential"
@@ -32,15 +26,17 @@ type CredentialController struct {
 	cfg     *config.Cfg
 	store   store.Store
 	msgsvr  *service.MsgService
+	vdri    vdri.VDRI
 }
 
-func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did) CredentialController {
+func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, did vdri.Did, v vdri.VDRI) CredentialController {
 	s := CredentialController{
 		account: acct,
 		did:     did,
 		cfg:     cfg,
 		store:   db,
 		msgsvr:  msgsvr,
+		vdri:    v,
 	}
 	s.Initiate(nil)
 	return s
@@ -85,7 +81,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 		//for sample only
 		offer := new(message.OfferCredential)
-		offer.Type = OfferCredentialSpec
+		offer.Type = vdri.OfferCredentialSpec
 		offer.Id = uuid.New().String()
 		offer.Connection = service.ReverseConnection(req.Connection)
 		offer.CredentialPreview = message.CredentialPreview{Type: "sample", Attributre: []message.Attributre{message.Attributre{
@@ -150,16 +146,11 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 			fmt.Printf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
-		credential := message.IssueCredential{
-			Type:              IssueCredentialSpec,
-			Id:                uuid.New().String(),
-			Comment:           "",
-			Formats:           nil,
-			CredentialsAttach: nil,
-			Connection:        service.ReverseConnection(req.Connection),
-			Thread: message.Thread{
-				ID: req.Id,
-			},
+
+		credential, err := s.vdri.IssueCredential(req)
+		if err != nil {
+			fmt.Printf("error on IssueCredential:%s\n", err.Error())
+			return nil, err
 		}
 
 		outMsg := service.OutboundMsg{
@@ -188,7 +179,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 
 		ack := message.CredentialACK{
-			Type: CredentialACKSpec,
+			Type: vdri.CredentialACKSpec,
 			Id:   uuid.New().String(),
 			Thread: message.Thread{
 				ID: req.Thread.ID,

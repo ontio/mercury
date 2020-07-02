@@ -4,6 +4,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/vdri"
+	"github.com/google/uuid"
 )
 
 //todo use sdk query from smart contract
@@ -14,15 +15,36 @@ func NewOntVDRI() *OntVDRI {
 	return &OntVDRI{}
 }
 
-func (ontVdri *OntVDRI) OfferCredential(req message.ProposalCredential) (*message.OfferCredential, error) {
+func (ontVdri *OntVDRI) OfferCredential(req *message.ProposalCredential) (*message.OfferCredential, error) {
 	return nil, nil
 }
-func (ontVdri *OntVDRI) IssueCredential(req message.RequestCredential) (*message.IssueCredential, error) {
-	return nil, nil
+func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*message.IssueCredential, error) {
+	//fixme
+	credential := &message.IssueCredential{
+		Type:              vdri.IssueCredentialSpec,
+		Id:                uuid.New().String(),
+		Comment:           "",
+		Formats:           nil,
+		CredentialsAttach: nil,
+		Connection:        service.ReverseConnection(req.Connection),
+		Thread: message.Thread{
+			ID: req.Id,
+		},
+	}
+
+	return credential, nil
 }
 
-func (ontVdri *OntVDRI) PresentProof(req message.RequestPresentation) (*message.Presentation, error) {
-	return nil, nil
+func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation) (*message.Presentation, error) {
+	//fixme
+	presentation := new(message.Presentation)
+	presentation.Type = vdri.PresentationProofSpec
+	presentation.Comment = "sample presentation"
+	presentation.Connection = service.ReverseConnection(req.Connection)
+	presentation.Thread = message.Thread{
+		ID: req.Id,
+	}
+	return presentation, nil
 }
 func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 

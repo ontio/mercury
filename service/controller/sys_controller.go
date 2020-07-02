@@ -15,13 +15,6 @@ import (
 )
 
 const (
-	Version                = "1.0"
-	InvitationSpec         = "spec/connections/" + Version + "/invitation"
-	ConnectionRequestSpec  = "spec/connections/" + Version + "/request"
-	ConnectionResponseSpec = "spec/connections/" + Version + "/response"
-	ConnectionACKSpec      = "spec/connections/" + Version + "/ack"
-	BasicMsgSpec           = "spec/didcomm/" + Version + "/generalmessage"
-
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
 	ConnectionKey    = "Connection"
@@ -154,7 +147,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			ID: req.Id,
 		}
 		//todo define the response type
-		res.Type = ConnectionResponseSpec
+		res.Type = vdri.ConnectionResponseSpec
 		//self conn
 		res.Connection = message.Connection{
 			MyDid:          ivrc.Invitation.Did,
@@ -200,7 +193,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 
 		//3. send ACK back
 		ack := message.ConnectionACK{
-			Type:       ConnectionACKSpec,
+			Type:       vdri.ConnectionACKSpec,
 			Id:         uuid.New().String(),
 			Thread:     message.Thread{ID: connid},
 			Status:     ACK_SUCCEED,
@@ -265,7 +258,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			fmt.Printf("err on GetConnection:%s\n", err.Error())
 			return nil, err
 		}
-		req.Type = BasicMsgSpec
+		req.Type = vdri.BasicMsgSpec
 		req.Id = uuid.New().String()
 
 		om := service.OutboundMsg{
