@@ -47,9 +47,9 @@ func GetApiName(msgType message.MessageType) string {
 	case message.CredentialACKType:
 		return Group_Api_V1 + CredentialAckInfo_Api
 	case message.RequestPresentationType:
-		return Group_Api_V1 + RequestProof_Api
+		return Group_Api_V1 + RequestPresentation_Api
 	case message.PresentationType:
-		return Group_Api_V1 + PresentProof_Api
+		return Group_Api_V1 + Presentation_Api
 	case message.PresentationACKType:
 		return Group_Api_V1 + PresentationAckInfo
 	case message.SendGeneralMsgType:

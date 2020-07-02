@@ -57,10 +57,12 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 				MessageType:message.RequestPresentationType,
 				Content:req,
 			},
-			Conn: message.Connection{},
+			Conn: req.Connection,
 		}
-
-
+		err := p.msgsvr.HandleOutBound(outMsg)
+		if err != nil{
+			return nil,err
+		}
 
 	case message.RequestPresentationType:
 
