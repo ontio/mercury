@@ -7,7 +7,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
-	"git.ont.io/ontid/otf/vdri/did"
+	"git.ont.io/ontid/otf/vdri/ontdid"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"time"
@@ -27,7 +27,7 @@ const (
 
 type CredentialController struct {
 	account *sdk.Account
-	did     did.Did
+	did     ontdid.Did
 	cfg     *config.Cfg
 	store   store.Store
 	msgsvr  *service.MsgService

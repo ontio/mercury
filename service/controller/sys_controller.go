@@ -7,7 +7,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
-	"git.ont.io/ontid/otf/vdri/did"
+	"git.ont.io/ontid/otf/vdri/ontdid"
 	"github.com/fatih/structs"
 	"github.com/google/uuid"
 	"github.com/ontio/ontology-crypto/signature"
@@ -32,14 +32,14 @@ const (
 
 type Syscontroller struct {
 	account *sdk.Account
-	did     did.Did
+	did     ontdid.Did
 	cfg     *config.Cfg
 	store   store.Store
 	msgsvr  *service.MsgService
 }
 
 func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
-	did := did.NewOntDID(cfg, acct)
+	did := ontdid.NewOntDID(cfg, acct)
 	s := Syscontroller{
 		account: acct,
 		did:     did,

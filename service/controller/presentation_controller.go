@@ -6,7 +6,7 @@ import (
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
-	"git.ont.io/ontid/otf/vdri/did"
+	"git.ont.io/ontid/otf/vdri/ontdid"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
@@ -42,8 +42,6 @@ func (p PresentationController) Name() string {
 	return "CredentialController"
 }
 
-
-
 func (p PresentationController) Process(msg message.Message) (service.ControllerResp, error) {
 	fmt.Printf("%s Process:%v\n", p.Name(), msg)
 	//todo add logic
@@ -53,9 +51,9 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		req := msg.Content.(*message.RequestPresentation)
 
 		outMsg := service.OutboundMsg{
-			Msg:  message.Message{
-				MessageType:message.RequestPresentationType,
-				Content:req,
+			Msg: message.Message{
+				MessageType: message.RequestPresentationType,
+				Content:     req,
 			},
 			Conn: req.Connection,
 		}
@@ -66,7 +64,6 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 
 	case message.RequestPresentationType:
 
-
 	case message.PresentationType:
 	case message.PresentationACKType:
 
@@ -75,6 +72,6 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 
 	}
 
-	return nil,nil
+	return nil, nil
 
 }

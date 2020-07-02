@@ -42,7 +42,7 @@ func InitRouter() *gin.Engine {
 		v.POST(utils.IssueCredential_Api, IssueCredential)
 		v.POST(utils.CredentialAckInfo_Api, CredentialAckInfo)
 
-		v.POST(utils.SendRequestPresentation_Api,SendRequestPresentation)
+		v.POST(utils.SendRequestPresentation_Api, SendRequestPresentation)
 		v.POST(utils.RequestPresentation_Api, RequestPresentation)
 		v.POST(utils.Presentation_Api, Presentation)
 		v.POST(utils.PresentationAckInfo, PresentationAckInfo)

@@ -12,7 +12,7 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 
 	//todo implement
 	//only for test
-	if did == "did:ont:testdid1" {
+	if did == "ontdid:ont:testdid1" {
 		return DIDDoc{
 			Context:        nil,
 			Id:             "",
@@ -21,10 +21,9 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 			Controller:     nil,
 			Recovery:       nil,
 			Service: []ServiceDoc{{
-				ServiceID:   "did:ont:serviceid1",
-				ServiceType: "ontdid",
-				//ServiceEndpoint: "http://192.168.1.114:8080",
-				ServiceEndpoint: "http://0.0.0.0:8080",
+				ServiceID:       "ontdid:ont:serviceid1",
+				ServiceType:     "ontdid",
+				ServiceEndpoint: "http://192.168.1.114:8080",
 			}},
 			Attribute: nil,
 			Created:   nil,
@@ -32,7 +31,7 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 			Proof:     nil,
 		}, nil
 	}
-	if did == "did:ont:testdid2" {
+	if did == "ontdid:ont:testdid2" {
 		return DIDDoc{
 			Context:        nil,
 			Id:             "",
@@ -41,7 +40,7 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 			Controller:     nil,
 			Recovery:       nil,
 			Service: []ServiceDoc{{
-				ServiceID:       "did:ont:serviceid2",
+				ServiceID:       "ontdid:ont:serviceid2",
 				ServiceType:     "ontdid",
 				ServiceEndpoint: "http://0.0.0.0:8080",
 				//ServiceEndpoint: "http://192.168.2.235:8080",
@@ -60,7 +59,7 @@ func (o OntVDRI) GetDIDDoc(did string) (CommonDIDDoc, error) {
 		Controller:     nil,
 		Recovery:       nil,
 		Service: []ServiceDoc{{
-			ServiceID:       "did:ont:serviceid",
+			ServiceID:       "ontdid:ont:serviceid",
 			ServiceType:     "ontdid",
 			ServiceEndpoint: "http://0.0.0.0:8080",
 		}},

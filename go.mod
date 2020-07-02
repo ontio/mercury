@@ -12,7 +12,6 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/uuid v1.0.0
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
-	github.com/itchyny/base58-go v0.1.0
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect

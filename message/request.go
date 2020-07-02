@@ -6,7 +6,7 @@ type Invitation struct {
 	Type      string `json:"@type,omitempty"`
 	Id        string `json:"@id,omitempty"`
 	Label     string `json:"label,omitempty"`
-	Did       string `json:"did,omitempty"`
+	Did       string `json:"ontdid,omitempty"`
 	ServiceId string `json:"service_id,omitempty"`
 }
 
@@ -193,7 +193,7 @@ type RequestPresentation struct {
 	Comment                   string       `json:"comment,omitempty"`
 	Formats                   []Format     `json:"formats,omitempty"`
 	RequestPresentationAttach []Attachment `json:"request_presentation_attach,omitempty"`
-	Connection Connection `json:"connection,omitempty"`
+	Connection                Connection   `json:"connection,omitempty"`
 }
 
 type Presentation struct {
@@ -202,7 +202,7 @@ type Presentation struct {
 	Comment            string       `json:"comment,omitempty"`
 	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
-	Connection Connection `json:"connection,omitempty"`
+	Connection         Connection   `json:"connection,omitempty"`
 }
 
 type BasicMessage struct {
