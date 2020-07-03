@@ -83,7 +83,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
 
-		presentation, err := p.vdri.PresentProof(req)
+		presentation, err := p.vdri.PresentProof(req, p.store)
 		if err != nil {
 			middleware.Log.Errorf("errors on PresentProof :%s", err.Error())
 			return nil, err
