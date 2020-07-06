@@ -37,6 +37,8 @@ func LoggerToFile() gin.HandlerFunc {
 	Log = logrus.New()
 	Log.Out = src
 	Log.SetLevel(logrus.DebugLevel)
+	Log.SetOutput(os.Stdout)
+	Log.SetReportCaller(true)
 	Log.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
