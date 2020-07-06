@@ -1,8 +1,7 @@
-package service
+package message
 
 import (
 	"fmt"
-	"git.ont.io/ontid/otf/message"
 	"time"
 )
 
@@ -30,30 +29,30 @@ const (
 )
 
 type InvitationRec struct {
-	Invitation message.Invitation `json:"invitation"`
-	State      ConnectionState    `json:"state"`
+	Invitation Invitation      `json:"invitation"`
+	State      ConnectionState `json:"state"`
 }
 
 type ConnectionRequestRec struct {
-	ConnReq message.ConnectionRequest `json:"conn_req"`
-	State   ConnectionState           `json:"state"`
+	ConnReq ConnectionRequest `json:"conn_req"`
+	State   ConnectionState   `json:"state"`
 }
 
 type ConnectionRec struct {
 	OwnerDID    string `json:"owner_did"`
-	Connections map[string]message.Connection
+	Connections map[string]Connection
 }
 
 type RequestCredentialRec struct {
-	RequesterDID      string                    `json:"requester_did"`
-	RequestCredential message.RequestCredential `json:"request_credential"`
-	State             RequestCredentialState    `json:"state"`
+	RequesterDID      string                 `json:"requester_did"`
+	RequestCredential RequestCredential      `json:"request_credential"`
+	State             RequestCredentialState `json:"state"`
 }
 
 type CredentialRec struct {
-	OwnerDID   string                  `json:"owner_did"`
-	Credential message.IssueCredential `json:"credential"`
-	Timestamp  time.Time               `json:"timestamp"`
+	OwnerDID   string          `json:"owner_did"`
+	Credential IssueCredential `json:"credential"`
+	Timestamp  time.Time       `json:"timestamp"`
 }
 
 type ServiceDoc struct {
@@ -63,15 +62,15 @@ type ServiceDoc struct {
 }
 
 type RequestPresentationRec struct {
-	RequesterDID       string                      `json:"requester_did"`
-	RerquestPrentation message.RequestPresentation `json:"rerquest_prentation"`
-	State              RequestPresentationState    `json:"state"`
+	RequesterDID       string                   `json:"requester_did"`
+	RerquestPrentation RequestPresentation      `json:"rerquest_prentation"`
+	State              RequestPresentationState `json:"state"`
 }
 
 type PresentationRec struct {
-	OwnerDID     string               `json:"owner_did"`
-	Presentation message.Presentation `json:"presentation"`
-	Timestamp    time.Time            `json:"timestamp"`
+	OwnerDID     string       `json:"owner_did"`
+	Presentation Presentation `json:"presentation"`
+	Timestamp    time.Time    `json:"timestamp"`
 }
 
 type DIDDoc struct {

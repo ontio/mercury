@@ -139,7 +139,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		middleware.Log.Infof("resolve PresentationACKType")
 		req := msg.Content.(*message.PresentationACK)
 
-		err := p.UpdateRequestPresentaion(req.Thread.ID, service.RequestPresentationReceived)
+		err := p.UpdateRequestPresentaion(req.Thread.ID, message.RequestPresentationReceived)
 		if err != nil {
 			return nil, err
 		}
@@ -163,10 +163,10 @@ func (p PresentationController) SaveRequestPresentation(id string, rr message.Re
 		return fmt.Errorf("ReqeustPresentation id:%s,all ready exist", id)
 	}
 
-	rec := new(service.RequestPresentationRec)
+	rec := new(message.RequestPresentationRec)
 	rec.RerquestPrentation = rr
 	rec.RequesterDID = rr.Connection.MyDid
-	rec.State = service.RequestPresentationReceived
+	rec.State = message.RequestPresentationReceived
 
 	data, err := json.Marshal(rec)
 	if err != nil {
@@ -176,13 +176,13 @@ func (p PresentationController) SaveRequestPresentation(id string, rr message.Re
 	return p.store.Put(key, data)
 }
 
-func (p PresentationController) UpdateRequestPresentaion(id string, state service.RequestPresentationState) error {
+func (p PresentationController) UpdateRequestPresentaion(id string, state message.RequestPresentationState) error {
 	key := []byte(fmt.Sprintf("%s_%s", RequestPresentationKey, id))
 	data, err := p.store.Get(key)
 	if err != nil {
 		return err
 	}
-	rec := new(service.RequestPresentationRec)
+	rec := new(message.RequestPresentationRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
@@ -209,7 +209,7 @@ func (p PresentationController) SavePresentation(id string, pr message.Presentat
 		return fmt.Errorf("ReqeustPresentation id:%s,all ready exist", id)
 	}
 
-	rec := new(service.PresentationRec)
+	rec := new(message.PresentationRec)
 	rec.Presentation = pr
 	rec.OwnerDID = pr.Connection.TheirDid
 	rec.Timestamp = time.Now()

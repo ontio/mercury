@@ -96,14 +96,14 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 
 		//update connection to request received state
-		err = s.SaveConnectionRequest(*req, service.ConnectionRequestReceived)
+		err = s.SaveConnectionRequest(*req, message.ConnectionRequestReceived)
 		if err != nil {
 			middleware.Log.Infof("err on SaveConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 
 		//update invitation to used state
-		err = s.UpdateInvitation(ivrc.Invitation.Id, service.InvitationUsed)
+		err = s.UpdateInvitation(ivrc.Invitation.Id, message.InvitationUsed)
 		if err != nil {
 			middleware.Log.Infof("err on UpdateInvitation:%s\n", err.Error())
 			return nil, err
@@ -190,7 +190,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, fmt.Errorf("got failed ACK ")
 		}
 		connid := req.Thread.ID
-		err := s.UpdateConnectionRequest(connid, service.ConnectionACKReceived)
+		err := s.UpdateConnectionRequest(connid, message.ConnectionACKReceived)
 		if err != nil {
 			middleware.Log.Errorf("err on UpdateConnectionRequest:%s\n", err.Error())
 			return nil, err
@@ -292,9 +292,9 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 		return fmt.Errorf("invitation with id:%s existed", iv.Id)
 	}
 
-	rec := service.InvitationRec{
+	rec := message.InvitationRec{
 		Invitation: iv,
-		State:      service.InvitationInit,
+		State:      message.InvitationInit,
 	}
 
 	bs, err := json.Marshal(rec)
@@ -305,14 +305,14 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 	return s.store.Put([]byte(key), bs)
 }
 
-func (s Syscontroller) GetInvitation(id string) (*service.InvitationRec, error) {
+func (s Syscontroller) GetInvitation(id string) (*message.InvitationRec, error) {
 	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
 	}
 
-	rec := new(service.InvitationRec)
+	rec := new(message.InvitationRec)
 
 	err = json.Unmarshal(data, rec)
 	if err != nil {
@@ -321,13 +321,13 @@ func (s Syscontroller) GetInvitation(id string) (*service.InvitationRec, error) 
 	return rec, nil
 }
 
-func (s Syscontroller) UpdateInvitation(id string, state service.ConnectionState) error {
+func (s Syscontroller) UpdateInvitation(id string, state message.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
 	}
-	rec := new(service.InvitationRec)
+	rec := new(message.InvitationRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
@@ -344,7 +344,7 @@ func (s Syscontroller) UpdateInvitation(id string, state service.ConnectionState
 	return s.store.Put(key, bts)
 }
 
-func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state service.ConnectionState) error {
+func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state message.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, cr.Id))
 	b, err := s.store.Has(key)
 	if err != nil {
@@ -353,7 +353,7 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	if b {
 		return fmt.Errorf("connection request with id:%s existed", cr.Id)
 	}
-	rec := service.ConnectionRequestRec{
+	rec := message.ConnectionRequestRec{
 		ConnReq: cr,
 		State:   state,
 	}
@@ -366,13 +366,13 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	return s.store.Put(key, bs)
 }
 
-func (s Syscontroller) GetConnectionRequest(id string) (*service.ConnectionRequestRec, error) {
+func (s Syscontroller) GetConnectionRequest(id string) (*message.ConnectionRequestRec, error) {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
 	}
-	cr := new(service.ConnectionRequestRec)
+	cr := new(message.ConnectionRequestRec)
 	err = json.Unmarshal(data, cr)
 	if err != nil {
 		return nil, err
@@ -380,13 +380,13 @@ func (s Syscontroller) GetConnectionRequest(id string) (*service.ConnectionReque
 	return cr, nil
 }
 
-func (s Syscontroller) UpdateConnectionRequest(id string, state service.ConnectionState) error {
+func (s Syscontroller) UpdateConnectionRequest(id string, state message.ConnectionState) error {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
 	}
-	rec := new(service.ConnectionRequestRec)
+	rec := new(message.ConnectionRequestRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
@@ -406,7 +406,7 @@ func (s Syscontroller) UpdateConnectionRequest(id string, state service.Connecti
 
 func (s Syscontroller) SaveConnection(myDID, myServiceId, theirDID, theirServiceID string) error {
 
-	cr := new(service.ConnectionRec)
+	cr := new(message.ConnectionRec)
 
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
 	exist, err := s.store.Has(key)
@@ -451,7 +451,7 @@ func (s Syscontroller) GetConnection(myDID, theirDID, theirServiceID string) (me
 	if err != nil {
 		return message.Connection{}, err
 	}
-	cr := new(service.ConnectionRec)
+	cr := new(message.ConnectionRec)
 	err = json.Unmarshal(data, cr)
 	if err != nil {
 		return message.Connection{}, err

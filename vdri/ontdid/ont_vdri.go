@@ -152,7 +152,7 @@ func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 		return nil, err
 	}
 
-	doc := new(service.DIDDoc)
+	doc := new(message.DIDDoc)
 	err = json.Unmarshal(bts, doc)
 	if err != nil {
 		return nil, err

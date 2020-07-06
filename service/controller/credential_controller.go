@@ -205,7 +205,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		req := msg.Content.(*message.CredentialACK)
 		reqid := req.Thread.ID
 
-		err := s.UpdateRequestCredential(reqid, service.RequestCredentialResolved)
+		err := s.UpdateRequestCredential(reqid, message.RequestCredentialResolved)
 		if err != nil {
 			middleware.Log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
 			return nil, err
@@ -250,7 +250,7 @@ func (s CredentialController) SaveCredential(id string, credential message.Issue
 		return fmt.Errorf("id:%s already exist\n", id)
 	}
 
-	rec := service.CredentialRec{
+	rec := message.CredentialRec{
 		OwnerDID:   credential.Connection.TheirServiceId,
 		Credential: credential,
 		Timestamp:  time.Now(),
@@ -272,10 +272,10 @@ func (s CredentialController) SaveRequestCredential(id string, requestCredential
 		return fmt.Errorf("id:%s already exist\n", id)
 	}
 
-	rec := service.RequestCredentialRec{
+	rec := message.RequestCredentialRec{
 		RequesterDID:      requestCredential.Connection.MyDid,
 		RequestCredential: requestCredential,
-		State:             service.RequestCredentialReceived,
+		State:             message.RequestCredentialReceived,
 	}
 	data, err := json.Marshal(rec)
 	if err != nil {
@@ -284,14 +284,14 @@ func (s CredentialController) SaveRequestCredential(id string, requestCredential
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) UpdateRequestCredential(id string, state service.RequestCredentialState) error {
+func (s CredentialController) UpdateRequestCredential(id string, state message.RequestCredentialState) error {
 	key := []byte(fmt.Sprintf("%s_%s", RequestCredentialKey, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
 	}
 
-	rec := new(service.RequestCredentialRec)
+	rec := new(message.RequestCredentialRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return err
