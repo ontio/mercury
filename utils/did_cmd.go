@@ -71,7 +71,7 @@ func newDid(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("new did err:%s", err)
 	}
-	fmt.Printf("did:%v\n", did)
+	fmt.Printf("did:  %v\n", did)
 	return nil
 }
 
