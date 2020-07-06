@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"git.ont.io/ontid/otf/message"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
@@ -42,7 +43,7 @@ func ValidateDid(did string) bool {
 	return sdk.VerifyID(did)
 }
 
-func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
+func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*message.DIDDoc, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return nil, fmt.Errorf("ontsdk is nil")
 	}
@@ -50,7 +51,7 @@ func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
 	if err != nil {
 		return nil, err
 	}
-	doc := &Doc{}
+	doc := &message.DIDDoc{}
 	err = json.Unmarshal([]byte(string(data)), doc)
 	if err != nil {
 		return nil, err
@@ -66,7 +67,7 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 	if err != nil {
 		return nil, err
 	}
-	doc := &Doc{}
+	doc := &message.DIDDoc{}
 	err = json.Unmarshal([]byte(string(data)), &doc)
 	if err != nil {
 		return nil, err
