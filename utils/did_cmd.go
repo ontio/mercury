@@ -39,8 +39,7 @@ var AddServiceCommand = cli.Command{
 
 func newdid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	//addr := ctx.GlobalString(GetFlagName(RPCPortFlag))
-	ontSdk.NewRpcClient().SetAddress(DEFAULT_RPC_URL)
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	optionFile := checkFileName(ctx)
@@ -58,10 +57,10 @@ func newdid(ctx *cli.Context) error {
 
 func addservice(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(GetFlagName(RPCPortFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
-	did := ctx.GlobalString(GetFlagName(DidFlag))
+	did := ctx.String(GetFlagName(DidFlag))
 	optionFile := checkFileName(ctx)
 	acc, err := OpenAccount(optionFile, ontSdk)
 	if err != nil {
@@ -70,9 +69,9 @@ func addservice(ctx *cli.Context) error {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return fmt.Errorf("ontsdk is nil")
 	}
-	serviceId := ctx.GlobalString(GetFlagName(ServiceEndPointFlag))
-	type_ := ctx.GlobalString(GetFlagName(TypeFlag))
-	serviceEndpoint := ctx.GlobalString(GetFlagName(ServiceEndPointFlag))
+	serviceId := ctx.String(GetFlagName(ServiceEndPointFlag))
+	type_ := ctx.String(GetFlagName(TypeFlag))
+	serviceEndpoint := ctx.String(GetFlagName(ServiceEndPointFlag))
 	index := ctx.Uint64(GetFlagName(IndexFlag))
 	txHash, err := ontSdk.Native.OntId.AddService(gasPrice, gasLimit, acc, did, []byte(serviceId), []byte(type_), []byte(serviceEndpoint), uint32(index), acc)
 	if err != nil {

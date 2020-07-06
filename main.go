@@ -47,13 +47,13 @@ func main() {
 
 func startAgent(ctx *cli.Context) {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(utils.GetFlagName(utils.ChainAddrFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(utils.GetFlagName(utils.ChainAddrFlag)))
 	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH, ontSdk)
 	if err != nil {
 		panic(err)
 	}
-	port := ctx.GlobalString(utils.GetFlagName(utils.HttpPortFlag))
-	ip := ctx.GlobalString(utils.GetFlagName(utils.HttpIpFlag))
+	port := ctx.String(utils.GetFlagName(utils.HttpPortFlag))
+	ip := ctx.String(utils.GetFlagName(utils.HttpIpFlag))
 	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
 	db, err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
 	if err != nil {
