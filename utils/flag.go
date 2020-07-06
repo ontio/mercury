@@ -13,7 +13,7 @@ const (
 	DEFAULT_LOG_FILE_PATH     = "./Log/"
 	DEFAULT_STORE_DIR         = "./db_otf/"
 	DEFAULT_BLOCK_CHAIN_ADDR  = "127.0.0.1:20334"
-	DEFAULT_RPC_URL           = "127.0.0.1:20336"
+	DEFAULT_RPC_URL           = "http://polaris2.ont.io:20336"
 	MIN_TRANSACTION_GAS       = 20000
 	DEFAULT_GAS_PRICE         = 2500
 	DEFAULT_WALLET_FILE_NAME  = "./wallet.dat"
@@ -46,8 +46,8 @@ var (
 		Value: DEFAULT_BLOCK_CHAIN_ADDR,
 	}
 	RPCPortFlag = cli.StringFlag{
-		Name:  "rpcport",
-		Usage: "Json rpc server listening port `<number>`",
+		Name:  "http rpc url",
+		Usage: "Json rpc server listening port `<url>`",
 		Value: DEFAULT_RPC_URL,
 	}
 	TransactionGasPriceFlag = cli.Uint64Flag{

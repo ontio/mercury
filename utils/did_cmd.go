@@ -39,7 +39,8 @@ var AddServiceCommand = cli.Command{
 
 func newdid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.GlobalString(GetFlagName(RPCPortFlag)))
+	//addr := ctx.GlobalString(GetFlagName(RPCPortFlag))
+	ontSdk.NewRpcClient().SetAddress(DEFAULT_RPC_URL)
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	optionFile := checkFileName(ctx)
