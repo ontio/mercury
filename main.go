@@ -31,6 +31,8 @@ func setupAPP() *cli.App {
 	app.Commands = []cli.Command{
 		utils.DidCommand,
 		utils.AddServiceCommand,
+		utils.QueryDidDocCommand,
+		utils.QueryServiceEndPointCommand,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())

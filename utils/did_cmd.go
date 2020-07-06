@@ -37,6 +37,26 @@ var AddServiceCommand = cli.Command{
 	},
 }
 
+var QueryDidDocCommand = cli.Command{
+	Name:   "diddoc",
+	Usage:  "query did doc",
+	Action: queryDidDoc,
+	Flags: []cli.Flag{
+		RPCPortFlag,
+		DidFlag,
+	},
+}
+
+var QueryServiceEndPointCommand = cli.Command{
+	Name:   "endpoint",
+	Usage:  "query service end point",
+	Action: QueryEndPoint,
+	Flags: []cli.Flag{
+		RPCPortFlag,
+		DidFlag,
+	},
+}
+
 func newDid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
@@ -109,6 +129,30 @@ func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account, gasPrice
 	if err != nil {
 		return err
 	}
-	fmt.Printf("did:%v,Hash:%v\n", did, txHash.ToHexString())
+	fmt.Printf("Did:  %v,  Hash:%v\n", did, txHash.ToHexString())
+	return nil
+}
+
+func queryDidDoc(ctx *cli.Context) error {
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	did := ctx.String(GetFlagName(DidFlag))
+	doc,err := GetDidDocByDid(did,ontSdk)
+	if err != nil {
+		return fmt.Errorf("err:%s",err)
+	}
+	fmt.Printf("doc: %v\n",doc)
+	return nil
+}
+
+func QueryEndPoint(ctx *cli.Context) error {
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	did := ctx.String(GetFlagName(DidFlag))
+	endPoints,err := GetServiceEndpointByDid(did,ontSdk)
+	if err != nil {
+		return fmt.Errorf("err:%s",err)
+	}
+	fmt.Printf("endPoints:%v\n",endPoints)
 	return nil
 }

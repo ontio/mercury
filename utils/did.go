@@ -1,4 +1,4 @@
-package ontdid
+package utils
 
 import (
 	"encoding/json"
@@ -51,7 +51,7 @@ func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*Doc, error) {
 		return nil, err
 	}
 	doc := &Doc{}
-	err = json.Unmarshal(data, &doc)
+	err = json.Unmarshal([]byte(string(data)), doc)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 		return nil, err
 	}
 	doc := &Doc{}
-	err = json.Unmarshal(data, &doc)
+	err = json.Unmarshal([]byte(string(data)), &doc)
 	if err != nil {
 		return nil, err
 	}
