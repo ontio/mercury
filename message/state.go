@@ -58,7 +58,7 @@ type CredentialRec struct {
 type ServiceDoc struct {
 	ServiceID       string `json:"id"`
 	ServiceType     string `json:"type"`
-	ServiceEndpoint string `json:"serviceEndpoint"`
+	ServiceEndpoint string `json:"serviceEndpint"` //todo fix this typo with ontology update
 }
 
 type RequestPresentationRec struct {
