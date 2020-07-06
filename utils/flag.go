@@ -12,7 +12,7 @@ const (
 	DEFAULT_HTTP_IP           = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH     = "./Log/"
 	DEFAULT_STORE_DIR         = "./db_otf/"
-	DEFAULT_BLOCK_CHAIN_ADDR  = "http://polaris2.ont.io:20334"
+	DEFAULT_BLOCK_CHAIN_ADDR  = "http://polaris2.ont.io:20336"
 	DEFAULT_RPC_URL           = "http://polaris2.ont.io:20336"
 	MIN_TRANSACTION_GAS       = 20000
 	DEFAULT_GAS_PRICE         = 2500

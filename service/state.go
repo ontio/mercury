@@ -57,9 +57,9 @@ type CredentialRec struct {
 }
 
 type ServiceDoc struct {
-	ServiceID       string `json:"service_id"`
-	ServiceType     string `json:"service_type"`
-	ServiceEndpoint string `json:"service_endpoint"`
+	ServiceID       string `json:"id"`
+	ServiceType     string `json:"type"`
+	ServiceEndpoint string `json:"serviceEndpoint"`
 }
 
 type RequestPresentationRec struct {

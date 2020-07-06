@@ -24,16 +24,6 @@ func Invite(c *gin.Context) {
 		return
 	}
 	resp.Response(http.StatusOK, 0, "", data)
-	/*
-		jsonbytes, err := data.(service.ControllerResp).GetJsonbytes()
-		if err != nil {
-			middleware.Log.Errorf("Invite err:%s", err)
-			resp.Response(http.StatusOK, 0, err.Error(), nil)
-			return
-		}
-		resp.Response(http.StatusOK, 0, "", utils.Base64Encode(jsonbytes))
-
-	*/
 }
 
 func SendConnectionReq(c *gin.Context) {
