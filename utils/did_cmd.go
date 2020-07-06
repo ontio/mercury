@@ -89,7 +89,7 @@ func addService(ctx *cli.Context) error {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return fmt.Errorf("ontsdk is nil")
 	}
-	serviceId := ctx.String(GetFlagName(ServiceEndPointFlag))
+	serviceId := ctx.String(GetFlagName(ServiceIdFlag))
 	type_ := ctx.String(GetFlagName(TypeFlag))
 	serviceEndpoint := ctx.String(GetFlagName(ServiceEndPointFlag))
 	index := ctx.Uint64(GetFlagName(IndexFlag))
