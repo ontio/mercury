@@ -10,7 +10,7 @@ var DidCommand = cli.Command{
 	Name:        "did",
 	Usage:       "new did",
 	Description: "Did management commands can generate did",
-	Action:      newdid,
+	Action:      newDid,
 	Flags: []cli.Flag{
 		RPCPortFlag,
 		TransactionGasPriceFlag,
@@ -23,7 +23,7 @@ var AddServiceCommand = cli.Command{
 	Name:        "addsvr",
 	Usage:       "add service endpoint",
 	Description: "Use Did add service endpoint",
-	Action:      addservice,
+	Action:      addService,
 	Flags: []cli.Flag{
 		RPCPortFlag,
 		TransactionGasPriceFlag,
@@ -37,7 +37,7 @@ var AddServiceCommand = cli.Command{
 	},
 }
 
-func newdid(ctx *cli.Context) error {
+func newDid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
@@ -51,11 +51,11 @@ func newdid(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("new did err:%s", err)
 	}
-	fmt.Printf("did:%v", did)
+	fmt.Printf("did:%v\n", did)
 	return nil
 }
 
-func addservice(ctx *cli.Context) error {
+func addService(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
@@ -109,6 +109,6 @@ func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account, gasPrice
 	if err != nil {
 		return err
 	}
-	fmt.Printf("did:%v,hash:%v\n", did, txHash.ToHexString())
+	fmt.Printf("did:%v,Hash:%v\n", did, txHash.ToHexString())
 	return nil
 }
