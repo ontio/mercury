@@ -6,7 +6,7 @@ type Invitation struct {
 	Type      string `json:"@type,omitempty"`
 	Id        string `json:"@id,omitempty"`
 	Label     string `json:"label,omitempty"`
-	Did       string `json:"ontdid,omitempty"`
+	Did       string `json:"did,omitempty"`
 	ServiceId string `json:"service_id,omitempty"`
 }
 
