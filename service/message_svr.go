@@ -68,7 +68,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		fmt.Printf("err while sendmsg:%s\n", err)
 		return
 	}
-	fmt.Printf("url:%s,data:%s\n", url,data)
+	fmt.Printf("url:%s,data:%s\n", url, data)
 	err = m.HttpPostData(url, string(data))
 	if err != nil {
 		fmt.Printf("SendMsg msg url:%s,type:%d,err:%s\n", url, msg.Msg.MessageType, err)
@@ -93,7 +93,7 @@ func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	endpoint, err := doc.GetServicePoint(fmt.Sprintf("%s#%s",msg.Conn.TheirDid,msg.Conn.TheirServiceId))
+	endpoint, err := doc.GetServicePoint(fmt.Sprintf("%s#%s", msg.Conn.TheirDid, msg.Conn.TheirServiceId))
 	if err != nil {
 		return "", err
 	}

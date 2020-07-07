@@ -137,11 +137,11 @@ func queryDidDoc(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
-	doc,err := GetDidDocByDid(did,ontSdk)
+	doc, err := GetDidDocByDid(did, ontSdk)
 	if err != nil {
-		return fmt.Errorf("err:%s",err)
+		return fmt.Errorf("err:%s", err)
 	}
-	fmt.Printf("doc: %v\n",doc)
+	fmt.Printf("doc: %v\n", doc)
 	return nil
 }
 
@@ -149,10 +149,10 @@ func QueryEndPoint(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
-	endPoints,err := GetServiceEndpointByDid(did,ontSdk)
+	endPoints, err := GetServiceEndpointByDid(did, ontSdk)
 	if err != nil {
-		return fmt.Errorf("err:%s",err)
+		return fmt.Errorf("err:%s", err)
 	}
-	fmt.Printf("endPoints:%v\n",endPoints)
+	fmt.Printf("endPoints:%v\n", endPoints)
 	return nil
 }
