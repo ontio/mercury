@@ -81,7 +81,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, err
 		}
 
-		return service.ServiceResp{
+		return service.ServiceResponse{
 			Message: invitation,
 		}, nil
 

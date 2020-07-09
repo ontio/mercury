@@ -39,8 +39,8 @@ type ConnectionRequestRec struct {
 }
 
 type ConnectionRec struct {
-	OwnerDID    string `json:"owner_did"`
-	Connections map[string]Connection
+	OwnerDID    string                `json:"owner_did"`
+	Connections map[string]Connection `json:"connections"`
 }
 
 type RequestCredentialRec struct {

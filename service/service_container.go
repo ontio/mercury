@@ -44,7 +44,7 @@ func (r ServiceResp) GetMessage() (message.Message, error) {
 	m := message.Message{}
 	m.MessageType = r.OriginalMessage.MessageType
 	m.Content = r.Message
-	m.JsonBytes = r.JsonBytes
+	//m.JsonBytes = r.JsonBytes
 	return m, nil
 }
 
@@ -121,6 +121,6 @@ func Skipmessage(msg message.Message) (ControllerResp, error) {
 	resp := ServiceResp{}
 	resp.OriginalMessage = msg
 	resp.Message = msg.Content
-	resp.JsonBytes = msg.JsonBytes
+	//resp.JsonBytes = msg.JsonBytes
 	return resp, nil
 }

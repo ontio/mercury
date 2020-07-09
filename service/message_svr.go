@@ -57,22 +57,18 @@ func (m *MsgService) popMessage() {
 }
 
 func (m *MsgService) SendMsg(msg OutboundMsg) {
-	fmt.Println("on sendmsg")
-
 	url, err := m.GetServiceURL(msg)
 	if err != nil {
-		fmt.Printf("error on sendmsg:%s\n", err.Error())
+		middleware.Log.Errorf("error on sendmsg:%s\n", err.Error())
 	}
 	data, err := json.Marshal(msg.Msg.Content)
 	if err != nil {
-		fmt.Printf("err while sendmsg:%s\n", err)
+		middleware.Log.Errorf("err while sendmsg:%s\n", err)
 		return
 	}
-	fmt.Printf("url:%s,data:%s\n", url, data)
+	middleware.Log.Infof("url:%s,data:%s\n", url, data)
 	err = m.HttpPostData(url, string(data))
 	if err != nil {
-		fmt.Printf("SendMsg msg url:%s,type:%d,err:%s\n", url, msg.Msg.MessageType, err)
-
 		middleware.Log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
 	}
 }

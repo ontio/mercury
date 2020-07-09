@@ -34,34 +34,6 @@ type Thread struct {
 	ReceivedOrders map[string]int `json:"received_orders,omitempty"`
 }
 
-//type DIDDoc struct {
-//	Context   []string    `json:"@context"`
-//	Id        string      `json:"id"`
-//	PublicKey []PublicKey `json:"publicKey"`
-//}
-
-//type PublicKey struct {
-//	Type            string           `json:"type"`
-//	Id              string           `json:"id"`
-//	Controller      string           `json:"controller"`
-//	PublicKeyBase58 string           `json:"publicKeyBase58"`
-//	Authentication  []Authentication `json:"authentication"`
-//	Service         Service          `json:"service"`
-//}
-//
-//type Authentication struct {
-//	Type      string `json:"type"`
-//	PublicKey string `json:"publicKey"`
-//}
-
-//type Service struct {
-//	Id              string   `json:"id"`
-//	Type            string   `json:"type"`
-//	Priority        int      `json:"priority"`
-//	RecipientKeys   []string `json:"recipientKeys"`
-//	ServiceEndpoint string   `json:"serviceEndpoint"`
-//}
-
 type ConnectionResponse struct {
 	Type       string     `json:"@type,omitempty"`
 	Id         string     `json:"@id,omitempty"`
@@ -173,19 +145,6 @@ type ProposePresentation struct {
 	Formats       []Format     `json:"formats,omitempty"`
 	ProposeAttach []Attachment `json:"propose~attach,omitempty"`
 }
-
-//type PresentationPreview struct {
-//	Type       string       `json:"@type"`
-//	Attributes []Attributre `json:"attributes"`
-//	Predicates Predicate    `json:"predicates"`
-//}
-
-//type Predicate struct {
-//	Name      string `json:"name"`
-//	CredDefId string `json:"cred_def_id"`
-//	Predicate string `json:"predicate"`
-//	Threshold string `json:"threshold"`
-//}
 
 type RequestPresentation struct {
 	Type                      string       `json:"@type,omitempty"`
