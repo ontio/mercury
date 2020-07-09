@@ -1,3 +1,4 @@
+// rest api
 package rest
 
 import "github.com/gin-gonic/gin"
@@ -19,5 +20,4 @@ func (g *Gin) Response(httpCode, errCode int, msg string, data interface{}) {
 		Msg:  msg,
 		Data: data,
 	})
-	return
 }

@@ -37,7 +37,7 @@ func SendConnectionReq(c *gin.Context) {
 	}
 	_, err = SendMsg(message.SendConnectionRequestType, req)
 	if err != nil {
-		middleware.Log.Errorf("Send Connection Req err:%s")
+		middleware.Log.Errorf("Send Connection Req err:%s", err.Error())
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
@@ -55,7 +55,7 @@ func ConnectRequest(c *gin.Context) {
 	}
 	data, err := SendMsg(message.ConnectionRequestType, req)
 	if err != nil {
-		middleware.Log.Errorf("connect err:%s")
+		middleware.Log.Errorf("connect err:%s", err.Error())
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
@@ -73,7 +73,7 @@ func ConnectResponse(c *gin.Context) {
 	}
 	data, err := SendMsg(message.ConnectionResponseType, req)
 	if err != nil {
-		middleware.Log.Errorf("connect err:%s")
+		middleware.Log.Errorf("connect err:%s", err.Error())
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}

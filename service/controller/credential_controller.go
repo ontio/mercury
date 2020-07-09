@@ -39,7 +39,10 @@ func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store,
 		msgsvr: msgsvr,
 		vdri:   v,
 	}
-	s.Initiate(nil)
+	err := s.Initiate(nil)
+	if err != nil {
+		panic(err)
+	}
 	return s
 
 }
@@ -237,7 +240,6 @@ func (s CredentialController) SaveOfferCredential(id string, propsal *message.Of
 		return err
 	}
 	return s.store.Put(key, data)
-	return nil
 }
 
 func (s CredentialController) SaveCredential(id string, credential message.IssueCredential) error {
@@ -297,7 +299,7 @@ func (s CredentialController) UpdateRequestCredential(id string, state message.R
 		return err
 	}
 	if rec.State >= state {
-		return fmt.Errorf("UpdateRequestCredential id :%s state invalid\n")
+		return fmt.Errorf("UpdateRequestCredential id :%s state invalid\n", id)
 	}
 	rec.State = state
 	data, err = json.Marshal(rec)

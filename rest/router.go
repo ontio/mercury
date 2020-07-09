@@ -21,7 +21,6 @@ func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *serv
 	Svr = service.NewService()
 	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr))
 	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr, v))
-
 	Svr.RegisterController(controller.NewPresentationController(acct, cfg, db, msgSvr, v))
 }
 

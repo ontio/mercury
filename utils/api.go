@@ -57,5 +57,4 @@ func GetApiName(msgType message.MessageType) string {
 	default:
 		return Group_Api_V1
 	}
-	return Group_Api_V1
 }

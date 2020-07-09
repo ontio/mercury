@@ -38,7 +38,10 @@ func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Stor
 		msgsvr: msgsvr,
 		vdri:   v,
 	}
-	p.Initiate(nil)
+	err := p.Initiate(nil)
+	if err != nil {
+		panic(err)
+	}
 	return p
 
 }

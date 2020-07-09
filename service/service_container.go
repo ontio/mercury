@@ -65,10 +65,8 @@ func NewService() *Service {
 	return &Service{Container: list.New()}
 }
 
-func (s *Service) RegisterController(c ControllerInf) error {
-
+func (s *Service) RegisterController(c ControllerInf) {
 	s.Container.PushBack(c)
-	return nil
 }
 
 func (s *Service) GetController(name string) (ControllerInf, error) {

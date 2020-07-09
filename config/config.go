@@ -1,3 +1,4 @@
+//configuration for http rest
 package config
 
 type Cfg struct {

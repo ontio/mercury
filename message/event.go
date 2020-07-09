@@ -1,3 +1,4 @@
+//message for rest api
 package message
 
 type MessageType int

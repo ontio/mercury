@@ -40,7 +40,10 @@ func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr
 		store:  db,
 		msgsvr: msgsvr,
 	}
-	s.Initiate(nil)
+	err := s.Initiate(nil)
+	if err != nil {
+		panic(err)
+	}
 	return s
 }
 
@@ -259,8 +262,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		return service.Skipmessage(msg)
 	}
 
-	resp := service.ServiceResp{}
-	return resp, nil
 }
 func (s Syscontroller) Shutdown() error {
 	middleware.Log.Infof("%s shutdown\n", s.Name())
