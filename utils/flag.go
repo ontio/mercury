@@ -24,7 +24,7 @@ const (
 	DEFAULT_SERVICE_END_POINT = ""
 	DEFAULT_INDEX             = 1
 	DEFAULT_CERT_PATH         = "./key/ssl.crt"
-	DEFAULT_KEY_PATH 	      = "./key/ssl.key"
+	DEFAULT_KEY_PATH          = "./key/ssl.key"
 )
 
 var (
@@ -44,7 +44,7 @@ var (
 		Value: DEFAULT_HTTPS_PORT,
 	}
 	EnableHttpsFlag = cli.BoolFlag{
-		Name:"enable-https",
+		Name:  "enable-https",
 		Usage: "start https restful service",
 	}
 	HttpIpFlag = cli.StringFlag{

@@ -79,7 +79,7 @@ func startAgent(ctx *cli.Context) {
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(utils.GetFlagName(utils.EnableHttpsFlag)) {
-		err = r.RunTLS(startPort,utils.DEFAULT_CERT_PATH,utils.DEFAULT_KEY_PATH)
+		err = r.RunTLS(startPort, utils.DEFAULT_CERT_PATH, utils.DEFAULT_KEY_PATH)
 		if err != nil {
 			panic(err)
 		}
