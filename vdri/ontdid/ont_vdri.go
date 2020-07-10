@@ -62,7 +62,6 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 
 	vc, err := ontVdri.ontSdk.Credential.CreateJWTCredential(contexts, types, subs, req.Connection.TheirDid, expirationDate, "", nil, ontVdri.acct)
 	if err != nil {
-		fmt.Printf("CreateJWTCredential err:%s\n", err.Error())
 		return nil, err
 	}
 

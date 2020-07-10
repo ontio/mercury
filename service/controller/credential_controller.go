@@ -261,7 +261,6 @@ func (s CredentialController) SaveOfferCredential(did, id string, propsal *messa
 
 func (s CredentialController) SaveCredential(did, id string, credential message.IssueCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
-	fmt.Printf("save credential key:%s\n", key)
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -306,7 +305,6 @@ func (s CredentialController) SaveRequestCredential(did, id string, requestCrede
 
 func (s CredentialController) QueryCredential(did, id string) (message.IssueCredential, error) {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
-	fmt.Printf("query credential key:%s\n", key)
 
 	data, err := s.store.Get(key)
 	if err != nil {
