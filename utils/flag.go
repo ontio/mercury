@@ -9,6 +9,7 @@ const (
 	DEFAULT_WALLET_PATH       = "./wallet.dat"
 	DEFAULT_LOG_LEVEL         = 1
 	DEFAULT_HTTP_PORT         = "8080"
+	DEFAULT_HTTPS_PORT        = "8443"
 	DEFAULT_HTTP_IP           = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH     = "./Log/"
 	DEFAULT_STORE_DIR         = "./db_otf/"
@@ -22,6 +23,8 @@ const (
 	DEFAULT_TYPE              = ""
 	DEFAULT_SERVICE_END_POINT = ""
 	DEFAULT_INDEX             = 1
+	DEFAULT_CERT_PATH         = "./key/ssl.crt"
+	DEFAULT_KEY_PATH 	      = "./key/ssl.key"
 )
 
 var (
@@ -31,9 +34,18 @@ var (
 		Value: DEFAULT_LOG_LEVEL,
 	}
 	HttpPortFlag = cli.StringFlag{
-		Name:  "rest-port",
+		Name:  "http-port",
 		Usage: "Set http rest port default:8080",
 		Value: DEFAULT_HTTP_PORT,
+	}
+	HttpsPortFlag = cli.StringFlag{
+		Name:  "https-port",
+		Usage: "Set https rest port default:8443",
+		Value: DEFAULT_HTTPS_PORT,
+	}
+	EnableHttpsFlag = cli.BoolFlag{
+		Name:"enable-https",
+		Usage: "start https restful service",
 	}
 	HttpIpFlag = cli.StringFlag{
 		Name:  "rest-ip",

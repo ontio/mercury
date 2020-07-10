@@ -16,6 +16,8 @@ var DidCommand = cli.Command{
 		TransactionGasPriceFlag,
 		TransactionGasLimitFlag,
 		WalletFileFlag,
+		HttpsPortFlag,
+		EnableHttpsFlag,
 	},
 }
 

@@ -27,6 +27,8 @@ func setupAPP() *cli.App {
 		utils.HttpIpFlag,
 		utils.HttpPortFlag,
 		utils.ChainAddrFlag,
+		utils.HttpsPortFlag,
+		utils.EnableHttpsFlag,
 	}
 	app.Commands = []cli.Command{
 		utils.DidCommand,
@@ -54,7 +56,12 @@ func startAgent(ctx *cli.Context) {
 	if err != nil {
 		panic(err)
 	}
-	port := ctx.String(utils.GetFlagName(utils.HttpPortFlag))
+	var port string
+	if ctx.Bool(utils.GetFlagName(utils.EnableHttpsFlag)) {
+		port = ctx.String(utils.GetFlagName(utils.HttpsPortFlag))
+	} else {
+		port = ctx.String(utils.GetFlagName(utils.HttpPortFlag))
+	}
 	ip := ctx.String(utils.GetFlagName(utils.HttpIpFlag))
 	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
 	db, err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
@@ -71,9 +78,16 @@ func startAgent(ctx *cli.Context) {
 	rest.NewService(account, cfg, db, msgSvr, ontvdri)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
-	err = r.Run(startPort)
-	if err != nil {
-		panic(err)
+	if ctx.Bool(utils.GetFlagName(utils.EnableHttpsFlag)) {
+		err = r.RunTLS(startPort,utils.DEFAULT_CERT_PATH,utils.DEFAULT_KEY_PATH)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		err = r.Run(startPort)
+		if err != nil {
+			panic(err)
+		}
 	}
 	signalHandle()
 }
