@@ -47,12 +47,14 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 	//for test
 	subs := make([]*SampleSubject, 0)
 	for _, attach := range req.RequestsAttach {
-		s := attach.Data.JSON.(string)
+		s := attach.Data.JSON.(map[string]interface{})
 		sample := new(SampleSubject)
-		err := json.Unmarshal([]byte(s), sample)
-		if err != nil {
-			return nil, err
-		}
+		sample.Name = s["name"].(string)
+		sample.Value = s["value"].(string)
+		//err := json.Unmarshal([]byte(s), sample)
+		//if err != nil {
+		//	return nil, err
+		//}
 		subs = append(subs, sample)
 	}
 

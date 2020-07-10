@@ -304,21 +304,21 @@ func (s CredentialController) SaveRequestCredential(did, id string, requestCrede
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) QueryCredential(did, id string) (*message.IssueCredential, error) {
+func (s CredentialController) QueryCredential(did, id string) (message.IssueCredential, error) {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
 	fmt.Printf("query credential key:%s\n", key)
 
 	data, err := s.store.Get(key)
 	if err != nil {
-		return nil, err
+		return message.IssueCredential{}, err
 	}
 
-	rec := new(message.IssueCredential)
+	rec := new(message.CredentialRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
-		return nil, err
+		return message.IssueCredential{}, err
 	}
-	return rec, nil
+	return rec.Credential, nil
 }
 
 func (s CredentialController) UpdateRequestCredential(did, id string, state message.RequestCredentialState) error {

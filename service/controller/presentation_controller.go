@@ -242,16 +242,16 @@ func (p PresentationController) SavePresentation(did, id string, pr message.Pres
 	return p.store.Put(key, data)
 }
 
-func (p PresentationController) QueryPresentation(did, id string) (*message.Presentation, error) {
+func (p PresentationController) QueryPresentation(did, id string) (message.Presentation, error) {
 	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
 	data, err := p.store.Get(key)
 	if err != nil {
-		return nil, err
+		return message.Presentation{}, err
 	}
-	rec := new(message.Presentation)
+	rec := new(message.PresentationRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
-		return nil, err
+		return message.Presentation{}, err
 	}
-	return rec, nil
+	return rec.Presentation, nil
 }
