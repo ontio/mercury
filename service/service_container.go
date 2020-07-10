@@ -15,32 +15,32 @@ type ServiceInf interface {
 	Serv(message message.Message) (ControllerResp, error)
 }
 
-type ServiceResp struct {
+type ServiceResponse struct {
 	OriginalMessage message.Message
 	Message         interface{}
 	JsonBytes       []byte
 }
 
-func (r ServiceResp) GetString() (string, error) {
+func (r ServiceResponse) GetString() (string, error) {
 	j, err := json.Marshal(r.Message)
 	if err != nil {
 		return "", err
 	}
 	return string(j), nil
 }
-func (r ServiceResp) GetBytes() ([]byte, error) {
+func (r ServiceResponse) GetBytes() ([]byte, error) {
 	return json.Marshal(r.Message)
 }
 
-func (r ServiceResp) GetInt64() (int64, error) {
+func (r ServiceResponse) GetInt64() (int64, error) {
 	return -1, fmt.Errorf("not support")
 }
 
-func (r ServiceResp) GetMap() (map[string]interface{}, error) {
+func (r ServiceResponse) GetMap() (map[string]interface{}, error) {
 	return nil, fmt.Errorf("not support")
 }
 
-func (r ServiceResp) GetMessage() (message.Message, error) {
+func (r ServiceResponse) GetMessage() (message.Message, error) {
 	m := message.Message{}
 	m.MessageType = r.OriginalMessage.MessageType
 	m.Content = r.Message
@@ -48,11 +48,11 @@ func (r ServiceResp) GetMessage() (message.Message, error) {
 	return m, nil
 }
 
-func (r ServiceResp) GetOriginMessage() (message.Message, error) {
+func (r ServiceResponse) GetOriginMessage() (message.Message, error) {
 	return r.OriginalMessage, nil
 }
 
-func (r ServiceResp) GetJsonbytes() ([]byte, error) {
+func (r ServiceResponse) GetJsonbytes() ([]byte, error) {
 	return r.JsonBytes, nil
 }
 
@@ -106,7 +106,7 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 			return msg, err
 		}
 		if msg == nil {
-			return &ServiceResp{}, nil
+			return &ServiceResponse{}, nil
 		}
 		m, err = msg.GetMessage()
 		if err != nil {
@@ -114,11 +114,11 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 		}
 	}
 	//never reach here
-	return ServiceResp{Message: m}, nil
+	return ServiceResponse{Message: m}, nil
 }
 
 func Skipmessage(msg message.Message) (ControllerResp, error) {
-	resp := ServiceResp{}
+	resp := ServiceResponse{}
 	resp.OriginalMessage = msg
 	resp.Message = msg.Content
 	//resp.JsonBytes = msg.JsonBytes
