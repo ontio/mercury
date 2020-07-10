@@ -78,3 +78,7 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 	}
 	return addrs, nil
 }
+
+func GetPubKeyByDid(did string) (string, error) {
+	return "", nil
+}

@@ -3,6 +3,7 @@ module git.ont.io/ontid/otf
 go 1.14
 
 require (
+	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/ethereum/go-ethereum v1.9.6
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
