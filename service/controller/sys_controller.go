@@ -92,7 +92,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 		req := msg.Content.(*message.ConnectionRequest)
 		//ivid := req.Thread.ID
-		ivrc, err := s.GetInvitation(req.InvitationId)
+		ivrc, err := s.GetInvitation(req.Connection.TheirDid, req.InvitationId)
 		if err != nil {
 			middleware.Log.Infof("err on GetInvitation:%s\n", err.Error())
 			return nil, err
@@ -106,7 +106,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		}
 
 		//update invitation to used state
-		err = s.UpdateInvitation(ivrc.Invitation.Id, message.InvitationUsed)
+		err = s.UpdateInvitation(ivrc.Invitation.Did, ivrc.Invitation.Id, message.InvitationUsed)
 		if err != nil {
 			middleware.Log.Infof("err on UpdateInvitation:%s\n", err.Error())
 			return nil, err
@@ -193,13 +193,13 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, fmt.Errorf("got failed ACK ")
 		}
 		connid := req.Thread.ID
-		err := s.UpdateConnectionRequest(connid, message.ConnectionACKReceived)
+		err := s.UpdateConnectionRequest(req.Connection.TheirDid, connid, message.ConnectionACKReceived)
 		if err != nil {
 			middleware.Log.Errorf("err on UpdateConnectionRequest:%s\n", err.Error())
 			return nil, err
 		}
 		//2. create and save a connection object
-		cr, err := s.GetConnectionRequest(connid)
+		cr, err := s.GetConnectionRequest(req.Connection.TheirDid, connid)
 		if err != nil {
 			middleware.Log.Errorf("err on GetConnectionRequest:%s\n", err.Error())
 			return nil, err
@@ -284,7 +284,7 @@ func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 
 func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 
-	key := fmt.Sprintf("%s_%s", InvitationKey, iv.Id)
+	key := fmt.Sprintf("%s_%s_%s", InvitationKey, iv.Did, iv.Id)
 	b, err := s.store.Has([]byte(key))
 	if err != nil {
 		return err
@@ -306,8 +306,8 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 	return s.store.Put([]byte(key), bs)
 }
 
-func (s Syscontroller) GetInvitation(id string) (*message.InvitationRec, error) {
-	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
+func (s Syscontroller) GetInvitation(did, id string) (*message.InvitationRec, error) {
+	key := []byte(fmt.Sprintf("%s_%s_%s", InvitationKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
@@ -322,8 +322,8 @@ func (s Syscontroller) GetInvitation(id string) (*message.InvitationRec, error) 
 	return rec, nil
 }
 
-func (s Syscontroller) UpdateInvitation(id string, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s", InvitationKey, id))
+func (s Syscontroller) UpdateInvitation(did, id string, state message.ConnectionState) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", InvitationKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
@@ -346,7 +346,7 @@ func (s Syscontroller) UpdateInvitation(id string, state message.ConnectionState
 }
 
 func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, cr.Id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, cr.Connection.TheirDid, cr.Id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -367,8 +367,8 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 	return s.store.Put(key, bs)
 }
 
-func (s Syscontroller) GetConnectionRequest(id string) (*message.ConnectionRequestRec, error) {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
+func (s Syscontroller) GetConnectionRequest(did, id string) (*message.ConnectionRequestRec, error) {
+	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
@@ -381,8 +381,8 @@ func (s Syscontroller) GetConnectionRequest(id string) (*message.ConnectionReque
 	return cr, nil
 }
 
-func (s Syscontroller) UpdateConnectionRequest(id string, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionReqKey, id))
+func (s Syscontroller) UpdateConnectionRequest(did, id string, state message.ConnectionState) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err

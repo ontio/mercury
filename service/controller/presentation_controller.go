@@ -92,7 +92,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 			return nil, err
 		}
 
-		err = p.SaveRequestPresentation(req.Id, *req)
+		err = p.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveRequestPresentation:%s", err.Error())
 			return nil, err
@@ -114,7 +114,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.Presentation)
 
-		err := p.SavePresentation(req.Thread.ID, *req)
+		err := p.SavePresentation(req.Connection.MyDid, req.Thread.ID, *req)
 		if err != nil {
 			return nil, err
 		}
@@ -142,11 +142,28 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		middleware.Log.Infof("resolve PresentationACKType")
 		req := msg.Content.(*message.PresentationACK)
 
-		err := p.UpdateRequestPresentaion(req.Thread.ID, message.RequestPresentationReceived)
+		err := p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
 		if err != nil {
 			return nil, err
 		}
 		middleware.Log.Infof("ack received")
+
+	case message.QueryPresentationType:
+		middleware.Log.Infof("resolve QueryPresentationType")
+		req := msg.Content.(*message.QueryPresentationRequest)
+
+		rec, err := p.QueryPresentation(req.DId, req.Id)
+		if err != nil {
+			middleware.Log.Errorf("error on QueryPresentationType:%s", err.Error())
+			return nil, err
+		}
+		queryRespons := new(message.QueryPresentationResponse)
+		queryRespons.Formats = rec.Formats
+		queryRespons.PresentationAttach = rec.PresentationAttach
+
+		return service.ServiceResponse{
+			Message: queryRespons,
+		}, nil
 
 	default:
 		return service.Skipmessage(msg)
@@ -156,8 +173,8 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 
 }
 
-func (p PresentationController) SaveRequestPresentation(id string, rr message.RequestPresentation) error {
-	key := []byte(fmt.Sprintf("%s_%s", RequestPresentationKey, id))
+func (p PresentationController) SaveRequestPresentation(did, id string, rr message.RequestPresentation) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestPresentationKey, did, id))
 	b, err := p.store.Has(key)
 	if err != nil {
 		return err
@@ -179,8 +196,8 @@ func (p PresentationController) SaveRequestPresentation(id string, rr message.Re
 	return p.store.Put(key, data)
 }
 
-func (p PresentationController) UpdateRequestPresentaion(id string, state message.RequestPresentationState) error {
-	key := []byte(fmt.Sprintf("%s_%s", RequestPresentationKey, id))
+func (p PresentationController) UpdateRequestPresentaion(did, id string, state message.RequestPresentationState) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestPresentationKey, did, id))
 	data, err := p.store.Get(key)
 	if err != nil {
 		return err
@@ -202,8 +219,8 @@ func (p PresentationController) UpdateRequestPresentaion(id string, state messag
 	return p.store.Put(key, data)
 }
 
-func (p PresentationController) SavePresentation(id string, pr message.Presentation) error {
-	key := []byte(fmt.Sprintf("%s_%s", PresentationKey, id))
+func (p PresentationController) SavePresentation(did, id string, pr message.Presentation) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
 	b, err := p.store.Has(key)
 	if err != nil {
 		return err
@@ -223,4 +240,18 @@ func (p PresentationController) SavePresentation(id string, pr message.Presentat
 	}
 
 	return p.store.Put(key, data)
+}
+
+func (p PresentationController) QueryPresentation(did, id string) (*message.Presentation, error) {
+	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
+	data, err := p.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	rec := new(message.Presentation)
+	err = json.Unmarshal(data, rec)
+	if err != nil {
+		return nil, err
+	}
+	return rec, nil
 }

@@ -22,6 +22,9 @@ const (
 	PresentationAckInfo           = "/presentationack"
 	SendGeneralMsg                = "/sendgeneralmsg"
 	ReceiveGeneralMsg             = "/receivegeneralmsg"
+
+	QueryCredential_Api   = "/querycredential"
+	QueryPresentation_Api = "/querypresentation"
 )
 
 func GetApiName(msgType message.MessageType) string {

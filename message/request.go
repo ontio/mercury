@@ -177,3 +177,23 @@ type BasicMessage struct {
 type I10n struct {
 	Locale string `json:"locale"`
 }
+
+type QueryCredentialRequest struct {
+	DId string `json:"did"`
+	Id  string `json:"id"`
+}
+
+type QueryCredentialResponse struct {
+	Formats           []Format     `json:"formats,omitempty"`
+	CredentialsAttach []Attachment `json:"credentials~attach,omitempty"`
+}
+
+type QueryPresentationRequest struct {
+	DId string `json:"did"`
+	Id  string `json:"id"`
+}
+
+type QueryPresentationResponse struct {
+	Formats            []Format     `json:"formats,omitempty"`
+	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
+}

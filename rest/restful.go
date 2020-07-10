@@ -329,3 +329,39 @@ func ReceiveGeneralMsg(c *gin.Context) {
 	}
 	resp.Response(http.StatusOK, 0, "", data)
 }
+
+func QueryCredential(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.QueryCredentialRequest{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("QueryCredential err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.QueryCredentialType, req)
+	if err != nil {
+		middleware.Log.Errorf("QueryCredential msg type:%d,err:%s", message.QueryCredentialType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func QueryPresentation(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.QueryPresentationRequest{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("QueryPresentation err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.QueryPresentationType, req)
+	if err != nil {
+		middleware.Log.Errorf("QueryPresentation msg type:%d,err:%s", message.QueryPresentationType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}

@@ -51,6 +51,9 @@ func InitRouter() *gin.Engine {
 
 		v.POST(utils.SendGeneralMsg, SendGeneralMsg)
 		v.POST(utils.ReceiveGeneralMsg, ReceiveGeneralMsg)
+
+		v.POST(utils.QueryCredential_Api, QueryCredential)
+		v.POST(utils.QueryPresentation_Api, QueryPresentation)
 	}
 	return r
 }

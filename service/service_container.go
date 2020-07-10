@@ -18,7 +18,7 @@ type ServiceInf interface {
 type ServiceResponse struct {
 	OriginalMessage message.Message
 	Message         interface{}
-	JsonBytes       []byte
+	//JsonBytes       []byte
 }
 
 func (r ServiceResponse) GetString() (string, error) {
@@ -52,9 +52,9 @@ func (r ServiceResponse) GetOriginMessage() (message.Message, error) {
 	return r.OriginalMessage, nil
 }
 
-func (r ServiceResponse) GetJsonbytes() ([]byte, error) {
-	return r.JsonBytes, nil
-}
+//func (r ServiceResponse) GetJsonbytes() ([]byte, error) {
+//	//return r.JsonBytes, nil
+//}
 
 type Service struct {
 	//store

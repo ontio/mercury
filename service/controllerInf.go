@@ -13,7 +13,7 @@ type ControllerResp interface {
 	GetMap() (map[string]interface{}, error)
 	GetMessage() (message.Message, error)
 	GetOriginMessage() (message.Message, error)
-	GetJsonbytes() ([]byte, error)
+	//GetJsonbytes() ([]byte, error)
 }
 
 type ControllerInf interface {

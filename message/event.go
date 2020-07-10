@@ -25,6 +25,9 @@ const (
 
 	SendGeneralMsgType
 	ReceiveGeneralMsgType
+
+	QueryCredentialType
+	QueryPresentationType
 )
 
 type Message struct {

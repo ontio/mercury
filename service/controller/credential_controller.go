@@ -143,7 +143,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		middleware.Log.Infof("resolve RequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
 
-		err := s.SaveRequestCredential(req.Id, *req)
+		err := s.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
@@ -174,7 +174,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		req := msg.Content.(*message.IssueCredential)
 
 		//store the credential
-		err := s.SaveCredential(req.Thread.ID, *req)
+		err := s.SaveCredential(req.Connection.MyDid, req.Thread.ID, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
@@ -208,11 +208,28 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		req := msg.Content.(*message.CredentialACK)
 		reqid := req.Thread.ID
 
-		err := s.UpdateRequestCredential(reqid, message.RequestCredentialResolved)
+		err := s.UpdateRequestCredential(req.Connection.MyDid, reqid, message.RequestCredentialResolved)
 		if err != nil {
 			middleware.Log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
+
+	case message.QueryCredentialType:
+		middleware.Log.Infof("resolve QueryCredentialType")
+		req := msg.Content.(*message.QueryCredentialRequest)
+		rec, err := s.QueryCredential(req.Id, req.DId)
+		if err != nil {
+			middleware.Log.Errorf("error on QueryCredentialType:%s\n", err.Error())
+			return nil, err
+		}
+		resp := new(service.ServiceResponse)
+
+		queryResult := new(message.QueryCredentialResponse)
+		queryResult.CredentialsAttach = rec.CredentialsAttach
+		queryResult.Formats = rec.Formats
+
+		resp.Message = queryResult
+		return resp, nil
 
 	default:
 		return service.Skipmessage(msg)
@@ -242,8 +259,8 @@ func (s CredentialController) SaveOfferCredential(id string, propsal *message.Of
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) SaveCredential(id string, credential message.IssueCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s", CredentialKey, id))
+func (s CredentialController) SaveCredential(id, did string, credential message.IssueCredential) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -264,8 +281,8 @@ func (s CredentialController) SaveCredential(id string, credential message.Issue
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) SaveRequestCredential(id string, requestCredential message.RequestCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s", RequestCredentialKey, id))
+func (s CredentialController) SaveRequestCredential(id, did string, requestCredential message.RequestCredential) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -286,8 +303,22 @@ func (s CredentialController) SaveRequestCredential(id string, requestCredential
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) UpdateRequestCredential(id string, state message.RequestCredentialState) error {
-	key := []byte(fmt.Sprintf("%s_%s", RequestCredentialKey, id))
+func (s CredentialController) QueryCredential(id, did string) (*message.IssueCredential, error) {
+	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
+	data, err := s.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	rec := new(message.IssueCredential)
+	err = json.Unmarshal(data, rec)
+	if err != nil {
+		return nil, err
+	}
+	return rec, nil
+}
+
+func (s CredentialController) UpdateRequestCredential(id, did string, state message.RequestCredentialState) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
@@ -307,5 +338,4 @@ func (s CredentialController) UpdateRequestCredential(id string, state message.R
 		return err
 	}
 	return s.store.Put(key, data)
-
 }
