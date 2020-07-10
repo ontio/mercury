@@ -137,10 +137,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			Conn: res.Connection,
 		})
 		if err != nil {
-			if err != nil {
-				middleware.Log.Errorf("err on HandleOutBound:%s\n", err.Error())
-				return nil, err
-			}
+			middleware.Log.Errorf("err on HandleOutBound:%s\n", err.Error())
 			return nil, err
 		}
 		return nil, nil
