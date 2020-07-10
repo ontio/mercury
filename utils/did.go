@@ -79,13 +79,13 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 	return addrs, nil
 }
 
-func GetPubKeyByDid(did string,ontSdk *sdk.OntologySdk) (string, error) {
+func GetPubKeyByDid(did string, ontSdk *sdk.OntologySdk) (string, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return "", fmt.Errorf("ontsdk is nil")
 	}
-	pubKey,err := ontSdk.Native.OntId.GetPublicKeysJson(did)
+	pubKey, err := ontSdk.Native.OntId.GetPublicKeysJson(did)
 	if err != nil {
-		return "",err
+		return "", err
 	}
-	return string(pubKey),nil
+	return string(pubKey), nil
 }

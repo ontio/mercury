@@ -116,7 +116,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		middleware.Log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.OfferCredential)
 		//todo save the offer in store
-		err := s.SaveOfferCredential(req.Thread.ID, req)
+		err := s.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveOfferCredential:%s", err.Error())
 			return nil, err
@@ -217,7 +217,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.QueryCredentialType:
 		middleware.Log.Infof("resolve QueryCredentialType")
 		req := msg.Content.(*message.QueryCredentialRequest)
-		rec, err := s.QueryCredential(req.Id, req.DId)
+		rec, err := s.QueryCredential(req.DId, req.Id)
 		if err != nil {
 			middleware.Log.Errorf("error on QueryCredentialType:%s\n", err.Error())
 			return nil, err
@@ -242,8 +242,8 @@ func (s CredentialController) Shutdown() error {
 	return nil
 }
 
-func (s CredentialController) SaveOfferCredential(id string, propsal *message.OfferCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s", OfferCredentialKey, id))
+func (s CredentialController) SaveOfferCredential(did, id string, propsal *message.OfferCredential) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", OfferCredentialKey, did, id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -259,8 +259,9 @@ func (s CredentialController) SaveOfferCredential(id string, propsal *message.Of
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) SaveCredential(id, did string, credential message.IssueCredential) error {
+func (s CredentialController) SaveCredential(did, id string, credential message.IssueCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
+	fmt.Printf("save credential key:%s\n", key)
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -281,7 +282,7 @@ func (s CredentialController) SaveCredential(id, did string, credential message.
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) SaveRequestCredential(id, did string, requestCredential message.RequestCredential) error {
+func (s CredentialController) SaveRequestCredential(did, id string, requestCredential message.RequestCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
 	b, err := s.store.Has(key)
 	if err != nil {
@@ -303,12 +304,15 @@ func (s CredentialController) SaveRequestCredential(id, did string, requestCrede
 	return s.store.Put(key, data)
 }
 
-func (s CredentialController) QueryCredential(id, did string) (*message.IssueCredential, error) {
+func (s CredentialController) QueryCredential(did, id string) (*message.IssueCredential, error) {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
+	fmt.Printf("query credential key:%s\n", key)
+
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
 	}
+
 	rec := new(message.IssueCredential)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
@@ -317,7 +321,7 @@ func (s CredentialController) QueryCredential(id, did string) (*message.IssueCre
 	return rec, nil
 }
 
-func (s CredentialController) UpdateRequestCredential(id, did string, state message.RequestCredentialState) error {
+func (s CredentialController) UpdateRequestCredential(did, id string, state message.RequestCredentialState) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {

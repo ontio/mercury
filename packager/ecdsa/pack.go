@@ -29,7 +29,7 @@ func New(ontSdk *sdk.OntologySdk, acct *sdk.Account) *Packager {
 }
 
 func (bp *Packager) PackMessage(envelope *packager.Envelope) ([]byte, error) {
-	pub, err := utils.GetPubKeyByDid(envelope.ToDID,bp.ontSdk)
+	pub, err := utils.GetPubKeyByDid(envelope.ToDID, bp.ontSdk)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (bp *Packager) UnpackMessage(encMessage []byte) (*packager.Envelope, error)
 	if err != nil {
 		return nil, err
 	}
-	pub, err := utils.GetPubKeyByDid(data.FromDID,bp.ontSdk)
+	pub, err := utils.GetPubKeyByDid(data.FromDID, bp.ontSdk)
 	if err != nil {
 		return nil, err
 	}

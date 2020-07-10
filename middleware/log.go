@@ -71,8 +71,3 @@ func LoggerToFile() gin.HandlerFunc {
 		}).Info()
 	}
 }
-
-type logFileWriter struct {
-	file *os.File
-	size int64
-}
