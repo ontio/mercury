@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/packager"
+	"git.ont.io/ontid/otf/packager/ecdsa"
 	"git.ont.io/ontid/otf/utils"
 	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
 	"io/ioutil"
@@ -84,11 +85,11 @@ var QueryCredCmd = cli.Command{
 	Description:            "query a stored credential",
 	Action:                 QueryCredential,
 	Flags:                  []cli.Flag{
-		cmd.DidFlag,
 		cmd.CredentialIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
 		cmd.FromDID,
+		cmd.ToDID,
 	},
 
 }
@@ -98,10 +99,10 @@ var QueryPresentationCmd = cli.Command{
 	Description:            "query a stored presentation",
 	Action:                 QueryPresentation,
 	Flags:                  []cli.Flag{
-		cmd.DidFlag,
 		cmd.PresentationIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
+		cmd.FromDID,
 		cmd.ToDID,
 	},
 
@@ -152,27 +153,53 @@ func ReqPresentation(ctx *cli.Context) error {
 
 func QueryCredential(ctx *cli.Context)error{
 
-	did := ctx.String(cmd.GetFlagName(cmd.DidFlag))
+	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
+	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	initsdk(url)
 	req := message.QueryCredentialRequest{
-		DId: did,
+		DId: fromdid,
 		Id:  id,
 	}
 	reqdata,err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
-	env := packager.Envelope{}
+	env := &packager.Envelope{}
 	env.Message = &packager.MessageData{
 		Data: reqdata,
 		Sign: nil,
 	}
+	env.FromDID = fromdid
+	env.ToDID = todid
+	env.MsgType = message.QueryCredentialType
+
+	packer := ecdsa.New(ontsdk,defaultAcct)
+	data,err := packer.PackMessage(env)
+	if err != nil {
+		return err
+	}
+	respbts,err := HttpPostData(url,string(data))
+	if err != nil {
+		return err
+	}
+	fmt.Println("==============credential==============")
+	fmt.Printf("%s\n",respbts)
+	fmt.Println("==============credential==============")
+
 	return nil
 }
 
 func QueryPresentation(ctx cli.Context)error {
+	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
+	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
+	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
+	initsdk(url)
+
+
+
 	return nil
 }
 func HttpPostData(url, data string) ([]byte, error) {
