@@ -140,6 +140,22 @@ var (
 		Usage: "req credential data",
 		Value: DEFAULT_REQ_PRESENTATION_DATA,
 	}
+	CredentialIdFlag = cli.StringFlag{
+		Name:  "credential id",
+		Usage: "credential id",
+	}
+	PresentationIdFlag = cli.StringFlag{
+		Name:  "presentation id",
+		Usage: "presentation id",
+	}
+	FromDID = cli.StringFlag{
+		Name:  "from id",
+		Usage: "from id",
+	}
+	ToDID = cli.StringFlag{
+		Name:  "to id",
+		Usage: "to id",
+	}
 )
 
 //GetFlagName deal with short flag, and return the flag name whether flag name have short name

@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/packager"
+	"git.ont.io/ontid/otf/utils"
+	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -75,6 +78,45 @@ var ReqPresentationCmd = cli.Command{
 		cmd.SendCredentialCmd,
 	},
 }
+var QueryCredCmd = cli.Command{
+	Name:                   "querycredential",
+	Usage:                  "query a stored credential",
+	Description:            "query a stored credential",
+	Action:                 QueryCredential,
+	Flags:                  []cli.Flag{
+		cmd.DidFlag,
+		cmd.CredentialIdFlag,
+		cmd.HttpClientFlag,
+		cmd.RPCPortFlag,
+		cmd.FromDID,
+	},
+
+}
+var QueryPresentationCmd = cli.Command{
+	Name:                   "querypresentation",
+	Usage:                  "query a stored presentation",
+	Description:            "query a stored presentation",
+	Action:                 QueryPresentation,
+	Flags:                  []cli.Flag{
+		cmd.DidFlag,
+		cmd.PresentationIdFlag,
+		cmd.HttpClientFlag,
+		cmd.RPCPortFlag,
+		cmd.ToDID,
+	},
+
+}
+var ontsdk *ontology_go_sdk.OntologySdk
+var defaultAcct *ontology_go_sdk.Account
+func initsdk(addr string)  {
+	ontsdk = ontology_go_sdk.NewOntologySdk()
+	ontsdk.NewRpcClient().SetAddress(addr)
+	var err error
+	defaultAcct, err = utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontsdk)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func NewInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
@@ -108,6 +150,31 @@ func ReqPresentation(ctx *cli.Context) error {
 	return nil
 }
 
+func QueryCredential(ctx *cli.Context)error{
+
+	did := ctx.String(cmd.GetFlagName(cmd.DidFlag))
+	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
+	initsdk(url)
+	req := message.QueryCredentialRequest{
+		DId: did,
+		Id:  id,
+	}
+	reqdata,err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	env := packager.Envelope{}
+	env.Message = &packager.MessageData{
+		Data: reqdata,
+		Sign: nil,
+	}
+	return nil
+}
+
+func QueryPresentation(ctx cli.Context)error {
+	return nil
+}
 func HttpPostData(url, data string) ([]byte, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
