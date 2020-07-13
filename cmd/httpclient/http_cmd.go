@@ -1,19 +1,20 @@
 package httpclient
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/packager"
-	"git.ont.io/ontid/otf/packager/ecdsa"
-	"git.ont.io/ontid/otf/utils"
-	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
 	"git.ont.io/ontid/otf/cmd"
+	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/packager"
+	"git.ont.io/ontid/otf/packager/ecdsa"
+	"git.ont.io/ontid/otf/utils"
+	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
 )
 
@@ -40,6 +41,8 @@ var ConnectCmd = cli.Command{
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.ConnectionFlag,
+		cmd.FromDID,
+		cmd.ToDID,
 	},
 }
 
@@ -53,11 +56,13 @@ var SendMsgCmd = cli.Command{
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.SendMsgFlag,
+		cmd.FromDID,
+		cmd.ToDID,
 	},
 }
 
 var ReqCredentialCmd = cli.Command{
-	Name:   "reqCredential",
+	Name:   "reqcredential",
 	Usage:  "req Credential",
 	Action: ReqCredential,
 	Flags: []cli.Flag{
@@ -65,11 +70,13 @@ var ReqCredentialCmd = cli.Command{
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.SendCredentialCmd,
+		cmd.FromDID,
+		cmd.ToDID,
 	},
 }
 
 var ReqPresentationCmd = cli.Command{
-	Name:   "reqPresentation",
+	Name:   "reqpresentation",
 	Usage:  "req presentation data",
 	Action: ReqPresentation,
 	Flags: []cli.Flag{
@@ -77,6 +84,8 @@ var ReqPresentationCmd = cli.Command{
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.SendCredentialCmd,
+		cmd.FromDID,
+		cmd.ToDID,
 	},
 }
 var QueryCredCmd = cli.Command{
@@ -118,11 +127,19 @@ func initsdk(addr string)  {
 		panic(err)
 	}
 }
+func initPackager(addr string) *ecdsa.Packager {
+	ontsdk = ontology_go_sdk.NewOntologySdk()
+	ontsdk.NewRpcClient().SetAddress(addr)
+	acc, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontsdk)
+	if err != nil {
+		panic(err)
+	}
+	return ecdsa.New(ontsdk, acc)
+}
 
 func NewInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	body, err := HttpPostData(url, data)
+	body, err := HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), data)
 	if err != nil {
 		return fmt.Errorf("NewInvitation err:%s", err)
 	}
@@ -136,18 +153,111 @@ func NewInvitation(ctx *cli.Context) error {
 }
 
 func Connection(ctx *cli.Context) error {
+	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	pack := initPackager(restUrl)
+	dataMsg, err := hex.DecodeString(data)
+	if err != nil {
+		return fmt.Errorf("DecodeString err:%s", err)
+	}
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data: dataMsg,
+		},
+		MsgType: int(message.ConnectionRequestType),
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
+	}
+	bys, err := pack.PackMessage(msg)
+	if err != nil {
+		return fmt.Errorf("packMessage err:%s", err)
+	}
+	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	if err != nil {
+		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
+	}
 	return nil
 }
 
 func SendMsg(ctx *cli.Context) error {
+	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	pack := initPackager(restUrl)
+	dataMsg, err := hex.DecodeString(data)
+	if err != nil {
+		return fmt.Errorf("DecodeString err:%s", err)
+	}
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data: dataMsg,
+		},
+		MsgType: int(message.SendGeneralMsgType),
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
+	}
+	bys, err := pack.PackMessage(msg)
+	if err != nil {
+		return fmt.Errorf("packMessage err:%s", err)
+	}
+	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	if err != nil {
+		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
+	}
 	return nil
 }
 
 func ReqCredential(ctx *cli.Context) error {
+	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	pack := initPackager(restUrl)
+	dataMsg, err := hex.DecodeString(data)
+	if err != nil {
+		return fmt.Errorf("DecodeString err:%s", err)
+	}
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data: dataMsg,
+		},
+		MsgType: int(message.RequestCredentialType),
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
+	}
+	bys, err := pack.PackMessage(msg)
+	if err != nil {
+		return fmt.Errorf("packMessage err:%s", err)
+	}
+	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	if err != nil {
+		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
+	}
 	return nil
 }
 
 func ReqPresentation(ctx *cli.Context) error {
+	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	pack := initPackager(restUrl)
+	dataMsg, err := hex.DecodeString(data)
+	if err != nil {
+		return fmt.Errorf("DecodeString err:%s", err)
+	}
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data: dataMsg,
+		},
+		MsgType: int(message.RequestPresentationType),
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
+	}
+	bys, err := pack.PackMessage(msg)
+	if err != nil {
+		return fmt.Errorf("packMessage err:%s", err)
+	}
+	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	if err != nil {
+		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
+	}
+	return nil
 	return nil
 }
 
@@ -173,7 +283,7 @@ func QueryCredential(ctx *cli.Context)error{
 	}
 	env.FromDID = fromdid
 	env.ToDID = todid
-	env.MsgType = message.QueryCredentialType
+	env.MsgType = int(message.QueryCredentialType)
 
 	packer := ecdsa.New(ontsdk,defaultAcct)
 	data,err := packer.PackMessage(env)
@@ -197,7 +307,6 @@ func QueryPresentation(ctx cli.Context)error {
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	initsdk(url)
-
 
 
 	return nil

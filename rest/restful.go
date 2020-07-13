@@ -7,7 +7,6 @@ import (
 
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
-	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -511,70 +510,70 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 	switch msg.MsgType {
-	case utils.ConnectRequest_Api:
+	case int(message.InvitationType):
 		req := &message.ConnectionRequest{}
 		err = json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.SendProposalCredentialReq_Api:
+	case int(message.SendProposalCredentialType):
 		req := &message.ProposalCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.OfferCredential_Api:
+	case int(message.OfferCredentialType):
 		req := &message.OfferCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.ProposalCredentialReq_Api:
+	case int(message.ProposalCredentialType):
 		req := &message.ProposalCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.SendRequestCredential_Api:
+	case int(message.SendRequestCredentialType):
 		req := &message.RequestCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.RequestCredential_Api:
+	case int(message.RequestCredentialType):
 		req := &message.RequestCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.IssueCredential_Api:
+	case int(message.IssueCredentialType):
 		req := &message.IssueCredential{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.RequestPresentation_Api:
+	case int(message.RequestPresentationType):
 		req := &message.RequestPresentation{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.SendRequestPresentation_Api:
+	case int(message.SendRequestPresentationType):
 		req := &message.RequestPresentation{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
 			return nil, err
 		}
 		return req, nil
-	case utils.SendGeneralMsg:
+	case int(message.SendGeneralMsgType):
 		req := &message.BasicMessage{}
 		err := json.Unmarshal(msg.Message.Data, req)
 		if err != nil {
