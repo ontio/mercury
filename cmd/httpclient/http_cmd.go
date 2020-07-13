@@ -267,7 +267,7 @@ func QueryCredential(ctx *cli.Context)error{
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	initsdk(url)
+	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	req := message.QueryCredentialRequest{
 		DId: fromdid,
 		Id:  id,
@@ -285,7 +285,7 @@ func QueryCredential(ctx *cli.Context)error{
 	env.ToDID = todid
 	env.MsgType = int(message.QueryCredentialType)
 
-	packer := ecdsa.New(ontsdk,defaultAcct)
+	packer := initPackager(rpc)
 	data,err := packer.PackMessage(env)
 	if err != nil {
 		return err
@@ -306,7 +306,8 @@ func QueryPresentation(ctx cli.Context)error {
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	initsdk(url)
+	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+
 	req := message.QueryPresentationRequest{
 		DId: fromdid,
 		Id:  id,
@@ -324,7 +325,7 @@ func QueryPresentation(ctx cli.Context)error {
 	env.ToDID = todid
 	env.MsgType = int(message.QueryPresentationType)
 
-	packer := ecdsa.New(ontsdk,defaultAcct)
+	packer := initPackager(rpc)
 	data,err := packer.PackMessage(env)
 	if err != nil {
 		return err
