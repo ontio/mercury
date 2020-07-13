@@ -104,19 +104,20 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 		}
 		credid := string(bts)
 
-		key := []byte(fmt.Sprintf("%s_%s", controller.CredentialKey, credid))
+		key := []byte(fmt.Sprintf("%s_%s_%s", controller.CredentialKey, holderdid, credid))
 		data, err := db.Get(key)
 		if err != nil {
 			return nil, err
 		}
 
-		cred := new(message.IssueCredential)
-		err = json.Unmarshal(data, cred)
+		credrec := new(message.CredentialRec)
+		err = json.Unmarshal(data, credrec)
 		if err != nil {
 			return nil, err
 		}
 
-		s := cred.CredentialsAttach[0].Data.Base64
+		//todo check with format and related id
+		s := credrec.Credential.CredentialsAttach[0].Data.Base64
 		creds = append(creds, s)
 	}
 
