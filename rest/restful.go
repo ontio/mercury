@@ -1,10 +1,13 @@
 package rest
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,7 +50,22 @@ func SendConnectionReq(c *gin.Context) {
 func ConnectRequest(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionRequest{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ConnectionRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ConnectionRequest err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -101,7 +119,22 @@ func ConnectAck(c *gin.Context) {
 func SendProposalCredentialReq(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ProposalCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ProposalCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -118,7 +151,22 @@ func SendProposalCredentialReq(c *gin.Context) {
 func OfferCredential(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.OfferCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.OfferCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -136,7 +184,22 @@ func OfferCredential(c *gin.Context) {
 func ProposalCredentialReq(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ProposalCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ProposalCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -171,7 +234,22 @@ func SendRequestCredential(c *gin.Context) {
 func RequestCredential(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.RequestCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.RequestCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ProposalCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -189,7 +267,22 @@ func RequestCredential(c *gin.Context) {
 func IssueCredential(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.IssueCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.IssueCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("OfferCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -225,7 +318,22 @@ func CredentialAckInfo(c *gin.Context) {
 func RequestPresentation(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.RequestPresentation{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.RequestPresentation)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("RequestCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -243,7 +351,22 @@ func RequestPresentation(c *gin.Context) {
 func SendRequestPresentation(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.RequestPresentation{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.RequestPresentation)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("RequestPresentationType err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -297,7 +420,22 @@ func PresentationAckInfo(c *gin.Context) {
 func SendGeneralMsg(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.BasicMessage{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.BasicMessage)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("SendGeneralMsg err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -364,4 +502,86 @@ func QueryPresentation(c *gin.Context) {
 		return
 	}
 	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func ParseMsg(c *gin.Context) (interface{}, error) {
+	data := []byte("")
+	msg, err := Svr.ParseMsg(data)
+	if err != nil {
+		return nil, err
+	}
+	switch msg.MsgType {
+	case utils.ConnectRequest_Api:
+		req := &message.ConnectionRequest{}
+		err = json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.SendProposalCredentialReq_Api:
+		req := &message.ProposalCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.OfferCredential_Api:
+		req := &message.OfferCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.ProposalCredentialReq_Api:
+		req := &message.ProposalCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.SendRequestCredential_Api:
+		req := &message.RequestCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.RequestCredential_Api:
+		req := &message.RequestCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.IssueCredential_Api:
+		req := &message.IssueCredential{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.RequestPresentation_Api:
+		req := &message.RequestPresentation{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.SendRequestPresentation_Api:
+		req := &message.RequestPresentation{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	case utils.SendGeneralMsg:
+		req := &message.BasicMessage{}
+		err := json.Unmarshal(msg.Message.Data, req)
+		if err != nil {
+			return nil, err
+		}
+		return req, nil
+	default:
+		return nil, fmt.Errorf("msg type err:%s", msg.MsgType)
+	}
 }

@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/packager"
+	"git.ont.io/ontid/otf/packager/ecdsa"
+	sdk "github.com/ontio/ontology-go-sdk"
 )
 
 type ServiceInf interface {
@@ -51,11 +54,16 @@ func (r ServiceResponse) GetOriginMessage() (message.Message, error) {
 }
 
 type Service struct {
+	//store
+	packager  *ecdsa.Packager
 	Container *list.List
 }
 
-func NewService() *Service {
-	return &Service{Container: list.New()}
+func NewService(ontSdk *sdk.OntologySdk, acct *sdk.Account) *Service {
+	return &Service{
+		packager:  ecdsa.New(ontSdk, acct),
+		Container: list.New(),
+	}
 }
 
 func (s *Service) RegisterController(c ControllerInf) {
@@ -107,6 +115,14 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 		}
 	}
 	return ServiceResponse{Message: m}, nil
+}
+
+func (s *Service) ParseMsg(data []byte) (*packager.Envelope, error) {
+	return s.packager.UnpackMessage(data)
+}
+
+func (s *Service) PackMsg(data *packager.Envelope) ([]byte, error) {
+	return s.packager.PackMessage(data)
 }
 
 func Skipmessage(msg message.Message) (ControllerResp, error) {

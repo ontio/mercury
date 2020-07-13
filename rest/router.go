@@ -14,11 +14,12 @@ import (
 )
 
 var (
-	Svr *service.Service
+	Svr           *service.Service
+	EnablePackage bool
 )
 
-func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService, v vdri.VDRI) {
-	Svr = service.NewService()
+func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *service.MsgService, v vdri.VDRI, ontSdk *sdk.OntologySdk) {
+	Svr = service.NewService(ontSdk, acct)
 	Svr.RegisterController(controller.NewSyscontroller(acct, cfg, db, msgSvr))
 	Svr.RegisterController(controller.NewCredentialController(acct, cfg, db, msgSvr, v))
 	Svr.RegisterController(controller.NewPresentationController(acct, cfg, db, msgSvr, v))

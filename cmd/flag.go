@@ -25,6 +25,9 @@ const (
 	DEFAULT_INDEX             = 1
 	DEFAULT_CERT_PATH         = "./key/ssl.crt"
 	DEFAULT_KEY_PATH          = "./key/ssl.key"
+	DEFAULT_CONNECT_DATA      = ""
+	DEFAULT_SEND_MSG_DATA     = ""
+	DEFAULT_CLIENT_REST_URL   = "http://127.0.0.1:8080"
 )
 
 var (
@@ -101,6 +104,29 @@ var (
 		Name:  "index",
 		Usage: "index number",
 		Value: DEFAULT_INDEX,
+	}
+	EnablePackageFlag = cli.BoolFlag{
+		Name:  "enable-package",
+		Usage: "start package msg",
+	}
+	HttpClientFlag = cli.StringFlag{
+		Name:  "restful",
+		Usage: "set http client restful url default:http://127.0.0.1:8080",
+		Value: DEFAULT_CLIENT_REST_URL,
+	}
+	InvitationFlag = cli.StringFlag{
+		Name:  "invitation data",
+		Usage: "invitation data",
+	}
+	ConnectionFlag = cli.StringFlag{
+		Name:  "connect  data",
+		Usage: "connect data",
+		Value: DEFAULT_CONNECT_DATA,
+	}
+	SendMsgFlag = cli.StringFlag{
+		Name:  "send msg",
+		Usage: "send msg data",
+		Value: DEFAULT_SEND_MSG_DATA,
 	}
 )
 

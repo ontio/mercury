@@ -30,6 +30,7 @@ func setupAPP() *cli.App {
 		cmd.ChainAddrFlag,
 		cmd.HttpsPortFlag,
 		cmd.EnableHttpsFlag,
+		cmd.EnablePackageFlag,
 	}
 	app.Commands = []cli.Command{
 		cmd.DidCommand,
@@ -63,6 +64,9 @@ func startAgent(ctx *cli.Context) {
 	} else {
 		port = ctx.String(cmd.GetFlagName(cmd.HttpPortFlag))
 	}
+	if ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)) {
+		rest.EnablePackage = true
+	}
 	ip := ctx.String(cmd.GetFlagName(cmd.HttpIpFlag))
 	prov := store.NewProvider(cmd.DEFAULT_STORE_DIR)
 	db, err := prov.OpenStore(cmd.DEFAULT_STORE_DIR)
@@ -75,8 +79,8 @@ func startAgent(ctx *cli.Context) {
 	}
 	r := rest.InitRouter()
 	ontvdri := ontdid.NewOntVDRI(ontSdk, account, "")
-	msgSvr := service.NewMessageService(ontvdri)
-	rest.NewService(account, cfg, db, msgSvr, ontvdri)
+	msgSvr := service.NewMessageService(ontvdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)))
+	rest.NewService(account, cfg, db, msgSvr, ontvdri, ontSdk)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
