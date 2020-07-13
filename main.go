@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/cmd"
 	"os"
 	"os/signal"
 	"runtime"
@@ -23,18 +24,18 @@ func setupAPP() *cli.App {
 	app.Usage = "agent otf"
 	app.Action = startAgent
 	app.Flags = []cli.Flag{
-		utils.LogLevelFlag,
-		utils.HttpIpFlag,
-		utils.HttpPortFlag,
-		utils.ChainAddrFlag,
-		utils.HttpsPortFlag,
-		utils.EnableHttpsFlag,
+		cmd.LogLevelFlag,
+		cmd.HttpIpFlag,
+		cmd.HttpPortFlag,
+		cmd.ChainAddrFlag,
+		cmd.HttpsPortFlag,
+		cmd.EnableHttpsFlag,
 	}
 	app.Commands = []cli.Command{
-		utils.DidCommand,
-		utils.AddServiceCommand,
-		utils.QueryDidDocCommand,
-		utils.QueryServiceEndPointCommand,
+		cmd.DidCommand,
+		cmd.AddServiceCommand,
+		cmd.QueryDidDocCommand,
+		cmd.QueryServiceEndPointCommand,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -51,20 +52,20 @@ func main() {
 
 func startAgent(ctx *cli.Context) {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(utils.GetFlagName(utils.ChainAddrFlag)))
-	account, err := utils.OpenAccount(utils.DEFAULT_WALLET_PATH, ontSdk)
+	ontSdk.NewRpcClient().SetAddress(ctx.String(cmd.GetFlagName(cmd.ChainAddrFlag)))
+	account, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontSdk)
 	if err != nil {
 		panic(err)
 	}
 	var port string
-	if ctx.Bool(utils.GetFlagName(utils.EnableHttpsFlag)) {
-		port = ctx.String(utils.GetFlagName(utils.HttpsPortFlag))
+	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
+		port = ctx.String(cmd.GetFlagName(cmd.HttpsPortFlag))
 	} else {
-		port = ctx.String(utils.GetFlagName(utils.HttpPortFlag))
+		port = ctx.String(cmd.GetFlagName(cmd.HttpPortFlag))
 	}
-	ip := ctx.String(utils.GetFlagName(utils.HttpIpFlag))
-	prov := store.NewProvider(utils.DEFAULT_STORE_DIR)
-	db, err := prov.OpenStore(utils.DEFAULT_STORE_DIR)
+	ip := ctx.String(cmd.GetFlagName(cmd.HttpIpFlag))
+	prov := store.NewProvider(cmd.DEFAULT_STORE_DIR)
+	db, err := prov.OpenStore(cmd.DEFAULT_STORE_DIR)
 	if err != nil {
 		panic(err)
 	}
@@ -78,8 +79,8 @@ func startAgent(ctx *cli.Context) {
 	rest.NewService(account, cfg, db, msgSvr, ontvdri)
 	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
 	startPort := ip + ":" + port
-	if ctx.Bool(utils.GetFlagName(utils.EnableHttpsFlag)) {
-		err = r.RunTLS(startPort, utils.DEFAULT_CERT_PATH, utils.DEFAULT_KEY_PATH)
+	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
+		err = r.RunTLS(startPort, cmd.DEFAULT_CERT_PATH, cmd.DEFAULT_KEY_PATH)
 		if err != nil {
 			panic(err)
 		}

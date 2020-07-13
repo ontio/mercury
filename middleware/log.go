@@ -3,10 +3,10 @@ package middleware
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/cmd"
 	"os"
 	"time"
 
-	"git.ont.io/ontid/otf/utils"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
@@ -15,7 +15,7 @@ import (
 var Log *logrus.Logger
 
 func LoggerToFile() gin.HandlerFunc {
-	logFilePath := utils.DEFAULT_LOG_FILE_PATH
+	logFilePath := cmd.DEFAULT_LOG_FILE_PATH
 	if fi, err := os.Stat(logFilePath); err == nil {
 		if !fi.IsDir() {
 			fmt.Printf("open %s: not a directory", logFilePath)

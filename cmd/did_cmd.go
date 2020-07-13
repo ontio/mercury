@@ -1,7 +1,8 @@
-package utils
+package cmd
 
 import (
 	"fmt"
+	"git.ont.io/ontid/otf/utils"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
 )
@@ -65,7 +66,7 @@ func newDid(ctx *cli.Context) error {
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	optionFile := checkFileName(ctx)
-	acc, err := OpenAccount(optionFile, ontSdk)
+	acc, err := utils.OpenAccount(optionFile, ontSdk)
 	if err != nil {
 		return fmt.Errorf("open account err:%s", err)
 	}
@@ -84,7 +85,7 @@ func addService(ctx *cli.Context) error {
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	did := ctx.String(GetFlagName(DidFlag))
 	optionFile := checkFileName(ctx)
-	acc, err := OpenAccount(optionFile, ontSdk)
+	acc, err := utils.OpenAccount(optionFile, ontSdk)
 	if err != nil {
 		return fmt.Errorf("open account err:%s", err)
 	}
@@ -139,7 +140,7 @@ func queryDidDoc(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
-	doc, err := GetDidDocByDid(did, ontSdk)
+	doc, err := utils.GetDidDocByDid(did, ontSdk)
 	if err != nil {
 		return fmt.Errorf("err:%s", err)
 	}
@@ -151,7 +152,7 @@ func QueryEndPoint(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
-	endPoints, err := GetServiceEndpointByDid(did, ontSdk)
+	endPoints, err := utils.GetServiceEndpointByDid(did, ontSdk)
 	if err != nil {
 		return fmt.Errorf("err:%s", err)
 	}
