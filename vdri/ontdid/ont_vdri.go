@@ -40,7 +40,19 @@ func NewOntVDRI(ontsdk *sdk.OntologySdk, acct *sdk.Account, did string) *OntVDRI
 }
 
 func (ontVdri *OntVDRI) OfferCredential(req *message.ProposalCredential) (*message.OfferCredential, error) {
-	return nil, nil
+	offer := new(message.OfferCredential)
+	offer.Type = vdri.OfferCredentialSpec
+	offer.Id = utils.GenUUID()
+	offer.Connection = service.ReverseConnection(req.Connection)
+	offer.CredentialPreview = message.CredentialPreview{Type: "sample", Attributre: []message.Attributre{message.Attributre{
+		Name:     "name1",
+		MimeType: "json",
+		Value:    "{abc}",
+	}}}
+	offer.Thread = message.Thread{
+		ID: req.Id,
+	}
+	return offer, nil
 }
 func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*message.IssueCredential, error) {
 

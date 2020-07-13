@@ -84,18 +84,10 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		//todo deal with the proposal, do we need store the proposal???
 		middleware.Log.Infof("proposal is %v", req)
 
-		//for sample only
-		offer := new(message.OfferCredential)
-		offer.Type = vdri.OfferCredentialSpec
-		offer.Id = utils.GenUUID()
-		offer.Connection = service.ReverseConnection(req.Connection)
-		offer.CredentialPreview = message.CredentialPreview{Type: "sample", Attributre: []message.Attributre{message.Attributre{
-			Name:     "name1",
-			MimeType: "json",
-			Value:    "{abc}",
-		}}}
-		offer.Thread = message.Thread{
-			ID: req.Id,
+		offer, err := s.vdri.OfferCredential(req)
+		if err != nil {
+			middleware.Log.Errorf("error on offerCredetial")
+			return nil, err
 		}
 
 		outerMsg := service.OutboundMsg{
@@ -106,7 +98,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 			Conn: offer.Connection,
 		}
 
-		err := s.msgsvr.HandleOutBound(outerMsg)
+		err = s.msgsvr.HandleOutBound(outerMsg)
 		if err != nil {
 			middleware.Log.Errorf("error on HandleOutBound :%s", err.Error())
 			return nil, err
