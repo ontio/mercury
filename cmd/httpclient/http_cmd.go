@@ -307,6 +307,35 @@ func QueryPresentation(ctx cli.Context)error {
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	initsdk(url)
+	req := message.QueryPresentationRequest{
+		DId: fromdid,
+		Id:  id,
+	}
+	reqdata,err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	env := &packager.Envelope{}
+	env.Message = &packager.MessageData{
+		Data: reqdata,
+		Sign: nil,
+	}
+	env.FromDID = fromdid
+	env.ToDID = todid
+	env.MsgType = int(message.QueryPresentationType)
+
+	packer := ecdsa.New(ontsdk,defaultAcct)
+	data,err := packer.PackMessage(env)
+	if err != nil {
+		return err
+	}
+	respbts,err := HttpPostData(url,string(data))
+	if err != nil {
+		return err
+	}
+	fmt.Println("==============presentation==============")
+	fmt.Printf("%s\n",respbts)
+	fmt.Println("==============presentation==============")
 
 
 	return nil

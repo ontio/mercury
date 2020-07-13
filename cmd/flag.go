@@ -63,7 +63,7 @@ var (
 		Value: DEFAULT_BLOCK_CHAIN_ADDR,
 	}
 	RPCPortFlag = cli.StringFlag{
-		Name:  "http rpc url",
+		Name:  "http-rpc-url",
 		Usage: "Json rpc server listening port `<url>`",
 		Value: DEFAULT_RPC_URL,
 	}
@@ -88,7 +88,7 @@ var (
 		Value: DEFAULT_DID,
 	}
 	ServiceIdFlag = cli.StringFlag{
-		Name:  "service_id",
+		Name:  "service-id",
 		Usage: "service id",
 		Value: DEFAULT_SERVICE_ID,
 	}
@@ -117,43 +117,43 @@ var (
 		Value: DEFAULT_CLIENT_REST_URL,
 	}
 	InvitationFlag = cli.StringFlag{
-		Name:  "invitation data",
+		Name:  "invitation-data",
 		Usage: "invitation data",
 	}
 	ConnectionFlag = cli.StringFlag{
-		Name:  "connect  data",
+		Name:  "connect-data",
 		Usage: "connect data",
 		Value: DEFAULT_CONNECT_DATA,
 	}
 	SendMsgFlag = cli.StringFlag{
-		Name:  "send msg",
+		Name:  "send-msg",
 		Usage: "send msg data",
 		Value: DEFAULT_SEND_MSG_DATA,
 	}
 	SendCredentialCmd = cli.StringFlag{
-		Name:  "req credential",
+		Name:  "req-credential",
 		Usage: "req credential data",
 		Value: DEFAULT_REQ_CREDENTIAL_DATA,
 	}
 	ReqPresentationCmd = cli.StringFlag{
-		Name:  "req credential",
+		Name:  "req-credential",
 		Usage: "req credential data",
 		Value: DEFAULT_REQ_PRESENTATION_DATA,
 	}
 	CredentialIdFlag = cli.StringFlag{
-		Name:  "credential id",
+		Name:  "credential-id",
 		Usage: "credential id",
 	}
 	PresentationIdFlag = cli.StringFlag{
-		Name:  "presentation id",
+		Name:  "presentation-id",
 		Usage: "presentation id",
 	}
 	FromDID = cli.StringFlag{
-		Name:  "from id",
+		Name:  "from-id",
 		Usage: "from id",
 	}
 	ToDID = cli.StringFlag{
-		Name:  "to id",
+		Name:  "to-id",
 		Usage: "to id",
 	}
 )
