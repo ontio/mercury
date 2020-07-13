@@ -33,5 +33,4 @@ const (
 type Message struct {
 	MessageType `json:"message_type"`
 	Content     interface{} `json:"content"`
-	//JsonBytes   []byte      `json:"json_bytes,,omitempty"`
 }

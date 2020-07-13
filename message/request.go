@@ -15,7 +15,6 @@ type ConnectionRequest struct {
 	Id         string     `json:"@id,omitempty"`
 	Label      string     `json:"label,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
-	//Thread     Thread     `json:"~thread,omitempty"`
 	InvitationId string `json:"invitation_id"`
 }
 
@@ -64,7 +63,7 @@ type PresentationACK struct {
 	Connection Connection `json:"connection,omitempty"`
 }
 
-//========issue credential
+//issue credential
 type ProposalCredential struct {
 	Type               string            `json:"@type,omitempty"`
 	Id                 string            `json:"@id,omitempty"`

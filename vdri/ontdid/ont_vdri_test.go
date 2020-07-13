@@ -46,9 +46,6 @@ func Init() {
 		fmt.Printf("GetDefaultAccount error:%s\n", err)
 		return
 	}
-
-	return
-
 }
 
 func TestOntVDRI_VerifyCred(t *testing.T) {
