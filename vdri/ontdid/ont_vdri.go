@@ -63,10 +63,6 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 		sample := new(SampleSubject)
 		sample.Name = s["name"].(string)
 		sample.Value = s["value"].(string)
-		//err := json.Unmarshal([]byte(s), sample)
-		//if err != nil {
-		//	return nil, err
-		//}
 		subs = append(subs, sample)
 	}
 
@@ -142,12 +138,12 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 	presentation.Id = utils.GenUUID()
 	presentation.Connection = service.ReverseConnection(req.Connection)
 	presentation.Formats = []message.Format{message.Format{
-		AttachID: "1", //magic index
+		AttachID: "1", //fixed index
 		Format:   "base64",
 	}}
 	presentation.PresentationAttach = []message.Attachment{
 		{
-			Id:          "1",
+			Id:          "1", //fixed index
 			LastModTime: time.Now(),
 			Data: message.Data{
 				Base64: ps,

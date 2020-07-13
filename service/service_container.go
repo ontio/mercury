@@ -18,7 +18,6 @@ type ServiceInf interface {
 type ServiceResponse struct {
 	OriginalMessage message.Message
 	Message         interface{}
-	//JsonBytes       []byte
 }
 
 func (r ServiceResponse) GetString() (string, error) {
@@ -44,7 +43,6 @@ func (r ServiceResponse) GetMessage() (message.Message, error) {
 	m := message.Message{}
 	m.MessageType = r.OriginalMessage.MessageType
 	m.Content = r.Message
-	//m.JsonBytes = r.JsonBytes
 	return m, nil
 }
 
@@ -52,12 +50,7 @@ func (r ServiceResponse) GetOriginMessage() (message.Message, error) {
 	return r.OriginalMessage, nil
 }
 
-//func (r ServiceResponse) GetJsonbytes() ([]byte, error) {
-//	//return r.JsonBytes, nil
-//}
-
 type Service struct {
-	//store
 	Container *list.List
 }
 
@@ -113,7 +106,6 @@ func (s *Service) Serv(message message.Message) (ControllerResp, error) {
 			return msg, err
 		}
 	}
-	//never reach here
 	return ServiceResponse{Message: m}, nil
 }
 
@@ -121,6 +113,5 @@ func Skipmessage(msg message.Message) (ControllerResp, error) {
 	resp := ServiceResponse{}
 	resp.OriginalMessage = msg
 	resp.Message = msg.Content
-	//resp.JsonBytes = msg.JsonBytes
 	return resp, nil
 }

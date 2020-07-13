@@ -19,10 +19,12 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/ontio/ontology v1.8.2
 	github.com/ontio/ontology-crypto v1.0.7
 	github.com/ontio/ontology-go-sdk v1.11.3
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.2.0
+	github.com/stretchr/testify v1.4.0
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tebeka/strftime v0.1.4 // indirect
 	github.com/urfave/cli v1.22.4
