@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"syscall"
 
+	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
@@ -37,6 +38,11 @@ func setupAPP() *cli.App {
 		cmd.AddServiceCommand,
 		cmd.QueryDidDocCommand,
 		cmd.QueryServiceEndPointCommand,
+		http_cmd.InvitationCmd,
+		http_cmd.ConnectCmd,
+		http_cmd.SendMsgCmd,
+		http_cmd.ReqCredentialCmd,
+		http_cmd.ReqPresentationCmd,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())

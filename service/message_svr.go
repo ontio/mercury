@@ -9,10 +9,10 @@ import (
 
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
-	"git.ont.io/ontid/otf/utils"
-	"git.ont.io/ontid/otf/vdri"
 	"git.ont.io/ontid/otf/packager"
 	"git.ont.io/ontid/otf/packager/ecdsa"
+	"git.ont.io/ontid/otf/utils"
+	"git.ont.io/ontid/otf/vdri"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 

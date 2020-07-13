@@ -6,28 +6,30 @@ import (
 )
 
 const (
-	DEFAULT_WALLET_PATH       = "./wallet.dat"
-	DEFAULT_LOG_LEVEL         = 1
-	DEFAULT_HTTP_PORT         = "8080"
-	DEFAULT_HTTPS_PORT        = "8443"
-	DEFAULT_HTTP_IP           = "127.0.0.1"
-	DEFAULT_LOG_FILE_PATH     = "./Log/"
-	DEFAULT_STORE_DIR         = "./db_otf/"
-	DEFAULT_BLOCK_CHAIN_ADDR  = "http://polaris2.ont.io:20336"
-	DEFAULT_RPC_URL           = "http://polaris2.ont.io:20336"
-	MIN_TRANSACTION_GAS       = 20000
-	DEFAULT_GAS_PRICE         = 2500
-	DEFAULT_WALLET_FILE_NAME  = "./wallet.dat"
-	DEFAULT_DID               = ""
-	DEFAULT_SERVICE_ID        = ""
-	DEFAULT_TYPE              = ""
-	DEFAULT_SERVICE_END_POINT = ""
-	DEFAULT_INDEX             = 1
-	DEFAULT_CERT_PATH         = "./key/ssl.crt"
-	DEFAULT_KEY_PATH          = "./key/ssl.key"
-	DEFAULT_CONNECT_DATA      = ""
-	DEFAULT_SEND_MSG_DATA     = ""
-	DEFAULT_CLIENT_REST_URL   = "http://127.0.0.1:8080"
+	DEFAULT_WALLET_PATH           = "./wallet.dat"
+	DEFAULT_LOG_LEVEL             = 1
+	DEFAULT_HTTP_PORT             = "8080"
+	DEFAULT_HTTPS_PORT            = "8443"
+	DEFAULT_HTTP_IP               = "127.0.0.1"
+	DEFAULT_LOG_FILE_PATH         = "./Log/"
+	DEFAULT_STORE_DIR             = "./db_otf/"
+	DEFAULT_BLOCK_CHAIN_ADDR      = "http://polaris2.ont.io:20336"
+	DEFAULT_RPC_URL               = "http://polaris2.ont.io:20336"
+	MIN_TRANSACTION_GAS           = 20000
+	DEFAULT_GAS_PRICE             = 2500
+	DEFAULT_WALLET_FILE_NAME      = "./wallet.dat"
+	DEFAULT_DID                   = ""
+	DEFAULT_SERVICE_ID            = ""
+	DEFAULT_TYPE                  = ""
+	DEFAULT_SERVICE_END_POINT     = ""
+	DEFAULT_INDEX                 = 1
+	DEFAULT_CERT_PATH             = "./key/ssl.crt"
+	DEFAULT_KEY_PATH              = "./key/ssl.key"
+	DEFAULT_CONNECT_DATA          = ""
+	DEFAULT_SEND_MSG_DATA         = ""
+	DEFAULT_CLIENT_REST_URL       = "http://127.0.0.1:8080"
+	DEFAULT_REQ_CREDENTIAL_DATA   = ""
+	DEFAULT_REQ_PRESENTATION_DATA = ""
 )
 
 var (
@@ -127,6 +129,16 @@ var (
 		Name:  "send msg",
 		Usage: "send msg data",
 		Value: DEFAULT_SEND_MSG_DATA,
+	}
+	SendCredentialCmd = cli.StringFlag{
+		Name:  "req credential",
+		Usage: "req credential data",
+		Value: DEFAULT_REQ_CREDENTIAL_DATA,
+	}
+	ReqPresentationCmd = cli.StringFlag{
+		Name:  "req credential",
+		Usage: "req credential data",
+		Value: DEFAULT_REQ_PRESENTATION_DATA,
 	}
 )
 

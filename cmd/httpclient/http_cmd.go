@@ -19,6 +19,7 @@ var InvitationCmd = cli.Command{
 	Description: "Generate Invitation",
 	Action:      NewInvitation,
 	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.InvitationFlag,
@@ -31,6 +32,7 @@ var ConnectCmd = cli.Command{
 	Description: "Connect  Data",
 	Action:      Connection,
 	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.ConnectionFlag,
@@ -38,14 +40,39 @@ var ConnectCmd = cli.Command{
 }
 
 var SendMsgCmd = cli.Command{
-	Name:        "sendmg",
+	Name:        "sendmsg",
 	Usage:       "send msg ",
 	Description: "Send Msg  data",
 	Action:      SendMsg,
 	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.SendMsgFlag,
+	},
+}
+
+var ReqCredentialCmd = cli.Command{
+	Name:   "reqCredential",
+	Usage:  "req Credential",
+	Action: ReqCredential,
+	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
+		cmd.HttpClientFlag,
+		cmd.WalletFileFlag,
+		cmd.SendCredentialCmd,
+	},
+}
+
+var ReqPresentationCmd = cli.Command{
+	Name:   "reqPresentation",
+	Usage:  "req presentation data",
+	Action: ReqPresentation,
+	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
+		cmd.HttpClientFlag,
+		cmd.WalletFileFlag,
+		cmd.SendCredentialCmd,
 	},
 }
 
@@ -70,6 +97,14 @@ func Connection(ctx *cli.Context) error {
 }
 
 func SendMsg(ctx *cli.Context) error {
+	return nil
+}
+
+func ReqCredential(ctx *cli.Context) error {
+	return nil
+}
+
+func ReqPresentation(ctx *cli.Context) error {
 	return nil
 }
 
