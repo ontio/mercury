@@ -39,6 +39,13 @@ type Doc struct {
 	Proof          interface{}
 }
 
+type DidPubkey struct {
+	Id           string      `json:"id"`
+	Type         string      `json:"type"`
+	Controller   interface{} `json:"controller"`
+	PublicKeyHex string      `json:"publicKeyHex"`
+}
+
 func ValidateDid(did string) bool {
 	return sdk.VerifyID(did)
 }
@@ -87,5 +94,15 @@ func GetPubKeyByDid(did string, ontSdk *sdk.OntologySdk) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(pubKey), nil
+
+	var pks []DidPubkey
+	err = json.Unmarshal(pubKey, &pks)
+	if err != nil {
+		return "", err
+	}
+	if len(pks) == 0 {
+		return "", fmt.Errorf("no public key found")
+	}
+
+	return pks[0].PublicKeyHex, nil
 }

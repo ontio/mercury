@@ -23,8 +23,8 @@ const (
 	SendGeneralMsg                = "sendgeneralmsg"
 	ReceiveGeneralMsg             = "receivegeneralmsg"
 
-	QueryCredential_Api   = "/querycredential"
-	QueryPresentation_Api = "/querypresentation"
+	QueryCredential_Api   = "querycredential"
+	QueryPresentation_Api = "querypresentation"
 )
 
 func GetApiName(msgType message.MessageType) string {
@@ -57,6 +57,10 @@ func GetApiName(msgType message.MessageType) string {
 		return Group_Api_V1 + PresentationAckInfo
 	case message.SendGeneralMsgType:
 		return Group_Api_V1 + ReceiveGeneralMsg
+	case message.QueryCredentialType:
+		return Group_Api_V1 + QueryCredential_Api
+	case message.QueryPresentationType:
+		return Group_Api_V1 + QueryPresentation_Api
 	default:
 		return Group_Api_V1
 	}

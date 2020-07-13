@@ -89,36 +89,35 @@ var ReqPresentationCmd = cli.Command{
 	},
 }
 var QueryCredCmd = cli.Command{
-	Name:                   "querycredential",
-	Usage:                  "query a stored credential",
-	Description:            "query a stored credential",
-	Action:                 QueryCredential,
-	Flags:                  []cli.Flag{
+	Name:        "querycredential",
+	Usage:       "query a stored credential",
+	Description: "query a stored credential",
+	Action:      QueryCredential,
+	Flags: []cli.Flag{
 		cmd.CredentialIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
 		cmd.FromDID,
 		cmd.ToDID,
 	},
-
 }
 var QueryPresentationCmd = cli.Command{
-	Name:                   "querypresentation",
-	Usage:                  "query a stored presentation",
-	Description:            "query a stored presentation",
-	Action:                 QueryPresentation,
-	Flags:                  []cli.Flag{
+	Name:        "querypresentation",
+	Usage:       "query a stored presentation",
+	Description: "query a stored presentation",
+	Action:      QueryPresentation,
+	Flags: []cli.Flag{
 		cmd.PresentationIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
 		cmd.FromDID,
 		cmd.ToDID,
 	},
-
 }
 var ontsdk *ontology_go_sdk.OntologySdk
 var defaultAcct *ontology_go_sdk.Account
-func initsdk(addr string)  {
+
+func initsdk(addr string) {
 	ontsdk = ontology_go_sdk.NewOntologySdk()
 	ontsdk.NewRpcClient().SetAddress(addr)
 	var err error
@@ -261,7 +260,7 @@ func ReqPresentation(ctx *cli.Context) error {
 	return nil
 }
 
-func QueryCredential(ctx *cli.Context)error{
+func QueryCredential(ctx *cli.Context) error {
 
 	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
@@ -272,7 +271,7 @@ func QueryCredential(ctx *cli.Context)error{
 		DId: fromdid,
 		Id:  id,
 	}
-	reqdata,err := json.Marshal(req)
+	reqdata, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
@@ -286,22 +285,23 @@ func QueryCredential(ctx *cli.Context)error{
 	env.MsgType = int(message.QueryCredentialType)
 
 	packer := initPackager(rpc)
-	data,err := packer.PackMessage(env)
+	data, err := packer.PackMessage(env)
 	if err != nil {
 		return err
 	}
-	respbts,err := HttpPostData(url,string(data))
+	url = url + utils.GetApiName(message.QueryCredentialType)
+	respbts, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
 	}
 	fmt.Println("==============credential==============")
-	fmt.Printf("%s\n",respbts)
+	fmt.Printf("%s\n", respbts)
 	fmt.Println("==============credential==============")
 
 	return nil
 }
 
-func QueryPresentation(ctx cli.Context)error {
+func QueryPresentation(ctx cli.Context) error {
 	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
@@ -312,7 +312,7 @@ func QueryPresentation(ctx cli.Context)error {
 		DId: fromdid,
 		Id:  id,
 	}
-	reqdata,err := json.Marshal(req)
+	reqdata, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
@@ -326,18 +326,17 @@ func QueryPresentation(ctx cli.Context)error {
 	env.MsgType = int(message.QueryPresentationType)
 
 	packer := initPackager(rpc)
-	data,err := packer.PackMessage(env)
+	data, err := packer.PackMessage(env)
 	if err != nil {
 		return err
 	}
-	respbts,err := HttpPostData(url,string(data))
+	respbts, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
 	}
 	fmt.Println("==============presentation==============")
-	fmt.Printf("%s\n",respbts)
+	fmt.Printf("%s\n", respbts)
 	fmt.Println("==============presentation==============")
-
 
 	return nil
 }

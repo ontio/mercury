@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"git.ont.io/ontid/otf/message"
@@ -469,8 +470,24 @@ func ReceiveGeneralMsg(c *gin.Context) {
 
 func QueryCredential(c *gin.Context) {
 	resp := Gin{C: c}
+
 	req := &message.QueryCredentialRequest{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.QueryCredentialRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("QueryCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -487,8 +504,23 @@ func QueryCredential(c *gin.Context) {
 
 func QueryPresentation(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.QueryPresentationRequest{}
-	err := c.Bind(req)
+	req := &message.ConnectionRequest{}
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ConnectionRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("QueryPresentation err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -504,83 +536,59 @@ func QueryPresentation(c *gin.Context) {
 }
 
 func ParseMsg(c *gin.Context) (interface{}, error) {
-	data := []byte("")
-	msg, err := Svr.ParseMsg(data)
+	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		return nil, err
 	}
+
+	msg, err := Svr.ParseMsg(body)
+	if err != nil {
+		return nil, err
+	}
+	var req interface{}
 	switch msg.MsgType {
 	case int(message.InvitationType):
-		req := &message.ConnectionRequest{}
-		err = json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.ConnectionRequest{}
+
 	case int(message.SendProposalCredentialType):
-		req := &message.ProposalCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.ProposalCredential{}
+
 	case int(message.OfferCredentialType):
-		req := &message.OfferCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.OfferCredential{}
+
 	case int(message.ProposalCredentialType):
-		req := &message.ProposalCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.ProposalCredential{}
+
 	case int(message.SendRequestCredentialType):
-		req := &message.RequestCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.RequestCredential{}
+
 	case int(message.RequestCredentialType):
-		req := &message.RequestCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.RequestCredential{}
+
 	case int(message.IssueCredentialType):
-		req := &message.IssueCredential{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.IssueCredential{}
+
 	case int(message.RequestPresentationType):
-		req := &message.RequestPresentation{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.RequestPresentation{}
+
 	case int(message.SendRequestPresentationType):
-		req := &message.RequestPresentation{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.RequestPresentation{}
+
 	case int(message.SendGeneralMsgType):
-		req := &message.BasicMessage{}
-		err := json.Unmarshal(msg.Message.Data, req)
-		if err != nil {
-			return nil, err
-		}
-		return req, nil
+		req = &message.BasicMessage{}
+
+	case int(message.QueryCredentialType):
+		req = &message.QueryCredentialRequest{}
+
+	case int(message.QueryPresentationType):
+		req = &message.QueryPresentationRequest{}
+
 	default:
 		return nil, fmt.Errorf("msg type err:%s", msg.MsgType)
 	}
+	err = json.Unmarshal(msg.Message.Data, req)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
 }

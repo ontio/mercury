@@ -7,7 +7,7 @@ type MessageData struct {
 
 type Envelope struct {
 	Message *MessageData `json:"message,omitempty"`
-	MsgType int       `json:"msgtype,omitempty"`
+	MsgType int          `json:"msgtype,omitempty"`
 	FromDID string       `json:"fromdid,omitempty"`
 	ToDID   string       `json:"todid,omitempty"`
 }

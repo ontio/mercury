@@ -209,6 +209,8 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.QueryCredentialType:
 		middleware.Log.Infof("resolve QueryCredentialType")
 		req := msg.Content.(*message.QueryCredentialRequest)
+		fmt.Printf("did:%s,id:%s\n", req.DId, req.Id)
+
 		rec, err := s.QueryCredential(req.DId, req.Id)
 		if err != nil {
 			middleware.Log.Errorf("error on QueryCredentialType:%s\n", err.Error())

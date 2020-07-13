@@ -11,11 +11,11 @@ type Invitation struct {
 }
 
 type ConnectionRequest struct {
-	Type       string     `json:"@type,omitempty"`
-	Id         string     `json:"@id,omitempty"`
-	Label      string     `json:"label,omitempty"`
-	Connection Connection `json:"connection,omitempty"`
-	InvitationId string `json:"invitation_id"`
+	Type         string     `json:"@type,omitempty"`
+	Id           string     `json:"@id,omitempty"`
+	Label        string     `json:"label,omitempty"`
+	Connection   Connection `json:"connection,omitempty"`
+	InvitationId string     `json:"invitation_id"`
 }
 
 type Connection struct {
