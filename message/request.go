@@ -3,11 +3,12 @@ package message
 import "time"
 
 type Invitation struct {
-	Type      string `json:"@type,omitempty"`
-	Id        string `json:"@id,omitempty"`
-	Label     string `json:"label,omitempty"`
-	Did       string `json:"did,omitempty"`
-	ServiceId string `json:"service_id,omitempty"`
+	Type      string   `json:"@type,omitempty"`
+	Id        string   `json:"@id,omitempty"`
+	Label     string   `json:"label,omitempty"`
+	Did       string   `json:"did,omitempty"`
+	Router    []string `json:"router"`
+	ServiceId string   `json:"service_id,omitempty"`
 }
 
 type ConnectionRequest struct {
@@ -19,10 +20,12 @@ type ConnectionRequest struct {
 }
 
 type Connection struct {
-	MyDid          string `json:"my_did,omitempty"`
-	TheirDid       string `json:"their_did"`
-	MyServiceId    string `json:"my_service_id,omitempty"`
-	TheirServiceId string `json:"their_service_id"`
+	MyDid          string   `json:"my_did,omitempty"`
+	MyRouter       []string `json:"my_router"`
+	TheirDid       string   `json:"their_did"`
+	TheirRouter    []string `json:"their_router"`
+	MyServiceId    string   `json:"my_service_id,omitempty"`
+	TheirServiceId string   `json:"their_service_id"`
 }
 
 // Thread thread data

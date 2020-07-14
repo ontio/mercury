@@ -42,6 +42,7 @@ Message sample
     "@id": "uuid-of-msg",
     "label": "Alice",
     "did": "did:ont:alicedid",
+    "router":["did:ont:cloudAgent"]
     "service_id":"serviceid"
 }
 ```
@@ -73,8 +74,10 @@ Message sample
   "label": "Bob",
   "connection": {
     "my_did": "did:ont:Bobdid",
+    "my_router":["did:ont:cloudAgent"]  ,
   	"my_service_id":"BobServiceID",
     "their_did":"did:ont:Alicedid",
+     "their_router":["did:ont:cloudAgent"]  ,
     "their_service_id":"AliceServiceID"  
   },
   "invitation_id":"invitation_id",
@@ -106,8 +109,10 @@ Message sample
   },
   "connection": {
     "my_did": "did:ont:Bobdid",
+    "my_router":["did:ont:cloudAgent"]  ,
   	"my_service_id":"BobServiceID",
     "their_did":"did:ont:Alicedid",
+    "their_router":["did:ont:cloudAgent"]  ,
     "their_service_id":"AliceServiceID" 
   }
 }
@@ -127,8 +132,10 @@ Message sample
   	"status":"succeed",
   	"connection": {
         "my_did": "did:ont:Bobdid",
+        "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+        "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
   }
@@ -168,8 +175,10 @@ Schema:
     },
     "connection": {
         "my_did": "did:ont:Bobdid",
+        "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+        "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }
@@ -207,8 +216,10 @@ Schema:
     ],
     "connection": {
         "my_did": "did:ont:Bobdid",
+        "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+        "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }
@@ -238,8 +249,10 @@ Schema:
     ],
     "connection": {
         "my_did": "did:ont:Bobdid",
+        "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+        "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }
@@ -284,8 +297,10 @@ Schema:
     ],
     "connection": {
         "my_did": "did:ont:Bobdid",
+        "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+         "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       },
   "~thread": {
@@ -333,8 +348,10 @@ From a verifier to a prover, the `request-presentation` message describes values
     ],
     "connection": {
         "my_did": "did:ont:Bobdid",
+         "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+         "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }
@@ -367,8 +384,10 @@ This message is a response to a Presentation Request message and contains signed
     ],
     "connection": {
         "my_did": "did:ont:Bobdid",
+         "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+         "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }
@@ -395,8 +414,10 @@ Message is message model for basic message protocol
 	},
 	"connection": {
         "my_did": "did:ont:Bobdid",
+         "my_router":["did:ont:cloudAgent"]  ,
         "my_service_id":"BobServiceID",
         "their_did":"did:ont:Alicedid",
+         "their_router":["did:ont:cloudAgent"]  ,
         "their_service_id":"AliceServiceID" 
       }
 }

@@ -73,8 +73,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		if !ok {
 			return nil, fmt.Errorf("message format is not correct")
 		}
-		//set uuid to invitation id
-		//invitation.Id = utils.GenUUID()
 
 		//store the invitation
 		err := s.SaveInvitation(*invitation)
@@ -125,8 +123,10 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		res.Connection = message.Connection{
 			MyDid:          ivrc.Invitation.Did,
 			MyServiceId:    ivrc.Invitation.ServiceId,
+			MyRouter:       ivrc.Invitation.Router,
 			TheirDid:       req.Connection.MyDid,
 			TheirServiceId: req.Connection.MyServiceId,
+			TheirRouter:    req.Connection.MyRouter,
 		}
 
 		outmsg := message.Message{
@@ -152,10 +152,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		connid := req.Thread.ID
 
 		//2. create and save a connection object
-		err := s.SaveConnection(req.Connection.TheirDid,
-			req.Connection.TheirServiceId,
-			req.Connection.MyDid,
-			req.Connection.MyServiceId)
+		err := s.SaveConnection(req.Connection)
 		if err != nil {
 			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
@@ -203,10 +200,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, err
 		}
 
-		err = s.SaveConnection(cr.ConnReq.Connection.TheirDid,
-			cr.ConnReq.Connection.TheirServiceId,
-			cr.ConnReq.Connection.MyDid,
-			cr.ConnReq.Connection.MyServiceId)
+		err = s.SaveConnection(service.ReverseConnection(cr.ConnReq.Connection))
 		if err != nil {
 			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
@@ -494,11 +488,11 @@ func (s Syscontroller) UpdateConnectionRequest(did, id string, state message.Con
 	return s.store.Put(key, bts)
 }
 
-func (s Syscontroller) SaveConnection(myDID, myServiceId, theirDID, theirServiceID string) error {
+func (s Syscontroller) SaveConnection(con message.Connection) error {
 
 	cr := new(message.ConnectionRec)
 
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
+	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, con.MyDid))
 	exist, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -513,19 +507,11 @@ func (s Syscontroller) SaveConnection(myDID, myServiceId, theirDID, theirService
 		if err != nil {
 			return err
 		}
-		cr.Connections[fmt.Sprintf("%s_%s", theirDID, theirServiceID)] = message.Connection{
-			MyDid:          myDID,
-			MyServiceId:    myServiceId,
-			TheirDid:       theirDID,
-			TheirServiceId: theirServiceID,
-		}
+		cr.Connections[fmt.Sprintf("%s_%s", con.TheirDid, con.TheirServiceId)] = con
 	} else {
-		cr.OwnerDID = myDID
+		cr.OwnerDID = con.MyDid
 		m := make(map[string]message.Connection)
-		m[fmt.Sprintf("%s_%s", theirDID, theirServiceID)] = message.Connection{
-			TheirDid:       theirDID,
-			TheirServiceId: theirServiceID,
-		}
+		m[fmt.Sprintf("%s_%s", con.TheirDid, con.TheirServiceId)] = con
 		cr.Connections = m
 	}
 	bts, err := json.Marshal(cr)
