@@ -134,7 +134,7 @@ func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
 		return "", err
 	}
 	//endpoint, err := doc.GetServicePoint(fmt.Sprintf("%s#%s", msg.Conn.TheirDid, msg.Conn.TheirServiceId))
-	endpoint, err := doc.GetServicePoint(fmt.Sprintf(routerdid))
+	endpoint, err := doc.GetServicePoint(routerdid)
 	if err != nil {
 		return "", err
 	}

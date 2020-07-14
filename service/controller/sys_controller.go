@@ -310,7 +310,7 @@ func (s Syscontroller) QueryGeneraMsg(did string, latest bool, removeAfterRead b
 	if rec.Msglist == nil || len(rec.Msglist) == 0 {
 		return nil, nil
 	}
-	retlist := make([]message.BasicMessage, 0)
+	var retlist []message.BasicMessage
 	if latest {
 		retlist = rec.Msglist[len(rec.Msglist)-1:]
 		if removeAfterRead {
