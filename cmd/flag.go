@@ -149,12 +149,12 @@ var (
 		Usage: "presentation id",
 	}
 	FromDID = cli.StringFlag{
-		Name:  "from-id",
-		Usage: "from id",
+		Name:  "from-did",
+		Usage: "from did",
 	}
 	ToDID = cli.StringFlag{
-		Name:  "to-id",
-		Usage: "to id",
+		Name:  "to-did",
+		Usage: "to did",
 	}
 )
 

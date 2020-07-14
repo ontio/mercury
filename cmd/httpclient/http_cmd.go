@@ -27,9 +27,9 @@ var InvitationCmd = cli.Command{
 		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
-		cmd.InvitationFlag,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.InvitationFlag,
 	},
 }
 
@@ -42,9 +42,9 @@ var ConnectCmd = cli.Command{
 		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
-		cmd.ConnectionFlag,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.ConnectionFlag,
 	},
 }
 
@@ -57,9 +57,9 @@ var SendMsgCmd = cli.Command{
 		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
-		cmd.SendMsgFlag,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.SendMsgFlag,
 	},
 }
 
@@ -71,9 +71,9 @@ var ReqCredentialCmd = cli.Command{
 		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
-		cmd.SendCredentialCmd,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.SendCredentialCmd,
 	},
 }
 
@@ -85,9 +85,9 @@ var ReqPresentationCmd = cli.Command{
 		cmd.RPCPortFlag,
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
-		cmd.SendCredentialCmd,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.SendCredentialCmd,
 	},
 }
 var QueryCredCmd = cli.Command{
@@ -129,25 +129,31 @@ func initPackager(addr string) *ecdsa.Packager {
 
 func NewInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
-	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
-	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
-	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
-	env := &packager.Envelope{}
-	env.Message = &packager.MessageData{
-		Data:    []byte(data),
-		MsgType: int(message.QueryCredentialType),
-		Sign:    nil,
-	}
-	env.FromDID = fromdid
-	env.ToDID = todid
-
-	packer := initPackager(rpc)
-	msg, err := packer.PackMessage(env)
+	invite := &message.Invitation{}
+	err := json.Unmarshal([]byte(data),invite)
 	if err != nil {
 		return err
 	}
-	body, err := HttpPostData(url, string(msg))
+	reqData,err := json.Marshal(invite)
+	if err != nil {
+		return err
+	}
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data:    reqData,
+			MsgType: int(message.ConnectionRequestType),
+		},
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
+	}
+	pack := initPackager(restUrl)
+	bys, err := pack.PackMessage(msg)
+	if err != nil {
+		return fmt.Errorf("packMessage err:%s", err)
+	}
+	body, err := HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("NewInvitation err:%s", err)
 	}
@@ -158,19 +164,24 @@ func NewInvitation(ctx *cli.Context) error {
 func Connection(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
-	pack := initPackager(restUrl)
-	dataMsg, err := hex.DecodeString(data)
+	invite := &message.ConnectionRequest{}
+	err := json.Unmarshal([]byte(data),invite)
 	if err != nil {
-		return fmt.Errorf("DecodeString err:%s", err)
+		return err
+	}
+	reqData,err := json.Marshal(invite)
+	if err != nil {
+		return err
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data:    dataMsg,
+			Data:    reqData,
 			MsgType: int(message.ConnectionRequestType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
+	pack := initPackager(restUrl)
 	bys, err := pack.PackMessage(msg)
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
@@ -186,7 +197,6 @@ func Connection(ctx *cli.Context) error {
 func SendMsg(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
-	pack := initPackager(restUrl)
 	dataMsg, err := hex.DecodeString(data)
 	if err != nil {
 		return fmt.Errorf("DecodeString err:%s", err)
@@ -199,6 +209,7 @@ func SendMsg(ctx *cli.Context) error {
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
+	pack := initPackager(restUrl)
 	bys, err := pack.PackMessage(msg)
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
@@ -214,19 +225,24 @@ func SendMsg(ctx *cli.Context) error {
 func ReqCredential(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
-	pack := initPackager(restUrl)
-	dataMsg, err := hex.DecodeString(data)
+	invite := &message.RequestCredential{}
+	err := json.Unmarshal([]byte(data),invite)
 	if err != nil {
-		return fmt.Errorf("DecodeString err:%s", err)
+		return err
+	}
+	reqData,err := json.Marshal(invite)
+	if err != nil {
+		return err
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data:    dataMsg,
+			Data:    reqData,
 			MsgType: int(message.RequestCredentialType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
+	pack := initPackager(restUrl)
 	bys, err := pack.PackMessage(msg)
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
@@ -242,19 +258,24 @@ func ReqCredential(ctx *cli.Context) error {
 func ReqPresentation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
-	pack := initPackager(restUrl)
-	dataMsg, err := hex.DecodeString(data)
+	invite := &message.RequestPresentation{}
+	err := json.Unmarshal([]byte(data),invite)
 	if err != nil {
-		return fmt.Errorf("DecodeString err:%s", err)
+		return err
+	}
+	reqData,err := json.Marshal(invite)
+	if err != nil {
+		return err
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data:    dataMsg,
+			Data:    reqData,
 			MsgType: int(message.RequestPresentationType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
+	pack := initPackager(restUrl)
 	bys, err := pack.PackMessage(msg)
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)

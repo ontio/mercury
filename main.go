@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"syscall"
 
+	"git.ont.io/ontid/otf/cmd"
+	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
 	"git.ont.io/ontid/otf/config"
 	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/rest"
@@ -16,8 +18,6 @@ import (
 	"git.ont.io/ontid/otf/vdri/ontdid"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
-	"git.ont.io/ontid/otf/cmd"
-	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
 )
 
 func setupAPP() *cli.App {
