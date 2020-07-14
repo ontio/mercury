@@ -551,7 +551,7 @@ func QueryCredential(c *gin.Context) {
 
 func QueryPresentation(c *gin.Context) {
 	resp := Gin{C: c}
-	req := &message.ConnectionRequest{}
+	req := &message.QueryPresentationRequest{}
 	var err error
 	var ok bool
 	if EnablePackage {
@@ -560,7 +560,7 @@ func QueryPresentation(c *gin.Context) {
 			resp.Response(http.StatusOK, 0, err.Error(), nil)
 			return
 		}
-		req, ok = msg.(*message.ConnectionRequest)
+		req, ok = msg.(*message.QueryPresentationRequest)
 		if !ok {
 			resp.Response(http.StatusOK, 0, "msg parse error", nil)
 			return

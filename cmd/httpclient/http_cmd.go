@@ -385,7 +385,7 @@ func QueryCredential(ctx *cli.Context) error {
 	return nil
 }
 
-func QueryPresentation(ctx cli.Context) error {
+func QueryPresentation(ctx *cli.Context) error {
 	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
@@ -414,6 +414,8 @@ func QueryPresentation(ctx cli.Context) error {
 	if err != nil {
 		return err
 	}
+	url = url + utils.GetApiName(message.QueryPresentationType)
+
 	respbts, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
