@@ -410,144 +410,33 @@ Message is message model for basic message protocol
 
 ## 4. Envelop and Encrypt
 
-### 4.1 Authcrypt mode vs. Anoncrypt mode
+### 4.1 Envelope
 
-When packing and unpacking are done in a way that the sender is anonymous, we say that we are in **anoncrypt mode**. When the sender is revealed, we are in **authcrypt mode**. Authcrypt mode reveals the sender *to the recipient only*; it is not the same as a non-repudiable signature.
+Messages transport between agents should packed as an envelope.
 
-This is an example of an outputted message encrypting for two verkeys using Authcrypt.
-
-```
-{
-    "protected": "eyJlbmMiOiJ4Y2hhY2hhMjBwb2x5MTMwNV9pZXRmIiwidHlwIjoiSldNLzEuMCIsImFsZyI6IkF1dGhjcnlwdCIsInJlY2lwaWVudHMiOlt7ImVuY3J5cHRlZF9rZXkiOiJMNVhEaEgxNVBtX3ZIeFNlcmFZOGVPVEc2UmZjRTJOUTNFVGVWQy03RWlEWnl6cFJKZDhGVzBhNnFlNEpmdUF6IiwiaGVhZGVyIjp7ImtpZCI6IkdKMVN6b1d6YXZRWWZOTDlYa2FKZHJRZWpmenRONFhxZHNpVjRjdDNMWEtMIiwiaXYiOiJhOEltaW5zdFhIaTU0X0otSmU1SVdsT2NOZ1N3RDlUQiIsInNlbmRlciI6ImZ0aW13aWlZUkc3clJRYlhnSjEzQzVhVEVRSXJzV0RJX2JzeERxaVdiVGxWU0tQbXc2NDE4dnozSG1NbGVsTThBdVNpS2xhTENtUkRJNHNERlNnWkljQVZYbzEzNFY4bzhsRm9WMUJkREk3ZmRLT1p6ckticUNpeEtKaz0ifX0seyJlbmNyeXB0ZWRfa2V5IjoiZUFNaUQ2R0RtT3R6UkVoSS1UVjA1X1JoaXBweThqd09BdTVELTJJZFZPSmdJOC1ON1FOU3VsWXlDb1dpRTE2WSIsImhlYWRlciI6eyJraWQiOiJIS1RBaVlNOGNFMmtLQzlLYU5NWkxZajRHUzh1V0NZTUJ4UDJpMVk5Mnp1bSIsIml2IjoiRDR0TnRIZDJyczY1RUdfQTRHQi1vMC05QmdMeERNZkgiLCJzZW5kZXIiOiJzSjdwaXU0VUR1TF9vMnBYYi1KX0pBcHhzYUZyeGlUbWdwWmpsdFdqWUZUVWlyNGI4TVdtRGR0enAwT25UZUhMSzltRnJoSDRHVkExd1Z0bm9rVUtvZ0NkTldIc2NhclFzY1FDUlBaREtyVzZib2Z0d0g4X0VZR1RMMFE9In19XX0=",
-    "iv": "ZqOrBZiA-RdFMhy2",
-    "ciphertext": "K7KxkeYGtQpbi-gNuLObS8w724mIDP7IyGV_aN5AscnGumFd-SvBhW2WRIcOyHQmYa-wJX0MSGOJgc8FYw5UOQgtPAIMbSwVgq-8rF2hIniZMgdQBKxT_jGZS06kSHDy9UEYcDOswtoLgLp8YPU7HmScKHSpwYY3vPZQzgSS_n7Oa3o_jYiRKZF0Gemamue0e2iJ9xQIOPodsxLXxkPrvvdEIM0fJFrpbeuiKpMk",
-    "tag": "kAuPl8mwb0FFVyip1omEhQ=="
-}
-```
-
-
-
-- receiver_verkeys: a list of recipient verkeys as string containing a JSON array
-- sender_verkey: the sender's verkey as a string. This verkey is used to look up the sender's private key so the wallet can put supply it as input to the encryption algorithm. When an empty string ("") is passed in this parameter, anoncrypt mode is used
-
-The base64URL encoded `protected` decodes to this:
+Envelope struct:
 
 ```
 {
-    "enc": "xchacha20poly1305_ietf",
-    "typ": "JWM/1.0",
-    "alg": "Authcrypt",
-    "recipients": [
-        {
-            "encrypted_key": "L5XDhH15Pm_vHxSeraY8eOTG6RfcE2NQ3ETeVC-7EiDZyzpRJd8FW0a6qe4JfuAz",
-            "header": {
-                "kid": "GJ1SzoWzavQYfNL9XkaJdrQejfztN4XqdsiV4ct3LXKL",
-                "iv": "a8IminstXHi54_J-Je5IWlOcNgSwD9TB",
-                "sender": "ftimwiiYRG7rRQbXgJ13C5aTEQIrsWDI_bsxDqiWbTlVSKPmw6418vz3HmMlelM8AuSiKlaLCmRDI4sDFSgZIcAVXo134V8o8lFoV1BdDI7fdKOZzrKbqCixKJk="
-            }
-        },
-        {
-            "encrypted_key": "eAMiD6GDmOtzREhI-TV05_Rhippy8jwOAu5D-2IdVOJgI8-N7QNSulYyCoWiE16Y",
-            "header": {
-                "kid": "HKTAiYM8cE2kKC9KaNMZLYj4GS8uWCYMBxP2i1Y92zum",
-                "iv": "D4tNtHd2rs65EG_A4GB-o0-9BgLxDMfH",
-                "sender": "sJ7piu4UDuL_o2pXb-J_JApxsaFrxiTmgpZjltWjYFTUir4b8MWmDdtzp0OnTeHLK9mFrhH4GVA1wVtnokUKogCdNWHscarQscQCRPZDKrW6boftwH8_EYGTL0Q="
-            }
-        }
-    ]
+    "message":{
+        "data":"encrypt data as hex format",
+        "sign":"data signature by sender did",
+        "msgtype":int,
+    },
+    "fromdid":"sender did",
+    "todid":"receiver did"
 }
 ```
 
-#### pack output format (Authcrypt mode)
+Before outbound message sent, 
 
-```
-    {
-        "protected": "b64URLencoded({
-            "enc": "xchachapoly1305_ietf",
-            "typ": "JWM/1.0",
-            "alg": "Authcrypt",
-            "recipients": [
-                {
-                    "encrypted_key": base64URLencode(libsodium.crypto_box(my_key, their_vk, cek, cek_iv))
-                    "header": {
-                          "kid": "base58encode(recipient_verkey)",
-                           "sender" : base64URLencode(libsodium.crypto_box_seal(their_vk, base58encode(sender_vk)),
-                            "iv" : base64URLencode(cek_iv)
-                }
-            },
-            ],
-        })",
-        "iv": <b64URLencode(iv)>,
-        "ciphertext": b64URLencode(encrypt_detached({'@type'...}, protected_value_encoded, iv, cek),
-        "tag": <b64URLencode(tag)>
-    }
-```
+1.  Encrypt message by receiver did binded public key.
+2. Sign the encrypt data using sender's did binded private key.
+3. Set the pre-defined message type .
+4. Set self did as ```fromdid```
+5. Set receiver did as ```todid```
+6. Post the message to receiver did binded service point.
 
-This is an example of an outputted message encrypted for two verkeys using Anoncrypt.
+### 4.2 Encrypt
 
-```
-{
-    "protected": "eyJlbmMiOiJ4Y2hhY2hhMjBwb2x5MTMwNV9pZXRmIiwidHlwIjoiSldNLzEuMCIsImFsZyI6IkFub25jcnlwdCIsInJlY2lwaWVudHMiOlt7ImVuY3J5cHRlZF9rZXkiOiJYQ044VjU3UTF0Z2F1TFcxemdqMVdRWlEwV0RWMFF3eUVaRk5Od0Y2RG1pSTQ5Q0s1czU4ZHNWMGRfTlpLLVNNTnFlMGlGWGdYRnZIcG9jOGt1VmlTTV9LNWxycGJNU3RqN0NSUHNrdmJTOD0iLCJoZWFkZXIiOnsia2lkIjoiR0oxU3pvV3phdlFZZk5MOVhrYUpkclFlamZ6dE40WHFkc2lWNGN0M0xYS0wifX0seyJlbmNyeXB0ZWRfa2V5IjoiaG5PZUwwWTl4T3ZjeTVvRmd0ZDFSVm05ZDczLTB1R1dOSkN0RzRsS3N3dlljV3pTbkRsaGJidmppSFVDWDVtTU5ZdWxpbGdDTUZRdmt2clJEbkpJM0U2WmpPMXFSWnVDUXY0eVQtdzZvaUE9IiwiaGVhZGVyIjp7ImtpZCI6IjJHWG11Q04ySkN4U3FNUlZmdEJITHhWSktTTDViWHl6TThEc1B6R3FRb05qIn19XX0=",
-    "iv": "M1GneQLepxfDbios",
-    "ciphertext": "iOLSKIxqn_kCZ7Xo7iKQ9rjM4DYqWIM16_vUeb1XDsmFTKjmvjR0u2mWFA48ovX5yVtUd9YKx86rDVDLs1xgz91Q4VLt9dHMOfzqv5DwmAFbbc9Q5wHhFwBvutUx5-lDZJFzoMQHlSAGFSBrvuApDXXt8fs96IJv3PsL145Qt27WLu05nxhkzUZz8lXfERHwAC8FYAjfvN8Fy2UwXTVdHqAOyI5fdKqfvykGs6fV",
-    "tag": "gL-lfmD-MnNj9Pr6TfzgLA=="
-}
-```
-
-The protected data decodes to this:
-
-```
-{
-    "enc": "xchacha20poly1305_ietf",
-    "typ": "JWM/1.0",
-    "alg": "Anoncrypt",
-    "recipients": [
-        {
-            "encrypted_key": "XCN8V57Q1tgauLW1zgj1WQZQ0WDV0QwyEZFNNwF6DmiI49CK5s58dsV0d_NZK-SMNqe0iFXgXFvHpoc8kuViSM_K5lrpbMStj7CRPskvbS8=",
-            "header": {
-                "kid": "GJ1SzoWzavQYfNL9XkaJdrQejfztN4XqdsiV4ct3LXKL"
-            }
-        },
-        {
-            "encrypted_key": "hnOeL0Y9xOvcy5oFgtd1RVm9d73-0uGWNJCtG4lKswvYcWzSnDlhbbvjiHUCX5mMNYulilgCMFQvkvrRDnJI3E6ZjO1qRZuCQv4yT-w6oiA=",
-            "header": {
-                "kid": "2GXmuCN2JCxSqMRVftBHLxVJKSL5bXyzM8DsPzGqQoNj"
-            }
-        }
-    ]
-}
-```
-
-#### pack output format (Anoncrypt mode)
-
-```
-    {
-         "protected": "b64URLencoded({
-            "enc": "xchachapoly1305_ietf",
-            "typ": "JWM/1.0",
-            "alg": "Anoncrypt",
-            "recipients": [
-                {
-                    "encrypted_key": base64URLencode(libsodium.crypto_box_seal(their_vk, cek)),
-                    "header": {
-                        "kid": base58encode(recipient_verkey),
-                    }
-                },
-            ],
-         })",
-         "iv": b64URLencode(iv),
-         "ciphertext": b64URLencode(encrypt_detached({'@type'...}, protected_value_encoded, iv, cek),
-         "tag": b64URLencode(tag)
-    }
-```
-
-
-
-
-
-
-
-## 
-
-
-
+currently use ontology-crypto lib.
