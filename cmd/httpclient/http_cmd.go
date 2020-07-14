@@ -28,6 +28,8 @@ var InvitationCmd = cli.Command{
 		cmd.HttpClientFlag,
 		cmd.WalletFileFlag,
 		cmd.InvitationFlag,
+		cmd.FromDID,
+		cmd.ToDID,
 	},
 }
 
@@ -138,16 +140,29 @@ func initPackager(addr string) *ecdsa.Packager {
 
 func NewInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
-	body, err := HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), data)
+	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
+	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
+	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
+	env := &packager.Envelope{}
+	env.Message = &packager.MessageData{
+		Data: []byte(data),
+		Sign: nil,
+	}
+	env.FromDID = fromdid
+	env.ToDID = todid
+	env.MsgType = int(message.QueryCredentialType)
+
+	packer := initPackager(rpc)
+	msg, err := packer.PackMessage(env)
+	if err != nil {
+		return err
+	}
+	body, err := HttpPostData(url, string(msg))
 	if err != nil {
 		return fmt.Errorf("NewInvitation err:%s", err)
 	}
-	msg := &message.Invitation{}
-	err = json.Unmarshal(body, msg)
-	if err != nil {
-		return fmt.Errorf("NewInvatation unmarshal err:%s", err)
-	}
-	fmt.Printf("msg:%v\n", msg)
+	fmt.Printf(":%s\n", body)
 	return nil
 }
 
@@ -350,14 +365,14 @@ func HttpPostData(url, data string) ([]byte, error) {
 		},
 		Timeout: time.Second * 300,
 	}
-	resp, err := client.Post(url, "application/json", strings.NewReader(data))
+	method := "POST"
+	req, err := http.NewRequest(method, url, strings.NewReader(data))
 	if err != nil {
-		return nil, fmt.Errorf("http post request:%s error:%s", data, err)
+		return nil, fmt.Errorf("newRequest err:%s", err)
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("read  response body err:%s", err)
-	}
-	return body, nil
+	req.Header.Add("Content-Type", "application/json")
+	res, err := client.Do(req)
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	return body, err
 }
