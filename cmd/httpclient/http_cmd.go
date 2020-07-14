@@ -14,7 +14,7 @@ import (
 	"git.ont.io/ontid/otf/packager"
 	"git.ont.io/ontid/otf/packager/ecdsa"
 	"git.ont.io/ontid/otf/utils"
-	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
+	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
 )
 
@@ -116,26 +116,15 @@ var QueryPresentationCmd = cli.Command{
 		cmd.ToDID,
 	},
 }
-var ontsdk *ontology_go_sdk.OntologySdk
-var defaultAcct *ontology_go_sdk.Account
 
-func initsdk(addr string) {
-	ontsdk = ontology_go_sdk.NewOntologySdk()
-	ontsdk.NewRpcClient().SetAddress(addr)
-	var err error
-	defaultAcct, err = utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontsdk)
-	if err != nil {
-		panic(err)
-	}
-}
 func initPackager(addr string) *ecdsa.Packager {
-	ontsdk = ontology_go_sdk.NewOntologySdk()
-	ontsdk.NewRpcClient().SetAddress(addr)
-	acc, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontsdk)
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(addr)
+	acc, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontSdk)
 	if err != nil {
 		panic(err)
 	}
-	return ecdsa.New(ontsdk, acc)
+	return ecdsa.New(ontSdk, acc)
 }
 
 func NewInvitation(ctx *cli.Context) error {
