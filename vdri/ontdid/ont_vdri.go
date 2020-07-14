@@ -11,7 +11,6 @@ import (
 	"git.ont.io/ontid/otf/vdri"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
-	"strings"
 	"time"
 )
 
@@ -159,13 +158,7 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 }
 func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 
-	var realdid string
-	if strings.Contains(did, "#") {
-		realdid = strings.Split(did, "#")[0]
-	} else {
-		realdid = did
-	}
-
+	realdid := utils.CutDId(did)
 	bts, err := o.ontSdk.Native.OntId.GetDocumentJson(realdid)
 	if err != nil {
 		return nil, err

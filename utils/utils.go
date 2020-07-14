@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
 	sdk "github.com/ontio/ontology-go-sdk"
+	"strings"
 )
 
 var Version = ""
@@ -44,4 +45,15 @@ func ClearPasswd(passwd []byte) {
 
 func GenUUID() string {
 	return uuid.New().String()
+}
+
+func CutDId(did string)string {
+	var realdid string
+	if strings.Contains(did, "#") {
+		realdid = strings.Split(did, "#")[0]
+	} else {
+		realdid = did
+	}
+	return realdid
+
 }
