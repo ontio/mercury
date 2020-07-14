@@ -175,7 +175,8 @@ func Connection(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendConnectionRequestType)
+	_, err = HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -202,7 +203,8 @@ func SendMsg(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendGeneralMsgType)
+	_, err = HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -229,7 +231,8 @@ func ReqCredential(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestCredentialType)
+	_, err = HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -256,7 +259,8 @@ func ReqPresentation(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	_, err = HttpPostData(ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), hex.EncodeToString(bys))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestPresentationType)
+	_, err = HttpPostData(url, hex.EncodeToString(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
