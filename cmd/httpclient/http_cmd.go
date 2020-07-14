@@ -4,11 +4,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"time"
-
 	"git.ont.io/ontid/otf/cmd"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/packager"
@@ -16,6 +11,10 @@ import (
 	"git.ont.io/ontid/otf/utils"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
 )
 
 var InvitationCmd = cli.Command{
@@ -60,6 +59,21 @@ var SendMsgCmd = cli.Command{
 		cmd.FromDID,
 		cmd.ToDID,
 		cmd.SendMsgFlag,
+	},
+}
+
+var QueryMsgCmd = cli.Command{
+	Name:        "querymsg",
+	Description: "query general message",
+	Action:      QueryMsg,
+	Flags: []cli.Flag{
+		cmd.RPCPortFlag,
+		cmd.HttpClientFlag,
+		cmd.WalletFileFlag,
+		cmd.FromDID,
+		cmd.ToDID,
+		cmd.ReadLatestMsgFlag,
+		cmd.RemoveAfterReadFlag,
 	},
 }
 
@@ -222,6 +236,48 @@ func SendMsg(ctx *cli.Context) error {
 	return nil
 }
 
+func QueryMsg(ctx *cli.Context) error {
+	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
+	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	latest := ctx.Bool(cmd.GetFlagName(cmd.ReadLatestMsgFlag))
+	rar := ctx.Bool(cmd.GetFlagName(cmd.RemoveAfterReadFlag))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
+	packer := initPackager(restUrl)
+
+	req := message.QueryGeneralMessageRequest{
+		DID:             fromdid,
+		Latest:          latest,
+		RemoveAfterRead: rar,
+	}
+	reqdata, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	env := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data:    reqdata,
+			MsgType: int(message.QueryGeneralMessageType),
+		},
+		FromDID: fromdid,
+		ToDID:   todid,
+	}
+	data, err := packer.PackMessage(env)
+	if err != nil {
+		return err
+	}
+	url = url + utils.GetApiName(message.QueryGeneralMessageType)
+	respbts, err := HttpPostData(url, string(data))
+	if err != nil {
+		return err
+	}
+	fmt.Println("==============general message==============")
+	fmt.Printf("%s\n", respbts)
+	fmt.Println("==============general message==============")
+	return nil
+}
+
 func ReqCredential(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
@@ -368,6 +424,7 @@ func QueryPresentation(ctx cli.Context) error {
 
 	return nil
 }
+
 func HttpPostData(url, data string) ([]byte, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -378,14 +435,10 @@ func HttpPostData(url, data string) ([]byte, error) {
 		},
 		Timeout: time.Second * 300,
 	}
-	method := "POST"
-	req, err := http.NewRequest(method, url, strings.NewReader(data))
+	resp, err := client.Post(url, "application/json", strings.NewReader(data))
 	if err != nil {
-		return nil, fmt.Errorf("newRequest err:%s", err)
+		return nil, fmt.Errorf("http post request:%s error:%s", data, err)
 	}
-	req.Header.Add("Content-Type", "application/json")
-	res, err := client.Do(req)
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	return body, err
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
 }

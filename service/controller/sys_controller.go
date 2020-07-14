@@ -316,21 +316,25 @@ func (s Syscontroller) QueryGeneraMsg(did string, latest bool, removeAfterRead b
 	retlist := make([]message.BasicMessage, 0)
 	if latest {
 		retlist = rec.Msglist[len(rec.Msglist)-1:]
-		rec.Msglist = rec.Msglist[0 : len(rec.Msglist)-1]
-		data, err := json.Marshal(rec)
-		if err != nil {
-			return nil, err
-		}
-		err = s.store.Put(key, data)
-		if err != nil {
-			return nil, err
+		if removeAfterRead {
+			rec.Msglist = rec.Msglist[0 : len(rec.Msglist)-1]
+			data, err := json.Marshal(rec)
+			if err != nil {
+				return nil, err
+			}
+			err = s.store.Put(key, data)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 	} else {
 		retlist = rec.Msglist
-		err = s.store.Delete(key)
-		if err != nil {
-			return nil, err
+		if removeAfterRead {
+			err = s.store.Delete(key)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return retlist, nil

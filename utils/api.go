@@ -58,6 +58,8 @@ func GetApiName(msgType message.MessageType) string {
 		return Group_Api_V1 + PresentationAckInfo
 	case message.SendGeneralMsgType:
 		return Group_Api_V1 + ReceiveGeneralMsg_Api
+	case message.QueryGeneralMessageType:
+		return Group_Api_V1 + QueryGeneralMsg_Api
 	case message.QueryCredentialType:
 		return Group_Api_V1 + QueryCredential_Api
 	case message.QueryPresentationType:

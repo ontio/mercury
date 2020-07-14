@@ -470,9 +470,24 @@ func ReceiveGeneralMsg(c *gin.Context) {
 func QueryGeneralMsg(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.QueryGeneralMessageRequest{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.QueryGeneralMessageRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
-		middleware.Log.Errorf("QueryGeneralMsg err:%s", err)
+		middleware.Log.Errorf("QueryGeneralMessage err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
 		return
 	}
@@ -598,7 +613,7 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 		req = &message.BasicMessage{}
 
 	case int(message.QueryGeneralMessageType):
-		req = &message.GeneralMsgRec{}
+		req = &message.QueryGeneralMessageRequest{}
 
 	case int(message.QueryCredentialType):
 		req = &message.QueryCredentialRequest{}

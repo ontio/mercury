@@ -45,6 +45,7 @@ func setupAPP() *cli.App {
 		http_cmd.ReqPresentationCmd,
 		http_cmd.QueryCredCmd,
 		http_cmd.QueryPresentationCmd,
+		http_cmd.QueryMsgCmd,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())

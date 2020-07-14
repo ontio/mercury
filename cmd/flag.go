@@ -130,6 +130,14 @@ var (
 		Usage: "send msg data",
 		Value: DEFAULT_SEND_MSG_DATA,
 	}
+	ReadLatestMsgFlag = cli.BoolFlag{
+		Name:  "latest",
+		Usage: "read latest message",
+	}
+	RemoveAfterReadFlag = cli.BoolFlag{
+		Name:  "remove-after-read",
+		Usage: "remove after read",
+	}
 	SendCredentialCmd = cli.StringFlag{
 		Name:  "req-credential",
 		Usage: "req credential data",
