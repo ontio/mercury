@@ -14,7 +14,22 @@ import (
 func Invite(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.Invitation{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.Invitation)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("Invite err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -583,7 +598,7 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 	var req interface{}
 	switch msg.Message.MsgType {
 	case int(message.InvitationType):
-		req = &message.ConnectionRequest{}
+		req = &message.Invitation{}
 
 	case int(message.SendProposalCredentialType):
 		req = &message.ProposalCredential{}

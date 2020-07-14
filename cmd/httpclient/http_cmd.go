@@ -146,18 +146,18 @@ func NewInvitation(ctx *cli.Context) error {
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
 	invite := &message.Invitation{}
-	err := json.Unmarshal([]byte(data),invite)
+	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
 		return err
 	}
-	reqData,err := json.Marshal(invite)
+	reqData, err := json.Marshal(invite)
 	if err != nil {
 		return err
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.ConnectionRequestType),
+			MsgType: int(message.InvitationType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -179,11 +179,11 @@ func Connection(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.ConnectionRequest{}
-	err := json.Unmarshal([]byte(data),invite)
+	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
 		return err
 	}
-	reqData,err := json.Marshal(invite)
+	reqData, err := json.Marshal(invite)
 	if err != nil {
 		return err
 	}
@@ -282,11 +282,11 @@ func ReqCredential(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestCredential{}
-	err := json.Unmarshal([]byte(data),invite)
+	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
 		return err
 	}
-	reqData,err := json.Marshal(invite)
+	reqData, err := json.Marshal(invite)
 	if err != nil {
 		return err
 	}
@@ -315,11 +315,11 @@ func ReqPresentation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestPresentation{}
-	err := json.Unmarshal([]byte(data),invite)
+	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
 		return err
 	}
-	reqData,err := json.Marshal(invite)
+	reqData, err := json.Marshal(invite)
 	if err != nil {
 		return err
 	}
