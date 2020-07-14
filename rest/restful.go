@@ -546,7 +546,7 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 	if msg.Message == nil {
-		return nil,fmt.Errorf("msg is nil")
+		return nil, fmt.Errorf("msg is nil")
 	}
 	var req interface{}
 	switch msg.Message.MsgType {

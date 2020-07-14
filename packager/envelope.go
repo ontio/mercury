@@ -1,9 +1,9 @@
 package packager
 
 type MessageData struct {
-	Data []byte `json:"data,omitempty"`
-	MsgType int          `json:"msgtype,omitempty"`
-	Sign []byte `json:"sign,omitempty"`
+	Data    []byte `json:"data,omitempty"`
+	MsgType int    `json:"msgtype,omitempty"`
+	Sign    []byte `json:"sign,omitempty"`
 }
 
 type Envelope struct {

@@ -146,9 +146,9 @@ func NewInvitation(ctx *cli.Context) error {
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
 	env := &packager.Envelope{}
 	env.Message = &packager.MessageData{
-		Data: []byte(data),
-		MsgType:int(message.QueryCredentialType),
-		Sign: nil,
+		Data:    []byte(data),
+		MsgType: int(message.QueryCredentialType),
+		Sign:    nil,
 	}
 	env.FromDID = fromdid
 	env.ToDID = todid
@@ -176,8 +176,8 @@ func Connection(ctx *cli.Context) error {
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data: dataMsg,
-			MsgType:int(message.ConnectionRequestType),
+			Data:    dataMsg,
+			MsgType: int(message.ConnectionRequestType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -203,7 +203,7 @@ func SendMsg(ctx *cli.Context) error {
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data: dataMsg,
+			Data:    dataMsg,
 			MsgType: int(message.SendGeneralMsgType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
@@ -230,7 +230,7 @@ func ReqCredential(ctx *cli.Context) error {
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data: dataMsg,
+			Data:    dataMsg,
 			MsgType: int(message.RequestCredentialType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
@@ -257,7 +257,7 @@ func ReqPresentation(ctx *cli.Context) error {
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data: dataMsg,
+			Data:    dataMsg,
 			MsgType: int(message.RequestPresentationType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
@@ -271,7 +271,6 @@ func ReqPresentation(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
-	return nil
 	return nil
 }
 
@@ -292,9 +291,9 @@ func QueryCredential(ctx *cli.Context) error {
 	}
 	env := &packager.Envelope{}
 	env.Message = &packager.MessageData{
-		Data: reqdata,
-		MsgType:int(message.QueryCredentialType),
-		Sign: nil,
+		Data:    reqdata,
+		MsgType: int(message.QueryCredentialType),
+		Sign:    nil,
 	}
 	env.FromDID = fromdid
 	env.ToDID = todid
@@ -333,9 +332,9 @@ func QueryPresentation(ctx cli.Context) error {
 	}
 	env := &packager.Envelope{}
 	env.Message = &packager.MessageData{
-		Data: reqdata,
-		MsgType:int(message.QueryPresentationType),
-		Sign: nil,
+		Data:    reqdata,
+		MsgType: int(message.QueryPresentationType),
+		Sign:    nil,
 	}
 	env.FromDID = fromdid
 	env.ToDID = todid
