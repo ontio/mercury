@@ -87,8 +87,8 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		msg := &packager.Envelope{
 			Message: &packager.MessageData{
 				Data: data,
+				MsgType:int(msg.Msg.MessageType),
 			},
-			//MsgType: msg.Msg.MessageType,
 			FromDID: msg.Conn.MyDid,
 			ToDID:   msg.Conn.TheirDid,
 		}
