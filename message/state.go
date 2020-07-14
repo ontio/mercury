@@ -28,6 +28,10 @@ const (
 	RequestPresentationResolved
 )
 
+type GeneralMsgRec struct {
+	Msglist []BasicMessage `json:"msglist"`
+}
+
 type InvitationRec struct {
 	Invitation Invitation      `json:"invitation"`
 	State      ConnectionState `json:"state"`

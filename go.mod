@@ -29,7 +29,7 @@ require (
 	github.com/urfave/cli v1.22.4
 	golang.org/x/crypto v0.0.0-20200115085410-6d4e4cb37c7d // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
-	golang.org/x/text v0.3.3 // indirect
+	golang.org/x/text v0.3.3
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

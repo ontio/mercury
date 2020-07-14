@@ -19,6 +19,7 @@ const (
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
 	ConnectionKey    = "Connection"
+	GeneralMsgKey    = "General"
 
 	ACK_SUCCEED = "succeed"
 	ACK_FAILED  = "failed"
@@ -247,13 +248,27 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	case message.ReceiveGeneralMsgType:
 		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
+
+		//todo remove me
 		data, err := json.Marshal(req)
 		if err != nil {
 			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
 		middleware.Log.Infof("we got a message: %s\n", data)
-		return nil, nil
+		//todo end
+		return nil, s.SaveGeneralMsg(req)
+
+	case message.QueryGeneralMessageType:
+		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
+		req := msg.Content.(*message.QueryGeneralMessageRequest)
+		ret, err := s.QueryGeneraMsg(req.DID, req.Latest, req.RemoveAfterRead)
+		if err != nil {
+			return nil, err
+		}
+		return service.ServiceResponse{
+			Message: ret,
+		}, nil
 
 	default:
 		return service.Skipmessage(msg)
@@ -275,6 +290,79 @@ func (s Syscontroller) sign(data []byte) ([]byte, error) {
 
 func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 	return structs.Map(v), nil
+}
+
+func (s Syscontroller) QueryGeneraMsg(did string, latest bool, removeAfterRead bool) ([]message.BasicMessage, error) {
+	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, did))
+	b, err := s.store.Has(key)
+	if err != nil {
+		return nil, err
+	}
+	if !b {
+		return nil, nil
+	}
+	data, err := s.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	rec := new(message.GeneralMsgRec)
+	err = json.Unmarshal(data, rec)
+	if err != nil {
+		return nil, err
+	}
+	if rec.Msglist == nil || len(rec.Msglist) == 0 {
+		return nil, nil
+	}
+	retlist := make([]message.BasicMessage, 0)
+	if latest {
+		retlist = rec.Msglist[len(rec.Msglist)-1:]
+		rec.Msglist = rec.Msglist[0 : len(rec.Msglist)-1]
+		data, err := json.Marshal(rec)
+		if err != nil {
+			return nil, err
+		}
+		err = s.store.Put(key, data)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		retlist = rec.Msglist
+		err = s.store.Delete(key)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return retlist, nil
+
+}
+
+func (s Syscontroller) SaveGeneralMsg(m *message.BasicMessage) error {
+	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, m.Connection.TheirDid))
+	b, err := s.store.Has(key)
+	if err != nil {
+		return err
+	}
+	rec := new(message.GeneralMsgRec)
+	if b {
+		data, err := s.store.Get(key)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(data, rec)
+		if err != nil {
+			return err
+		}
+		rec.Msglist = append(rec.Msglist, *m)
+	} else {
+		rec.Msglist = []message.BasicMessage{*m}
+	}
+
+	data, err := json.Marshal(rec)
+	if err != nil {
+		return err
+	}
+	return s.store.Put(key, data)
 }
 
 //

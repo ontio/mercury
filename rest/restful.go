@@ -467,6 +467,23 @@ func ReceiveGeneralMsg(c *gin.Context) {
 	}
 	resp.Response(http.StatusOK, 0, "", data)
 }
+func QueryGeneralMsg(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.QueryGeneralMessageRequest{}
+	err := c.Bind(req)
+	if err != nil {
+		middleware.Log.Errorf("QueryGeneralMsg err:%s", err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.QueryGeneralMessageType, req)
+	if err != nil {
+		middleware.Log.Errorf("SendGeneralMsg msg type:%d,err:%s", message.QueryGeneralMessageType, err)
+		resp.Response(http.StatusOK, 0, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
 
 func QueryCredential(c *gin.Context) {
 	resp := Gin{C: c}
@@ -580,6 +597,9 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 	case int(message.SendGeneralMsgType):
 		req = &message.BasicMessage{}
 
+	case int(message.QueryGeneralMessageType):
+		req = &message.GeneralMsgRec{}
+
 	case int(message.QueryCredentialType):
 		req = &message.QueryCredentialRequest{}
 
@@ -587,7 +607,7 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 		req = &message.QueryPresentationRequest{}
 
 	default:
-		return nil, fmt.Errorf("msg type err:%s", msg.Message.MsgType)
+		return nil, fmt.Errorf("msg type err:%d", msg.Message.MsgType)
 	}
 	err = json.Unmarshal(msg.Message.Data, req)
 	if err != nil {

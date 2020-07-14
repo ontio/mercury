@@ -196,3 +196,9 @@ type QueryPresentationResponse struct {
 	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
 }
+
+type QueryGeneralMessageRequest struct {
+	DID             string `json:"did"`
+	Latest          bool   `json:"latest"`
+	RemoveAfterRead bool   `json:"remove_after_read"`
+}

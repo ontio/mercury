@@ -25,6 +25,7 @@ const (
 
 	SendGeneralMsgType
 	ReceiveGeneralMsgType
+	QueryGeneralMessageType
 
 	QueryCredentialType
 	QueryPresentationType
