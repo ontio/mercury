@@ -200,24 +200,30 @@ func Connection(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendConnectionRequestType)
-	_, err = HttpPostData(url, string(bys))
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.ConnectionRequestType)
+	body, err := HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
+	fmt.Printf(":%s\n", body)
 	return nil
 }
 
 func SendMsg(ctx *cli.Context) error {
-	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	data := ctx.String(cmd.GetFlagName(cmd.SendMsgFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
-	dataMsg, err := hex.DecodeString(data)
+	basicMsg := &message.BasicMessage{}
+	err := json.Unmarshal([]byte(data), basicMsg)
 	if err != nil {
-		return fmt.Errorf("DecodeString err:%s", err)
+		return err
+	}
+	reqData, err := json.Marshal(basicMsg)
+	if err != nil {
+		return err
 	}
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
-			Data:    dataMsg,
+			Data:    reqData,
 			MsgType: int(message.SendGeneralMsgType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
@@ -229,10 +235,11 @@ func SendMsg(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendGeneralMsgType)
-	_, err = HttpPostData(url, string(bys))
+	body, err := HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
+	fmt.Printf(":%s\n", body)
 	return nil
 }
 

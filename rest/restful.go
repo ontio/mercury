@@ -44,24 +44,6 @@ func Invite(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
-func SendConnectionReq(c *gin.Context) {
-	resp := Gin{C: c}
-	req := &message.ConnectionRequest{}
-	err := c.Bind(req)
-	if err != nil {
-		middleware.Log.Errorf("Send ConnectionRequest err:%s", err)
-		resp.Response(http.StatusOK, 0, err.Error(), nil)
-		return
-	}
-	_, err = SendMsg(message.SendConnectionRequestType, req)
-	if err != nil {
-		middleware.Log.Errorf("Send Connection Req err:%s", err.Error())
-		resp.Response(http.StatusOK, 0, err.Error(), nil)
-		return
-	}
-	resp.Response(http.StatusOK, 0, "", nil)
-}
-
 func ConnectRequest(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionRequest{}
@@ -599,6 +581,9 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 	switch msg.Message.MsgType {
 	case int(message.InvitationType):
 		req = &message.Invitation{}
+
+	case int(message.ConnectionRequestType):
+		req = &message.ConnectionRequest{}
 
 	case int(message.SendProposalCredentialType):
 		req = &message.ProposalCredential{}
