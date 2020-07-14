@@ -47,7 +47,7 @@ func GenUUID() string {
 	return uuid.New().String()
 }
 
-func CutDId(did string)string {
+func CutDId(did string) string {
 	var realdid string
 	if strings.Contains(did, "#") {
 		realdid = strings.Split(did, "#")[0]

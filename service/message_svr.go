@@ -88,8 +88,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
 			routerdid = msg.Conn.TheirDid
 		} else {
-			routerdid = msg.Conn.TheirRouter[0]
-
+			routerdid = utils.CutDId(msg.Conn.TheirRouter[0])
 		}
 		msg := &packager.Envelope{
 			Message: &packager.MessageData{
@@ -97,7 +96,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 				MsgType: int(msg.Msg.MessageType),
 			},
 			FromDID: msg.Conn.MyDid,
-			ToDID: routerdid,
+			ToDID:   routerdid,
 		}
 		data, err = m.packager.PackMessage(msg)
 		if err != nil {
