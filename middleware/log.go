@@ -40,9 +40,6 @@ func LoggerToFile() gin.HandlerFunc {
 	Log.SetLevel(logrus.DebugLevel)
 	Log.SetOutput(os.Stdout)
 	Log.SetReportCaller(true)
-	Log.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
 	logWriter, err := rotatelogs.New(
 		logFilePath+nowTime+"_Log.log",
 		rotatelogs.WithLinkName(logFilePath),
