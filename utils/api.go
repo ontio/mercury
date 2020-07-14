@@ -31,7 +31,7 @@ func GetApiName(msgType message.MessageType) string {
 	switch msgType {
 	case message.InvitationType:
 		return Group_Api_V1 + Invite_Api
-   case message.ConnectionRequestType:
+	case message.ConnectionRequestType:
 		return Group_Api_V1 + ConnectRequest_Api
 	case message.ConnectionResponseType:
 		return Group_Api_V1 + ConnectResponse_Api

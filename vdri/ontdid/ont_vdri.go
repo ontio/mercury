@@ -11,6 +11,7 @@ import (
 	"git.ont.io/ontid/otf/vdri"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
+	"strings"
 	"time"
 )
 
@@ -101,7 +102,7 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 
 func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.Store) (*message.Presentation, error) {
 
-	holderdid := req.Connection.TheirDid
+	holderdid := req.Connection.MyDid
 	creds := make([]string, 0)
 	for _, attachment := range req.RequestPresentationAttach {
 		b64 := attachment.Data.Base64
@@ -158,7 +159,14 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 }
 func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 
-	bts, err := o.ontSdk.Native.OntId.GetDocumentJson(did)
+	var realdid string
+	if strings.Contains(did, "#") {
+		realdid = strings.Split(did, "#")[0]
+	} else {
+		realdid = did
+	}
+
+	bts, err := o.ontSdk.Native.OntId.GetDocumentJson(realdid)
 	if err != nil {
 		return nil, err
 	}

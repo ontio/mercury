@@ -84,13 +84,20 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		return
 	}
 	if m.enableEnvelop {
+		var routerdid string
+		if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
+			routerdid = msg.Conn.TheirDid
+		} else {
+			routerdid = msg.Conn.TheirRouter[0]
+		}
 		msg := &packager.Envelope{
 			Message: &packager.MessageData{
-				Data: data,
-				MsgType:int(msg.Msg.MessageType),
+				Data:    data,
+				MsgType: int(msg.Msg.MessageType),
 			},
 			FromDID: msg.Conn.MyDid,
-			ToDID:   msg.Conn.TheirDid,
+			//ToDID:   msg.Conn.TheirDid,
+			ToDID: routerdid,
 		}
 		data, err = m.packager.PackMessage(msg)
 		if err != nil {
@@ -116,11 +123,18 @@ func (m *MsgService) HttpPostData(url, data string) error {
 }
 
 func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
-	doc, err := m.vdri.GetDIDDoc(msg.Conn.TheirDid)
+	var routerdid string
+	if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
+		routerdid = msg.Conn.TheirDid
+	} else {
+		routerdid = msg.Conn.TheirRouter[0]
+	}
+	doc, err := m.vdri.GetDIDDoc(routerdid)
 	if err != nil {
 		return "", err
 	}
-	endpoint, err := doc.GetServicePoint(fmt.Sprintf("%s#%s", msg.Conn.TheirDid, msg.Conn.TheirServiceId))
+	//endpoint, err := doc.GetServicePoint(fmt.Sprintf("%s#%s", msg.Conn.TheirDid, msg.Conn.TheirServiceId))
+	endpoint, err := doc.GetServicePoint(fmt.Sprintf(routerdid))
 	if err != nil {
 		return "", err
 	}

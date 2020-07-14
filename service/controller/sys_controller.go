@@ -121,12 +121,12 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		res.Type = vdri.ConnectionResponseSpec
 		//self conn
 		res.Connection = message.Connection{
-			MyDid:          ivrc.Invitation.Did,
-			MyServiceId:    ivrc.Invitation.ServiceId,
-			MyRouter:       ivrc.Invitation.Router,
-			TheirDid:       req.Connection.MyDid,
-			TheirServiceId: req.Connection.MyServiceId,
-			TheirRouter:    req.Connection.MyRouter,
+			MyDid: ivrc.Invitation.Did,
+			//MyServiceId:    ivrc.Invitation.ServiceId,
+			MyRouter: ivrc.Invitation.Router,
+			TheirDid: req.Connection.MyDid,
+			//TheirServiceId: req.Connection.MyServiceId,
+			TheirRouter: req.Connection.MyRouter,
 		}
 
 		outmsg := message.Message{
@@ -152,7 +152,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		connid := req.Thread.ID
 
 		//2. create and save a connection object
-		err := s.SaveConnection(req.Connection)
+		err := s.SaveConnection(service.ReverseConnection(req.Connection))
 		if err != nil {
 			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
 			return nil, err
@@ -210,14 +210,16 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	case message.SendGeneralMsgType:
 		middleware.Log.Infof("resolve SendGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
+		//todo remove me
 		data, err := json.Marshal(req)
 		if err != nil {
 			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
-		middleware.Log.Infof("we got a message: %s", data)
+		middleware.Log.Infof("==we will send a message: %s", data)
+		//todo end
 
-		conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid, req.Connection.TheirServiceId)
+		conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid)
 		if err != nil {
 			middleware.Log.Errorf("err on GetConnection:%s\n", err.Error())
 			return nil, err
@@ -227,7 +229,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 
 		om := service.OutboundMsg{
 			Msg: message.Message{
-				MessageType: message.SendGeneralMsgType,
+				MessageType: message.ReceiveGeneralMsgType,
 				Content:     req,
 			},
 			Conn: conn,
@@ -237,7 +239,8 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			middleware.Log.Errorf("err on HandleOutBound:%s\n", err.Error())
 			return nil, err
 		}
-		return nil, nil
+
+		return nil, s.SaveGeneralMsg(req, true)
 
 	case message.ReceiveGeneralMsgType:
 		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
@@ -249,9 +252,9 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
 			return nil, err
 		}
-		middleware.Log.Infof("we got a message: %s\n", data)
+		middleware.Log.Infof("we receive a message: %s\n", data)
 		//todo end
-		return nil, s.SaveGeneralMsg(req)
+		return nil, s.SaveGeneralMsg(req, false)
 
 	case message.QueryGeneralMessageType:
 		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
@@ -335,8 +338,14 @@ func (s Syscontroller) QueryGeneraMsg(did string, latest bool, removeAfterRead b
 
 }
 
-func (s Syscontroller) SaveGeneralMsg(m *message.BasicMessage) error {
-	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, m.Connection.TheirDid))
+func (s Syscontroller) SaveGeneralMsg(m *message.BasicMessage, send bool) error {
+	var did string
+	if send {
+		did = m.Connection.MyDid
+	} else {
+		did = m.Connection.TheirDid
+	}
+	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, did))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -489,10 +498,10 @@ func (s Syscontroller) UpdateConnectionRequest(did, id string, state message.Con
 }
 
 func (s Syscontroller) SaveConnection(con message.Connection) error {
-
 	cr := new(message.ConnectionRec)
 
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, con.MyDid))
+	fmt.Printf("==========%s connection saved\n", key)
 	exist, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -507,11 +516,11 @@ func (s Syscontroller) SaveConnection(con message.Connection) error {
 		if err != nil {
 			return err
 		}
-		cr.Connections[fmt.Sprintf("%s_%s", con.TheirDid, con.TheirServiceId)] = con
+		cr.Connections[con.TheirDid] = con
 	} else {
 		cr.OwnerDID = con.MyDid
 		m := make(map[string]message.Connection)
-		m[fmt.Sprintf("%s_%s", con.TheirDid, con.TheirServiceId)] = con
+		m[con.TheirDid] = con
 		cr.Connections = m
 	}
 	bts, err := json.Marshal(cr)
@@ -521,7 +530,7 @@ func (s Syscontroller) SaveConnection(con message.Connection) error {
 	return s.store.Put(key, bts)
 }
 
-func (s Syscontroller) GetConnection(myDID, theirDID, theirServiceID string) (message.Connection, error) {
+func (s Syscontroller) GetConnection(myDID, theirDID string) (message.Connection, error) {
 	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
 	data, err := s.store.Get(key)
 	if err != nil {
@@ -532,7 +541,7 @@ func (s Syscontroller) GetConnection(myDID, theirDID, theirServiceID string) (me
 	if err != nil {
 		return message.Connection{}, err
 	}
-	c, ok := cr.Connections[fmt.Sprintf("%s_%s", theirDID, theirServiceID)]
+	c, ok := cr.Connections[theirDID]
 	if !ok {
 		return message.Connection{}, fmt.Errorf("connection not found!")
 	}

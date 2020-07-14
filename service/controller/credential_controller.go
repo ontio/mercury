@@ -166,7 +166,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		req := msg.Content.(*message.IssueCredential)
 
 		//store the credential
-		err := s.SaveCredential(req.Connection.MyDid, req.Thread.ID, *req)
+		err := s.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
@@ -264,7 +264,7 @@ func (s CredentialController) SaveCredential(did, id string, credential message.
 	}
 
 	rec := message.CredentialRec{
-		OwnerDID:   credential.Connection.TheirServiceId,
+		OwnerDID:   credential.Connection.TheirDid,
 		Credential: credential,
 		Timestamp:  time.Now(),
 	}

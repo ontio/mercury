@@ -114,7 +114,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.Presentation)
 
-		err := p.SavePresentation(req.Connection.MyDid, req.Thread.ID, *req)
+		err := p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
 		if err != nil {
 			return nil, err
 		}
