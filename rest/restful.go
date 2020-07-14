@@ -545,8 +545,11 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	if msg.Message == nil {
+		return nil,fmt.Errorf("msg is nil")
+	}
 	var req interface{}
-	switch msg.MsgType {
+	switch msg.Message.MsgType {
 	case int(message.InvitationType):
 		req = &message.ConnectionRequest{}
 
@@ -584,7 +587,7 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 		req = &message.QueryPresentationRequest{}
 
 	default:
-		return nil, fmt.Errorf("msg type err:%s", msg.MsgType)
+		return nil, fmt.Errorf("msg type err:%s", msg.Message.MsgType)
 	}
 	err = json.Unmarshal(msg.Message.Data, req)
 	if err != nil {

@@ -52,9 +52,9 @@ func (bp *Packager) PackMessage(envelope *packager.Envelope) ([]byte, error) {
 	packMsg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data: data,
+			MsgType: envelope.Message.MsgType,
 			Sign: sign,
 		},
-		MsgType: envelope.MsgType,
 		FromDID: envelope.FromDID,
 		ToDID:   envelope.ToDID,
 	}
@@ -96,8 +96,8 @@ func (bp *Packager) UnpackMessage(encMessage []byte) (*packager.Envelope, error)
 	return &packager.Envelope{
 		Message: &packager.MessageData{
 			Data: msg,
+			MsgType: data.Message.MsgType,
 		},
-		MsgType: data.MsgType,
 		FromDID: data.FromDID,
 		ToDID:   data.ToDID,
 	}, nil
