@@ -80,7 +80,22 @@ func ConnectRequest(c *gin.Context) {
 func ConnectResponse(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionResponse{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ConnectionResponse)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ConnectResponse err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -98,7 +113,22 @@ func ConnectResponse(c *gin.Context) {
 func ConnectAck(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ConnectionACK{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.ConnectionACK)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ConnectAck err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -584,6 +614,12 @@ func ParseMsg(c *gin.Context) (interface{}, error) {
 
 	case int(message.ConnectionRequestType):
 		req = &message.ConnectionRequest{}
+
+	case int(message.ConnectionResponseType):
+		req = &message.ConnectionResponse{}
+
+	case int(message.ConnectionACKType):
+		req = &message.ConnectionACK{}
 
 	case int(message.SendProposalCredentialType):
 		req = &message.ProposalCredential{}
