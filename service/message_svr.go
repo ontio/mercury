@@ -128,7 +128,7 @@ func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
 	} else {
 		routerdid = msg.Conn.TheirRouter[0]
 	}
-	doc, err := m.vdri.GetDIDDoc(routerdid)
+	doc, err := m.vdri.GetDIDDoc(utils.CutDId(routerdid))
 	if err != nil {
 		return "", err
 	}
