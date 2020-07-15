@@ -8,6 +8,8 @@ const (
 	ConnectionRequestType
 	ConnectionResponseType
 	ConnectionACKType
+	SendDisconnectType
+	DisconnectType
 
 	SendProposalCredentialType
 	ProposalCredentialType

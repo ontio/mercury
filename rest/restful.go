@@ -143,6 +143,72 @@ func ConnectAck(c *gin.Context) {
 	resp.Response(http.StatusOK, 0, "", data)
 }
 
+func Disconnect(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.DisconnectRequest{}
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.DisconnectRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
+	if err != nil {
+		middleware.Log.Errorf("Disconnect err:%s", err)
+		resp.Response(http.StatusOK, 500, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.DisconnectType, req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.DisconnectType, err)
+		resp.Response(http.StatusOK, 500, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
+func SendDisconnect(c *gin.Context) {
+	resp := Gin{C: c}
+	req := &message.DisconnectRequest{}
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.DisconnectRequest)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
+	if err != nil {
+		middleware.Log.Errorf("Disconnect err:%s", err)
+		resp.Response(http.StatusOK, 500, err.Error(), nil)
+		return
+	}
+	data, err := SendMsg(message.SendDisconnectType, req)
+	if err != nil {
+		middleware.Log.Errorf("ProposalCredentialReq msg type:%d,err:%s", message.SendDisconnectType, err)
+		resp.Response(http.StatusOK, 500, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, 0, "", data)
+}
+
 func SendProposalCredentialReq(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.ProposalCredential{}
@@ -156,7 +222,7 @@ func SendProposalCredentialReq(c *gin.Context) {
 		}
 		req, ok = msg.(*message.ProposalCredential)
 		if !ok {
-			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			resp.Response(http.StatusOK, 500, "msg parse error", nil)
 			return
 		}
 	} else {

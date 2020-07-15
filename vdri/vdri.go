@@ -10,6 +10,7 @@ type VDRI interface {
 	OfferCredential(req *message.ProposalCredential) (*message.OfferCredential, error)
 	IssueCredential(req *message.RequestCredential) (*message.IssueCredential, error)
 	PresentProof(req *message.RequestPresentation, db store.Store) (*message.Presentation, error)
+	VerifyDID(did string) bool
 }
 
 type CommonDIDDoc interface {

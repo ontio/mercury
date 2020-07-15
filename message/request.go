@@ -51,6 +51,12 @@ type ConnectionACK struct {
 	Connection Connection `json:"connection,omitempty"`
 }
 
+type DisconnectRequest struct {
+	Type       string     `json:"@type,omitempty"`
+	Id         string     `json:"@id,omitempty"`
+	Connection Connection `json:"connection,omitempty"`
+}
+
 type CredentialACK struct {
 	Type       string     `json:"@type,omitempty"`
 	Id         string     `json:"@id,omitempty"`

@@ -56,8 +56,8 @@ func (p PresentationController) Name() string {
 	return "CredentialController"
 }
 
-func (s PresentationController) Shutdown() error {
-	middleware.Log.Infof("%s shutdown\n", s.Name())
+func (p PresentationController) Shutdown() error {
+	middleware.Log.Infof("%s shutdown\n", p.Name())
 	return nil
 }
 
@@ -85,7 +85,11 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 	case message.RequestPresentationType:
 		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
-
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
 		presentation, err := p.vdri.PresentProof(req, p.store)
 		if err != nil {
 			middleware.Log.Errorf("errors on PresentProof :%s", err.Error())
@@ -113,8 +117,12 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 	case message.PresentationType:
 		middleware.Log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.Presentation)
-
-		err := p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
+		err = p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
 		if err != nil {
 			return nil, err
 		}
@@ -123,7 +131,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		ack.Thread = req.Thread
 		ack.Connection = service.ReverseConnection(req.Connection)
 		ack.Type = vdri.PresentationACKSpec
-		ack.Status = ACK_SUCCEED
+		ack.Status = utils.ACK_SUCCEED
 
 		outMsg := service.OutboundMsg{
 			Msg: message.Message{
@@ -141,8 +149,12 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 	case message.PresentationACKType:
 		middleware.Log.Infof("resolve PresentationACKType")
 		req := msg.Content.(*message.PresentationACK)
-
-		err := p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
+		err = p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
 		if err != nil {
 			return nil, err
 		}

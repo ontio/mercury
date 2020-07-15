@@ -81,6 +81,13 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.ProposalCredentialType:
 		middleware.Log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.ProposalCredential)
+
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
+
 		//todo deal with the proposal, do we need store the proposal???
 		middleware.Log.Infof("proposal is %v", req)
 
@@ -107,8 +114,14 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.OfferCredentialType:
 		middleware.Log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.OfferCredential)
+
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
 		//todo save the offer in store
-		err := s.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
+		err = s.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveOfferCredential:%s", err.Error())
 			return nil, err
@@ -134,8 +147,12 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.RequestCredentialType:
 		middleware.Log.Infof("resolve RequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
-
-		err := s.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
+		err = s.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
@@ -164,9 +181,13 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	case message.IssueCredentialType:
 		middleware.Log.Infof("resolve IssueCredentialType")
 		req := msg.Content.(*message.IssueCredential)
-
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
 		//store the credential
-		err := s.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
+		err = s.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
 		if err != nil {
 			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
@@ -178,7 +199,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 			Thread: message.Thread{
 				ID: req.Thread.ID,
 			},
-			Status:     ACK_SUCCEED,
+			Status:     utils.ACK_SUCCEED,
 			Connection: service.ReverseConnection(req.Connection),
 		}
 

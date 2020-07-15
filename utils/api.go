@@ -8,6 +8,8 @@ const (
 	ConnectRequest_Api            = "connectionrequest"
 	ConnectResponse_Api           = "connectionresponse"
 	ConnectAck_Api                = "connectionack"
+	SendDisconnect_Api            = "senddisconnect"
+	Disconnect_Api                = "disconnect"
 	SendProposalCredentialReq_Api = "sendproposalcredential"
 	ProposalCredentialReq_Api     = "proposalcredential"
 	OfferCredential_Api           = "offercredential"

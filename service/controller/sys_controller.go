@@ -15,16 +15,6 @@ import (
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
-const (
-	InvitationKey    = "Invitation"
-	ConnectionReqKey = "ConnectionReq"
-	ConnectionKey    = "Connection"
-	GeneralMsgKey    = "General"
-
-	ACK_SUCCEED = "succeed"
-	ACK_FAILED  = "failed"
-)
-
 type Syscontroller struct {
 	account *sdk.Account
 	//did     vdri.Did
@@ -163,7 +153,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			Type:       vdri.ConnectionACKSpec,
 			Id:         utils.GenUUID(),
 			Thread:     message.Thread{ID: connid},
-			Status:     ACK_SUCCEED,
+			Status:     utils.ACK_SUCCEED,
 			Connection: service.ReverseConnection(req.Connection),
 		}
 
@@ -183,7 +173,7 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		middleware.Log.Infof("resolve ConnectionACK")
 		req := msg.Content.(*message.ConnectionACK)
 		//1. update connection request to receive ack state
-		if req.Status != ACK_SUCCEED {
+		if req.Status != utils.ACK_SUCCEED {
 			//todo remove connectionreq when failed?
 			return nil, fmt.Errorf("got failed ACK ")
 		}
@@ -203,6 +193,41 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		err = s.SaveConnection(service.ReverseConnection(cr.ConnReq.Connection))
 		if err != nil {
 			middleware.Log.Errorf("err on SaveConnection:%s\n", err.Error())
+			return nil, err
+		}
+		return nil, nil
+
+	case message.SendDisconnectType:
+		middleware.Log.Infof("resolve Send disconnect")
+		req := msg.Content.(*message.DisconnectRequest)
+		mydid := req.Connection.MyDid
+		theirdid := req.Connection.TheirDid
+		//1. remove connection
+		err := s.DeleteConnection(mydid, theirdid)
+		if err != nil {
+			return nil, err
+		}
+		outmsg := message.Message{
+			MessageType: message.DisconnectType,
+			Content:     req,
+		}
+		err = s.msgsvr.HandleOutBound(service.OutboundMsg{
+			Msg:  outmsg,
+			Conn: service.ReverseConnection(req.Connection),
+		})
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+
+	case message.DisconnectType:
+		middleware.Log.Infof("resolve receive disconnect")
+		req := msg.Content.(*message.DisconnectRequest)
+		mydid := req.Connection.MyDid
+		theirdid := req.Connection.TheirDid
+		//1. remove connection
+		err := s.DeleteConnection(mydid, theirdid)
+		if err != nil {
 			return nil, err
 		}
 		return nil, nil
@@ -245,6 +270,12 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	case message.ReceiveGeneralMsgType:
 		middleware.Log.Infof("resolve ReceiveGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
+
+		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
+		if err != nil {
+			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			return nil, err
+		}
 
 		//todo remove me
 		data, err := json.Marshal(req)
@@ -290,7 +321,7 @@ func (s Syscontroller) toMap(v interface{}) (map[string]interface{}, error) {
 }
 
 func (s Syscontroller) QueryGeneraMsg(did string, latest bool, removeAfterRead bool) ([]message.BasicMessage, error) {
-	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, did))
+	key := []byte(fmt.Sprintf("%s_%s", utils.GeneralMsgKey, did))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return nil, err
@@ -345,7 +376,7 @@ func (s Syscontroller) SaveGeneralMsg(m *message.BasicMessage, send bool) error 
 	} else {
 		did = m.Connection.TheirDid
 	}
-	key := []byte(fmt.Sprintf("%s_%s", GeneralMsgKey, did))
+	key := []byte(fmt.Sprintf("%s_%s", utils.GeneralMsgKey, did))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -376,7 +407,7 @@ func (s Syscontroller) SaveGeneralMsg(m *message.BasicMessage, send bool) error 
 
 func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 
-	key := fmt.Sprintf("%s_%s_%s", InvitationKey, iv.Did, iv.Id)
+	key := fmt.Sprintf("%s_%s_%s", utils.InvitationKey, iv.Did, iv.Id)
 	b, err := s.store.Has([]byte(key))
 	if err != nil {
 		return err
@@ -399,7 +430,7 @@ func (s Syscontroller) SaveInvitation(iv message.Invitation) error {
 }
 
 func (s Syscontroller) GetInvitation(did, id string) (*message.InvitationRec, error) {
-	key := []byte(fmt.Sprintf("%s_%s_%s", InvitationKey, did, id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", utils.InvitationKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
@@ -415,7 +446,7 @@ func (s Syscontroller) GetInvitation(did, id string) (*message.InvitationRec, er
 }
 
 func (s Syscontroller) UpdateInvitation(did, id string, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", InvitationKey, did, id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", utils.InvitationKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
@@ -438,7 +469,7 @@ func (s Syscontroller) UpdateInvitation(did, id string, state message.Connection
 }
 
 func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, cr.Connection.TheirDid, cr.Id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", utils.ConnectionReqKey, cr.Connection.TheirDid, cr.Id))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
@@ -460,7 +491,7 @@ func (s Syscontroller) SaveConnectionRequest(cr message.ConnectionRequest, state
 }
 
 func (s Syscontroller) GetConnectionRequest(did, id string) (*message.ConnectionRequestRec, error) {
-	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, did, id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", utils.ConnectionReqKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return nil, err
@@ -474,7 +505,7 @@ func (s Syscontroller) GetConnectionRequest(did, id string) (*message.Connection
 }
 
 func (s Syscontroller) UpdateConnectionRequest(did, id string, state message.ConnectionState) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", ConnectionReqKey, did, id))
+	key := []byte(fmt.Sprintf("%s_%s_%s", utils.ConnectionReqKey, did, id))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return err
@@ -500,7 +531,7 @@ func (s Syscontroller) UpdateConnectionRequest(did, id string, state message.Con
 func (s Syscontroller) SaveConnection(con message.Connection) error {
 	cr := new(message.ConnectionRec)
 
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, con.MyDid))
+	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, con.MyDid))
 	fmt.Printf("==========%s connection saved\n", key)
 	exist, err := s.store.Has(key)
 	if err != nil {
@@ -531,7 +562,7 @@ func (s Syscontroller) SaveConnection(con message.Connection) error {
 }
 
 func (s Syscontroller) GetConnection(myDID, theirDID string) (message.Connection, error) {
-	key := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDID))
+	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, myDID))
 	data, err := s.store.Get(key)
 	if err != nil {
 		return message.Connection{}, err
@@ -547,4 +578,27 @@ func (s Syscontroller) GetConnection(myDID, theirDID string) (message.Connection
 	}
 
 	return c, nil
+}
+
+func (s Syscontroller) DeleteConnection(myDID, theirDID string) error {
+	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, myDID))
+
+	data, err := s.store.Get(key)
+	if err != nil {
+		return err
+	}
+	cr := new(message.ConnectionRec)
+	err = json.Unmarshal(data, cr)
+	if err != nil {
+		return err
+	}
+
+	delete(cr.Connections, theirDID)
+
+	data, err = json.Marshal(cr)
+	if err != nil {
+		return err
+	}
+
+	return s.store.Put(key, data)
 }

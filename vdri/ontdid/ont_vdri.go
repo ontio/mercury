@@ -11,6 +11,7 @@ import (
 	"git.ont.io/ontid/otf/vdri"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
+	"strings"
 	"time"
 )
 
@@ -229,4 +230,8 @@ func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 			Updated:   nil,
 			Proof:     nil,
 		}, nil*/
+}
+
+func (o OntVDRI) VerifyDID(did string) bool {
+	return strings.HasPrefix(did, "did:ont:")
 }
