@@ -31,7 +31,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "new invitation",
 			Description: "Generate Invitation",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -45,7 +45,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "connect",
 			Description: "Connect  Data",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -59,7 +59,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "send msg",
 			Description: "send basic msg data",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -73,7 +73,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "query basic msg",
 			Description: "query basic message",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -88,7 +88,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "req Credential",
 			Description: "req credential",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -102,7 +102,7 @@ var HttpClientCmd = cli.Command{
 			Usage:       "req presentation data",
 			Description: "req presentation data",
 			Flags: []cli.Flag{
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.HttpClientFlag,
 				cmd.WalletFileFlag,
 				cmd.FromDID,
@@ -117,7 +117,7 @@ var HttpClientCmd = cli.Command{
 			Description: "query a stored credential",
 			Flags: []cli.Flag{
 				cmd.HttpClientFlag,
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.FromDID,
 				cmd.ToDID,
 				cmd.CredentialIdFlag,
@@ -130,7 +130,7 @@ var HttpClientCmd = cli.Command{
 			Description: "query a stored presentation",
 			Flags: []cli.Flag{
 				cmd.HttpClientFlag,
-				cmd.RPCPortFlag,
+				cmd.RpcUrlFlag,
 				cmd.FromDID,
 				cmd.ToDID,
 				cmd.PresentationIdFlag,
@@ -151,7 +151,7 @@ func initPackager(addr string) *ecdsa.Packager {
 
 func newInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
 	invite := &message.Invitation{}
 	err := json.Unmarshal([]byte(data), invite)
@@ -185,7 +185,7 @@ func newInvitation(ctx *cli.Context) error {
 
 func connection(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	invite := &message.ConnectionRequest{}
 	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
@@ -219,7 +219,7 @@ func connection(ctx *cli.Context) error {
 
 func sendMsg(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.SendMsgFlag))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	basicMsg := &message.BasicMessage{}
 	err := json.Unmarshal([]byte(data), basicMsg)
 	if err != nil {
@@ -254,7 +254,7 @@ func sendMsg(ctx *cli.Context) error {
 func queryMsg(ctx *cli.Context) error {
 	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	latest := ctx.Bool(cmd.GetFlagName(cmd.ReadLatestMsgFlag))
 	rar := ctx.Bool(cmd.GetFlagName(cmd.RemoveAfterReadFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
@@ -295,7 +295,7 @@ func queryMsg(ctx *cli.Context) error {
 
 func reqCredential(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ReqCredentialCmd))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	invite := &message.RequestCredential{}
 	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
@@ -329,7 +329,7 @@ func reqCredential(ctx *cli.Context) error {
 
 func reqPresentation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ReqPresentationCmd))
-	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	invite := &message.RequestPresentation{}
 	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
@@ -364,7 +364,7 @@ func reqPresentation(ctx *cli.Context) error {
 func queryCredential(ctx *cli.Context) error {
 	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	rpc := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	req := message.QueryCredentialRequest{
 		DId: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		Id:  id,
@@ -400,7 +400,7 @@ func queryCredential(ctx *cli.Context) error {
 func queryPresentation(ctx *cli.Context) error {
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
+	rpc := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 
 	req := message.QueryPresentationRequest{
 		DId: ctx.String(cmd.GetFlagName(cmd.FromDID)),

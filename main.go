@@ -28,7 +28,7 @@ func setupAPP() *cli.App {
 		cmd.LogLevelFlag,
 		cmd.HttpIpFlag,
 		cmd.HttpPortFlag,
-		cmd.ChainAddrFlag,
+		cmd.RestUrlFlag,
 		cmd.HttpsPortFlag,
 		cmd.EnableHttpsFlag,
 		cmd.EnablePackageFlag,
@@ -52,7 +52,7 @@ func main() {
 
 func startAgent(ctx *cli.Context) {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(cmd.GetFlagName(cmd.ChainAddrFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag)))
 	account, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontSdk)
 	if err != nil {
 		panic(err)

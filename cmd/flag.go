@@ -13,8 +13,8 @@ const (
 	DEFAULT_HTTP_IP               = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH         = "./Log/"
 	DEFAULT_STORE_DIR             = "./db_otf/"
-	DEFAULT_BLOCK_CHAIN_ADDR      = "http://polaris2.ont.io:20336"
-	DEFAULT_RPC_URL               = "http://polaris2.ont.io:20336"
+	DEFAULT_BLOCK_CHAIN_REST_URL  = "http://polaris2.ont.io:20334"
+	DEFAULT_BLOCK_CHAIN_RPC_URL   = "http://polaris2.ont.io:20336"
 	MIN_TRANSACTION_GAS           = 20000
 	DEFAULT_GAS_PRICE             = 2500
 	DEFAULT_WALLET_FILE_NAME      = "./wallet.dat"
@@ -57,15 +57,15 @@ var (
 		Usage: "Set http rest ip addr default:127.0.0.1",
 		Value: DEFAULT_HTTP_IP,
 	}
-	ChainAddrFlag = cli.StringFlag{
-		Name:  "chain-addr",
+	RestUrlFlag = cli.StringFlag{
+		Name:  "rest-url",
 		Usage: "Set block chain rpc addr default:127.0.0.1:20334",
-		Value: DEFAULT_BLOCK_CHAIN_ADDR,
+		Value: DEFAULT_BLOCK_CHAIN_REST_URL,
 	}
-	RPCPortFlag = cli.StringFlag{
-		Name:  "http-rpc-url",
+	RpcUrlFlag = cli.StringFlag{
+		Name:  "chain-rpc-url",
 		Usage: "Json rpc server listening port `<url>`",
-		Value: DEFAULT_RPC_URL,
+		Value: DEFAULT_BLOCK_CHAIN_RPC_URL,
 	}
 	TransactionGasPriceFlag = cli.Uint64Flag{
 		Name:  "gasprice",

@@ -1,11 +1,40 @@
-### use http_cmd cli manual
+##agent-otf cli manual
 
+#####1、did cli cmd
+
+```shell script
+./agent-otf did newdid
+
+Password:
+Did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ,  Hash:4c4d3b8bafd22c16cc2b39e8383c0d060430e608d1726713b8a9ade72db95159
+did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
 ```
+
+```shell script
+./agent-otf addsvr --did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --service-id "1" --type "1" --endpoint "http://127.0.0.1:8080"  --index 1
+
+Password:
+txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
+```
+
+```shell script
+./agent-otf did diddoc --did did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
+
+
+doc: &{[https://www.w3.org/ns/did/v1 https://ontid.ont.io/did/v1] did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ [map[controller:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ id:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1 publicKeyHex:03afb755bf9c9a3a7577b6d210f07aeac2730ff9800b7af443917be80ef1ddd52f type:EcdsaSecp256r1VerificationKey2019]] [did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1] <nil> <nil> [{did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#1 1 http://127.0.0.1:8080}] <nil> 1.59480394e+09 1.594804114e+09 }
+```
+```shell script
+/agent-otf did endpoint --did did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
+endPoints:[http://127.0.0.1:8080]
+```
+
+####2、http_client cli cmd
+
+```shell script
 ./agent-otf httpclient invitation --from-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --to-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --invitation-data '{     "@type": "appuser-002",     "@id": "8",     "lable": "001",     "did": "did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF",     "router":["did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF#1"] }'
 ```
 
-
-```
+```shell script
 ./agent-otf httpclient connect --from-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --to-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --connect-data '{
     "@id": "009",
     "@type": "spec/connections/1.0/request",
@@ -20,7 +49,7 @@
 }'
 ```
 
-```
+```shell script
 ./agent-otf httpclient sendmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --send-msg '{
     "content":"test agent",
     "connection": {
@@ -32,7 +61,7 @@
 }'
 ```
 
-```
+```shell script
 ./agent-otf httpclient reqcredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-credential '{
     "@type":"spec/issue-credential/1.0/request-credential",
     "@id":"11",
@@ -60,7 +89,7 @@
 }'
 ```
 
-```
+```shell script
 ./agent-otf httpclient reqpresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-presentation '{
     "@type":"spec/issue-credential/1.0/propose-credential",
     "@id":"13",
@@ -74,7 +103,7 @@
 }'
 ```
 
-```
+```shell script
 ./agent-otf httpclient querycredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --credential-id 11
 Password:
 ==============credential==============

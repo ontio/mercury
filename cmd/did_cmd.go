@@ -21,7 +21,7 @@ var DidCommand = cli.Command{
 			Description: "new did,then register to block chain",
 			Action:      newDid,
 			Flags: []cli.Flag{
-				RPCPortFlag,
+				RpcUrlFlag,
 				TransactionGasPriceFlag,
 				TransactionGasLimitFlag,
 				WalletFileFlag,
@@ -35,7 +35,7 @@ var DidCommand = cli.Command{
 			Description: "Use Did add service endpoint to contract",
 			Action:      addService,
 			Flags: []cli.Flag{
-				RPCPortFlag,
+				RpcUrlFlag,
 				TransactionGasPriceFlag,
 				TransactionGasLimitFlag,
 				WalletFileFlag,
@@ -52,7 +52,7 @@ var DidCommand = cli.Command{
 			Description: "query did doc from block chain",
 			Action:      queryDidDoc,
 			Flags: []cli.Flag{
-				RPCPortFlag,
+				RpcUrlFlag,
 				DidFlag,
 			},
 		},
@@ -62,7 +62,7 @@ var DidCommand = cli.Command{
 			Description: "query service endPoint from block chain",
 			Action:      QueryEndPoint,
 			Flags: []cli.Flag{
-				RPCPortFlag,
+				RpcUrlFlag,
 				DidFlag,
 			},
 		},
@@ -71,7 +71,7 @@ var DidCommand = cli.Command{
 
 func newDid(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RpcUrlFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	optionFile := checkFileName(ctx)
@@ -89,7 +89,7 @@ func newDid(ctx *cli.Context) error {
 
 func addService(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RpcUrlFlag)))
 	gasPrice := ctx.Uint64(TransactionGasPriceFlag.Name)
 	gasLimit := ctx.Uint64(TransactionGasLimitFlag.Name)
 	did := ctx.String(GetFlagName(DidFlag))
@@ -147,7 +147,7 @@ func RegisterDid(did string, ontSdk *sdk.OntologySdk, acc *sdk.Account, gasPrice
 
 func queryDidDoc(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RpcUrlFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
 	doc, err := utils.GetDidDocByDid(did, ontSdk)
 	if err != nil {
@@ -159,7 +159,7 @@ func queryDidDoc(ctx *cli.Context) error {
 
 func QueryEndPoint(ctx *cli.Context) error {
 	ontSdk := sdk.NewOntologySdk()
-	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RPCPortFlag)))
+	ontSdk.NewRpcClient().SetAddress(ctx.String(GetFlagName(RpcUrlFlag)))
 	did := ctx.String(GetFlagName(DidFlag))
 	endPoints, err := utils.GetServiceEndpointByDid(did, ontSdk)
 	if err != nil {
