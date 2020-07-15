@@ -310,7 +310,22 @@ func ProposalCredentialReq(c *gin.Context) {
 func SendRequestCredential(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.RequestCredential{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.RequestCredential)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("SendRequestCredential err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -393,7 +408,22 @@ func IssueCredential(c *gin.Context) {
 func CredentialAckInfo(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.CredentialACK{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.CredentialACK)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("CredentialAck err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -477,7 +507,22 @@ func SendRequestPresentation(c *gin.Context) {
 func Presentation(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.Presentation{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.Presentation)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("Presentation err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -495,7 +540,22 @@ func Presentation(c *gin.Context) {
 func PresentationAckInfo(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.PresentationACK{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.PresentationACK)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("PresentationACK err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -546,7 +606,22 @@ func SendGeneralMsg(c *gin.Context) {
 func ReceiveGeneralMsg(c *gin.Context) {
 	resp := Gin{C: c}
 	req := &message.BasicMessage{}
-	err := c.Bind(req)
+	var err error
+	var ok bool
+	if EnablePackage {
+		msg, err := ParseMsg(c)
+		if err != nil {
+			resp.Response(http.StatusOK, 0, err.Error(), nil)
+			return
+		}
+		req, ok = msg.(*message.BasicMessage)
+		if !ok {
+			resp.Response(http.StatusOK, 0, "msg parse error", nil)
+			return
+		}
+	} else {
+		err = c.Bind(req)
+	}
 	if err != nil {
 		middleware.Log.Errorf("ReceiveGeneralMsg err:%s", err)
 		resp.Response(http.StatusOK, 0, err.Error(), nil)
@@ -595,7 +670,6 @@ func QueryGeneralMsg(c *gin.Context) {
 
 func QueryCredential(c *gin.Context) {
 	resp := Gin{C: c}
-
 	req := &message.QueryCredentialRequest{}
 	var err error
 	var ok bool

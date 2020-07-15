@@ -1,9 +1,13 @@
 package httpclient
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
+
 	"git.ont.io/ontid/otf/cmd"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/packager"
@@ -11,10 +15,6 @@ import (
 	"git.ont.io/ontid/otf/utils"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"time"
 )
 
 var InvitationCmd = cli.Command{
@@ -87,7 +87,7 @@ var ReqCredentialCmd = cli.Command{
 		cmd.WalletFileFlag,
 		cmd.FromDID,
 		cmd.ToDID,
-		cmd.SendCredentialCmd,
+		cmd.ReqCredentialCmd,
 	},
 }
 
@@ -101,7 +101,7 @@ var ReqPresentationCmd = cli.Command{
 		cmd.WalletFileFlag,
 		cmd.FromDID,
 		cmd.ToDID,
-		cmd.SendCredentialCmd,
+		cmd.ReqPresentationCmd,
 	},
 }
 var QueryCredCmd = cli.Command{
@@ -110,11 +110,11 @@ var QueryCredCmd = cli.Command{
 	Description: "query a stored credential",
 	Action:      QueryCredential,
 	Flags: []cli.Flag{
-		cmd.CredentialIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.CredentialIdFlag,
 	},
 }
 var QueryPresentationCmd = cli.Command{
@@ -123,11 +123,11 @@ var QueryPresentationCmd = cli.Command{
 	Description: "query a stored presentation",
 	Action:      QueryPresentation,
 	Flags: []cli.Flag{
-		cmd.PresentationIdFlag,
 		cmd.HttpClientFlag,
 		cmd.RPCPortFlag,
 		cmd.FromDID,
 		cmd.ToDID,
+		cmd.PresentationIdFlag,
 	},
 }
 
@@ -286,7 +286,7 @@ func QueryMsg(ctx *cli.Context) error {
 }
 
 func ReqCredential(ctx *cli.Context) error {
-	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	data := ctx.String(cmd.GetFlagName(cmd.ReqCredentialCmd))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestCredential{}
 	err := json.Unmarshal([]byte(data), invite)
@@ -311,15 +311,16 @@ func ReqCredential(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestCredentialType)
-	_, err = HttpPostData(url, string(bys))
+	body, err := HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
+	fmt.Printf(":%s\n", body)
 	return nil
 }
 
 func ReqPresentation(ctx *cli.Context) error {
-	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
+	data := ctx.String(cmd.GetFlagName(cmd.ReqPresentationCmd))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestPresentation{}
 	err := json.Unmarshal([]byte(data), invite)
@@ -344,91 +345,85 @@ func ReqPresentation(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestPresentationType)
-	_, err = HttpPostData(url, hex.EncodeToString(bys))
+	body, err := HttpPostData(url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
+	fmt.Printf(":%s\n", body)
 	return nil
 }
 
 func QueryCredential(ctx *cli.Context) error {
-
-	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
-	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	req := message.QueryCredentialRequest{
-		DId: fromdid,
+		DId: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		Id:  id,
 	}
-	reqdata, err := json.Marshal(req)
+	reqData, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
-	env := &packager.Envelope{}
-	env.Message = &packager.MessageData{
-		Data:    reqdata,
-		MsgType: int(message.QueryCredentialType),
-		Sign:    nil,
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data:    reqData,
+			MsgType: int(message.QueryCredentialType),
+		},
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
-	env.FromDID = fromdid
-	env.ToDID = todid
-
 	packer := initPackager(rpc)
-	data, err := packer.PackMessage(env)
+	data, err := packer.PackMessage(msg)
 	if err != nil {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryCredentialType)
-	respbts, err := HttpPostData(url, string(data))
+	body, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
 	}
 	fmt.Println("==============credential==============")
-	fmt.Printf("%s\n", respbts)
+	fmt.Printf("%s\n", body)
 	fmt.Println("==============credential==============")
-
 	return nil
 }
 
 func QueryPresentation(ctx *cli.Context) error {
-	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
-	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 
 	req := message.QueryPresentationRequest{
-		DId: fromdid,
+		DId: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		Id:  id,
 	}
-	reqdata, err := json.Marshal(req)
+	reqData, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
-	env := &packager.Envelope{}
-	env.Message = &packager.MessageData{
-		Data:    reqdata,
-		MsgType: int(message.QueryPresentationType),
-		Sign:    nil,
+	msg := &packager.Envelope{
+		Message: &packager.MessageData{
+			Data:    reqData,
+			MsgType: int(message.QueryPresentationType),
+			Sign:    nil,
+		},
+		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
+		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
 	}
-	env.FromDID = fromdid
-	env.ToDID = todid
-
 	packer := initPackager(rpc)
-	data, err := packer.PackMessage(env)
+	data, err := packer.PackMessage(msg)
 	if err != nil {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryPresentationType)
 
-	respbts, err := HttpPostData(url, string(data))
+	body, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
 	}
 	fmt.Println("==============presentation==============")
-	fmt.Printf("%s\n", respbts)
+	fmt.Printf("%s\n", body)
 	fmt.Println("==============presentation==============")
 
 	return nil

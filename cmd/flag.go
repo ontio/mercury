@@ -138,14 +138,14 @@ var (
 		Name:  "remove-after-read",
 		Usage: "remove after read",
 	}
-	SendCredentialCmd = cli.StringFlag{
+	ReqCredentialCmd = cli.StringFlag{
 		Name:  "req-credential",
 		Usage: "req credential data",
 		Value: DEFAULT_REQ_CREDENTIAL_DATA,
 	}
 	ReqPresentationCmd = cli.StringFlag{
-		Name:  "req-credential",
-		Usage: "req credential data",
+		Name:  "req-presentation",
+		Usage: "req presentation data",
 		Value: DEFAULT_REQ_PRESENTATION_DATA,
 	}
 	CredentialIdFlag = cli.StringFlag{
