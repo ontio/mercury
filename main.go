@@ -90,7 +90,7 @@ func startAgent(ctx *cli.Context) {
 	ontvdri := ontdid.NewOntVDRI(ontSdk, account, "")
 	msgSvr := service.NewMessageService(ontvdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)))
 	rest.NewService(account, cfg, db, msgSvr, ontvdri, ontSdk)
-	middleware.Log.Infof("start agent svr%s,port:%s", account.Address, cfg.Port)
+	middleware.Log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
 		err = r.RunTLS(startPort, cmd.DEFAULT_CERT_PATH, cmd.DEFAULT_KEY_PATH)

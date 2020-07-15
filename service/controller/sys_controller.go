@@ -111,11 +111,9 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 		res.Type = vdri.ConnectionResponseSpec
 		//self conn
 		res.Connection = message.Connection{
-			MyDid: ivrc.Invitation.Did,
-			//MyServiceId:    ivrc.Invitation.ServiceId,
-			MyRouter: ivrc.Invitation.Router,
-			TheirDid: req.Connection.MyDid,
-			//TheirServiceId: req.Connection.MyServiceId,
+			MyDid:       ivrc.Invitation.Did,
+			MyRouter:    ivrc.Invitation.Router,
+			TheirDid:    req.Connection.MyDid,
 			TheirRouter: req.Connection.MyRouter,
 		}
 
@@ -223,11 +221,10 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	case message.DisconnectType:
 		middleware.Log.Infof("resolve receive disconnect")
 		req := msg.Content.(*message.DisconnectRequest)
-		mydid := req.Connection.MyDid
-		theirdid := req.Connection.TheirDid
 		//1. remove connection
-		err := s.DeleteConnection(mydid, theirdid)
+		err := s.DeleteConnection(req.Connection.TheirDid, req.Connection.MyDid)
 		if err != nil {
+			middleware.Log.Errorf("error:%s", err.Error())
 			return nil, err
 		}
 		return nil, nil
@@ -235,14 +232,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 	case message.SendGeneralMsgType:
 		middleware.Log.Infof("resolve SendGeneralMsgType")
 		req := msg.Content.(*message.BasicMessage)
-		//todo remove me
-		data, err := json.Marshal(req)
-		if err != nil {
-			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
-			return nil, err
-		}
-		middleware.Log.Infof("==we will send a message: %s", data)
-		//todo end
 
 		conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid)
 		if err != nil {
@@ -277,14 +266,6 @@ func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, err
 			return nil, err
 		}
 
-		//todo remove me
-		data, err := json.Marshal(req)
-		if err != nil {
-			middleware.Log.Errorf("err on Marshal:%s\n", err.Error())
-			return nil, err
-		}
-		middleware.Log.Infof("we receive a message: %s\n", data)
-		//todo end
 		return nil, s.SaveGeneralMsg(req, false)
 
 	case message.QueryGeneralMessageType:
@@ -532,7 +513,6 @@ func (s Syscontroller) SaveConnection(con message.Connection) error {
 	cr := new(message.ConnectionRec)
 
 	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, con.MyDid))
-	fmt.Printf("==========%s connection saved\n", key)
 	exist, err := s.store.Has(key)
 	if err != nil {
 		return err

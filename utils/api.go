@@ -39,6 +39,8 @@ func GetApiName(msgType message.MessageType) string {
 		return Group_Api_V1 + ConnectResponse_Api
 	case message.ConnectionACKType:
 		return Group_Api_V1 + ConnectAck_Api
+	case message.DisconnectType:
+		return Group_Api_V1 + Disconnect_Api
 	case message.ProposalCredentialType:
 		return Group_Api_V1 + ProposalCredentialReq_Api
 	case message.OfferCredentialType:
