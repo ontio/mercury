@@ -8,55 +8,64 @@ import (
 )
 
 var DidCommand = cli.Command{
-	Name:        "did",
-	Usage:       "new did",
-	Description: "Did management commands can generate did",
-	Action:      newDid,
-	Flags: []cli.Flag{
-		RPCPortFlag,
-		TransactionGasPriceFlag,
-		TransactionGasLimitFlag,
-		WalletFileFlag,
-		HttpsPortFlag,
-		EnableHttpsFlag,
-	},
-}
-
-var AddServiceCommand = cli.Command{
-	Name:        "addsvr",
-	Usage:       "add service endpoint",
-	Description: "Use Did add service endpoint",
-	Action:      addService,
-	Flags: []cli.Flag{
-		RPCPortFlag,
-		TransactionGasPriceFlag,
-		TransactionGasLimitFlag,
-		WalletFileFlag,
-		DidFlag,
-		ServiceIdFlag,
-		TypeFlag,
-		ServiceEndPointFlag,
-		IndexFlag,
-	},
-}
-
-var QueryDidDocCommand = cli.Command{
-	Name:   "diddoc",
-	Usage:  "query did doc",
-	Action: queryDidDoc,
-	Flags: []cli.Flag{
-		RPCPortFlag,
-		DidFlag,
-	},
-}
-
-var QueryServiceEndPointCommand = cli.Command{
-	Name:   "endpoint",
-	Usage:  "query service end point",
-	Action: QueryEndPoint,
-	Flags: []cli.Flag{
-		RPCPortFlag,
-		DidFlag,
+	Action:    cli.ShowSubcommandHelp,
+	Name:      "did",
+	Usage:     "did cli",
+	ArgsUsage: "[arguments ...]",
+	Description: "cli management commands can be use to new did,addsvr,query diddoc" +
+		"query endpoint",
+	Subcommands: []cli.Command{
+		{
+			Name:        "newdid",
+			Usage:       "new did then register to block chain",
+			Description: "new did,then register to block chain",
+			Action:      newDid,
+			Flags: []cli.Flag{
+				RPCPortFlag,
+				TransactionGasPriceFlag,
+				TransactionGasLimitFlag,
+				WalletFileFlag,
+				HttpsPortFlag,
+				EnableHttpsFlag,
+			},
+		},
+		{
+			Name:        "addsvr",
+			Usage:       "add service endpoint",
+			Description: "Use Did add service endpoint to contract",
+			Action:      addService,
+			Flags: []cli.Flag{
+				RPCPortFlag,
+				TransactionGasPriceFlag,
+				TransactionGasLimitFlag,
+				WalletFileFlag,
+				DidFlag,
+				ServiceIdFlag,
+				TypeFlag,
+				ServiceEndPointFlag,
+				IndexFlag,
+			},
+		},
+		{
+			Name:        "diddoc",
+			Usage:       "query did doc from block chain",
+			Description: "query did doc from block chain",
+			Action:      queryDidDoc,
+			Flags: []cli.Flag{
+				RPCPortFlag,
+				DidFlag,
+			},
+		},
+		{
+			Name:        "endpoint",
+			Usage:       "query service endPoint from block chain",
+			Description: "query service endPoint from block chain",
+			Action:      QueryEndPoint,
+			Flags: []cli.Flag{
+				RPCPortFlag,
+				DidFlag,
+			},
+		},
 	},
 }
 

@@ -17,117 +17,125 @@ import (
 	"github.com/urfave/cli"
 )
 
-var InvitationCmd = cli.Command{
-	Name:        "invitation",
-	Usage:       "new invitation",
-	Description: "Generate Invitation",
-	Action:      NewInvitation,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.InvitationFlag,
-	},
-}
-
-var ConnectCmd = cli.Command{
-	Name:        "connect",
-	Usage:       "connect",
-	Description: "Connect  Data",
-	Action:      Connection,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.ConnectionFlag,
-	},
-}
-
-var SendMsgCmd = cli.Command{
-	Name:        "sendmsg",
-	Usage:       "send msg ",
-	Description: "Send Msg  data",
-	Action:      SendMsg,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.SendMsgFlag,
-	},
-}
-
-var QueryMsgCmd = cli.Command{
-	Name:        "querymsg",
-	Description: "query general message",
-	Action:      QueryMsg,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.ReadLatestMsgFlag,
-		cmd.RemoveAfterReadFlag,
-	},
-}
-
-var ReqCredentialCmd = cli.Command{
-	Name:   "reqcredential",
-	Usage:  "req Credential",
-	Action: ReqCredential,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.ReqCredentialCmd,
-	},
-}
-
-var ReqPresentationCmd = cli.Command{
-	Name:   "reqpresentation",
-	Usage:  "req presentation data",
-	Action: ReqPresentation,
-	Flags: []cli.Flag{
-		cmd.RPCPortFlag,
-		cmd.HttpClientFlag,
-		cmd.WalletFileFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.ReqPresentationCmd,
-	},
-}
-var QueryCredCmd = cli.Command{
-	Name:        "querycredential",
-	Usage:       "query a stored credential",
-	Description: "query a stored credential",
-	Action:      QueryCredential,
-	Flags: []cli.Flag{
-		cmd.HttpClientFlag,
-		cmd.RPCPortFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.CredentialIdFlag,
-	},
-}
-var QueryPresentationCmd = cli.Command{
-	Name:        "querypresentation",
-	Usage:       "query a stored presentation",
-	Description: "query a stored presentation",
-	Action:      QueryPresentation,
-	Flags: []cli.Flag{
-		cmd.HttpClientFlag,
-		cmd.RPCPortFlag,
-		cmd.FromDID,
-		cmd.ToDID,
-		cmd.PresentationIdFlag,
+var HttpClientCmd = cli.Command{
+	Action:    cli.ShowSubcommandHelp,
+	Name:      "httpclient",
+	Usage:     "http client cli",
+	ArgsUsage: "[arguments ...]",
+	Description: "cli management commands can be use to invitation,connect,sendmsg,reqcredential," +
+		"reqpresentation,querycredential,querypresentation.you can use ./agent-otf httpclient --help to view information",
+	Subcommands: []cli.Command{
+		{
+			Action:      newInvitation,
+			Name:        "invitation",
+			Usage:       "new invitation",
+			Description: "Generate Invitation",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.InvitationFlag,
+			},
+		},
+		{
+			Action:      connection,
+			Name:        "connect",
+			Usage:       "connect",
+			Description: "Connect  Data",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.ConnectionFlag,
+			},
+		},
+		{
+			Action:      sendMsg,
+			Name:        "sendmsg",
+			Usage:       "send msg",
+			Description: "send basic msg data",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.SendMsgFlag,
+			},
+		},
+		{
+			Action:      queryMsg,
+			Name:        "querymsg",
+			Usage:       "query basic msg",
+			Description: "query basic message",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.ReadLatestMsgFlag,
+				cmd.RemoveAfterReadFlag,
+			},
+		},
+		{
+			Action:      reqCredential,
+			Name:        "reqcredential",
+			Usage:       "req Credential",
+			Description: "req credential",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.ReqCredentialCmd,
+			},
+		},
+		{
+			Action:      reqPresentation,
+			Name:        "reqpresentation",
+			Usage:       "req presentation data",
+			Description: "req presentation data",
+			Flags: []cli.Flag{
+				cmd.RPCPortFlag,
+				cmd.HttpClientFlag,
+				cmd.WalletFileFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.ReqPresentationCmd,
+			},
+		},
+		{
+			Action:      queryCredential,
+			Name:        "querycredential",
+			Usage:       "query a stored credential",
+			Description: "query a stored credential",
+			Flags: []cli.Flag{
+				cmd.HttpClientFlag,
+				cmd.RPCPortFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.CredentialIdFlag,
+			},
+		},
+		{
+			Action:      queryPresentation,
+			Name:        "querypresentation",
+			Usage:       "query a stored presentation",
+			Description: "query a stored presentation",
+			Flags: []cli.Flag{
+				cmd.HttpClientFlag,
+				cmd.RPCPortFlag,
+				cmd.FromDID,
+				cmd.ToDID,
+				cmd.PresentationIdFlag,
+			},
+		},
 	},
 }
 
@@ -141,7 +149,7 @@ func initPackager(addr string) *ecdsa.Packager {
 	return ecdsa.New(ontSdk, acc)
 }
 
-func NewInvitation(ctx *cli.Context) error {
+func newInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
@@ -175,7 +183,7 @@ func NewInvitation(ctx *cli.Context) error {
 	return nil
 }
 
-func Connection(ctx *cli.Context) error {
+func connection(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ConnectionFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.ConnectionRequest{}
@@ -209,7 +217,7 @@ func Connection(ctx *cli.Context) error {
 	return nil
 }
 
-func SendMsg(ctx *cli.Context) error {
+func sendMsg(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.SendMsgFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	basicMsg := &message.BasicMessage{}
@@ -243,7 +251,7 @@ func SendMsg(ctx *cli.Context) error {
 	return nil
 }
 
-func QueryMsg(ctx *cli.Context) error {
+func queryMsg(ctx *cli.Context) error {
 	fromdid := ctx.String(cmd.GetFlagName(cmd.FromDID))
 	todid := ctx.String(cmd.GetFlagName(cmd.ToDID))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
@@ -285,7 +293,7 @@ func QueryMsg(ctx *cli.Context) error {
 	return nil
 }
 
-func ReqCredential(ctx *cli.Context) error {
+func reqCredential(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ReqCredentialCmd))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestCredential{}
@@ -319,7 +327,7 @@ func ReqCredential(ctx *cli.Context) error {
 	return nil
 }
 
-func ReqPresentation(ctx *cli.Context) error {
+func reqPresentation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.ReqPresentationCmd))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
 	invite := &message.RequestPresentation{}
@@ -353,7 +361,7 @@ func ReqPresentation(ctx *cli.Context) error {
 	return nil
 }
 
-func QueryCredential(ctx *cli.Context) error {
+func queryCredential(ctx *cli.Context) error {
 	id := ctx.String(cmd.GetFlagName(cmd.CredentialIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
@@ -389,7 +397,7 @@ func QueryCredential(ctx *cli.Context) error {
 	return nil
 }
 
-func QueryPresentation(ctx *cli.Context) error {
+func queryPresentation(ctx *cli.Context) error {
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	rpc := ctx.String(cmd.GetFlagName(cmd.RPCPortFlag))
@@ -417,7 +425,6 @@ func QueryPresentation(ctx *cli.Context) error {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryPresentationType)
-
 	body, err := HttpPostData(url, string(data))
 	if err != nil {
 		return err
