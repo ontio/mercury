@@ -23,7 +23,6 @@ const (
 
 type CredentialController struct {
 	account *sdk.Account
-	//did     vdri.Did
 	cfg    *config.Cfg
 	store  store.Store
 	msgsvr *service.MsgService
@@ -33,7 +32,6 @@ type CredentialController struct {
 func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) CredentialController {
 	s := CredentialController{
 		account: acct,
-		//did:     did,
 		cfg:    cfg,
 		store:  db,
 		msgsvr: msgsvr,

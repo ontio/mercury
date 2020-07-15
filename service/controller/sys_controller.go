@@ -17,7 +17,6 @@ import (
 
 type Syscontroller struct {
 	account *sdk.Account
-	//did     vdri.Did
 	cfg    *config.Cfg
 	store  store.Store
 	msgsvr *service.MsgService
@@ -26,7 +25,6 @@ type Syscontroller struct {
 func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
 	s := Syscontroller{
 		account: acct,
-		//did:     did,
 		cfg:    cfg,
 		store:  db,
 		msgsvr: msgsvr,
@@ -50,7 +48,6 @@ func (s Syscontroller) Initiate(param service.ParameterInf) error {
 
 func (s Syscontroller) Process(msg message.Message) (service.ControllerResp, error) {
 	middleware.Log.Infof("%s Process:%v\n", s.Name(), msg)
-	//todo add logic
 	switch msg.MessageType {
 	//for system
 	case message.InvitationType:

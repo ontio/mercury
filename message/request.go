@@ -24,8 +24,6 @@ type Connection struct {
 	MyRouter    []string `json:"my_router"`
 	TheirDid    string   `json:"their_did"`
 	TheirRouter []string `json:"their_router"`
-	//MyServiceId    string   `json:"my_service_id,omitempty"`
-	//TheirServiceId string   `json:"their_service_id"`
 }
 
 // Thread thread data

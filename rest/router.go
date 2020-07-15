@@ -32,7 +32,6 @@ func InitRouter() *gin.Engine {
 	v := r.Group(utils.Group_Api_V1)
 	{
 		v.POST(utils.Invite_Api, Invite)
-		//v.POST(utils.SendConnectionReq_Api, SendConnectionReq)
 		v.POST(utils.ConnectRequest_Api, ConnectRequest)
 		v.POST(utils.ConnectResponse_Api, ConnectResponse)
 		v.POST(utils.ConnectAck_Api, ConnectAck)
