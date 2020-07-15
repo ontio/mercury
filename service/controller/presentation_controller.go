@@ -22,19 +22,19 @@ const (
 
 type PresentationController struct {
 	account *sdk.Account
-	cfg    *config.Cfg
-	store  store.Store
-	msgsvr *service.MsgService
-	vdri   vdri.VDRI
+	cfg     *config.Cfg
+	store   store.Store
+	msgsvr  *service.MsgService
+	vdri    vdri.VDRI
 }
 
 func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) PresentationController {
 	p := PresentationController{
 		account: acct,
-		cfg:    cfg,
-		store:  db,
-		msgsvr: msgsvr,
-		vdri:   v,
+		cfg:     cfg,
+		store:   db,
+		msgsvr:  msgsvr,
+		vdri:    v,
 	}
 	err := p.Initiate(nil)
 	if err != nil {

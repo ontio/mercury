@@ -60,11 +60,20 @@ func resolveRequest(c *gin.Context, messageType message.MessageType) {
 		case message.IssueCredentialType:
 			req = msg.(*message.IssueCredential)
 
+		case message.CredentialACKType:
+			req = msg.(*message.CredentialACK)
+
 		case message.RequestPresentationType:
 			req = msg.(*message.RequestPresentation)
 
 		case message.SendRequestPresentationType:
 			req = msg.(*message.RequestPresentation)
+
+		case message.PresentationType:
+			req = msg.(*message.Presentation)
+
+		case message.PresentationACKType:
+			req = msg.(*message.PresentationACK)
 
 		case message.SendGeneralMsgType:
 			req = msg.(*message.BasicMessage)
@@ -250,11 +259,20 @@ func getReqByMessageType(t int) (interface{}, error) {
 	case int(message.IssueCredentialType):
 		req = &message.IssueCredential{}
 
+	case int(message.CredentialACKType):
+		req = &message.CredentialACK{}
+
 	case int(message.RequestPresentationType):
 		req = &message.RequestPresentation{}
 
 	case int(message.SendRequestPresentationType):
 		req = &message.RequestPresentation{}
+
+	case int(message.PresentationType):
+		req = &message.Presentation{}
+
+	case int(message.PresentationACKType):
+		req = &message.PresentationACK{}
 
 	case int(message.SendGeneralMsgType):
 		req = &message.BasicMessage{}

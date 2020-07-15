@@ -17,17 +17,17 @@ import (
 
 type Syscontroller struct {
 	account *sdk.Account
-	cfg    *config.Cfg
-	store  store.Store
-	msgsvr *service.MsgService
+	cfg     *config.Cfg
+	store   store.Store
+	msgsvr  *service.MsgService
 }
 
 func NewSyscontroller(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService) Syscontroller {
 	s := Syscontroller{
 		account: acct,
-		cfg:    cfg,
-		store:  db,
-		msgsvr: msgsvr,
+		cfg:     cfg,
+		store:   db,
+		msgsvr:  msgsvr,
 	}
 	err := s.Initiate(nil)
 	if err != nil {
