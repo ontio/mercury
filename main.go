@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"git.ont.io/ontid/otf/cmd"
+	"git.ont.io/ontid/otf/cmd/did"
 	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
 	"git.ont.io/ontid/otf/common/config"
 	"git.ont.io/ontid/otf/common/log"
@@ -35,7 +36,7 @@ func setupAPP() *cli.App {
 		cmd.EnablePackageFlag,
 	}
 	app.Commands = []cli.Command{
-		cmd.DidCommand,
+		did.DidCommand,
 		http_cmd.HttpClientCmd,
 	}
 	app.Before = func(context *cli.Context) error {
