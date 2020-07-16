@@ -2,10 +2,7 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
-	"time"
 
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/middleware"
@@ -33,16 +30,8 @@ type OutboundMsg struct {
 
 func NewMessageService(vdri vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool) *MsgService {
 	ms := &MsgService{
-		msgQueue: make(chan OutboundMsg, 64),
-		client: &http.Client{
-			Transport: &http.Transport{
-				MaxIdleConnsPerHost:   5,
-				DisableKeepAlives:     false,
-				IdleConnTimeout:       time.Second * 300,
-				ResponseHeaderTimeout: time.Second * 300,
-			},
-			Timeout: time.Second * 300,
-		},
+		msgQueue:      make(chan OutboundMsg, 64),
+		client:        utils.NewClient(),
 		quitC:         make(chan struct{}),
 		vdri:          vdri,
 		packager:      ecdsa.New(ontSdk, acct),
@@ -105,20 +94,10 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		}
 	}
 	middleware.Log.Infof("url:%s,data:%s\n", url, data)
-	err = m.HttpPostData(url, string(data))
+	_, err = utils.HttpPostData(m.client, url, string(data))
 	if err != nil {
 		middleware.Log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
 	}
-}
-
-func (m *MsgService) HttpPostData(url, data string) error {
-	resp, err := m.client.Post(url, "application/json", strings.NewReader(data))
-	if err != nil {
-		return fmt.Errorf("http post request:%s error:%s", data, err)
-	}
-	defer resp.Body.Close()
-	//todo analyze the resp???
-	return nil
 }
 
 func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {

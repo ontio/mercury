@@ -8,7 +8,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
 	sdk "github.com/ontio/ontology-go-sdk"
+	"io/ioutil"
+	"net/http"
 	"strings"
+	"time"
 )
 
 var Version = ""
@@ -88,5 +91,25 @@ func CheckConnection(mydid, theirdid string, db store.Store) error {
 		return fmt.Errorf("connection not found!")
 	}
 	return nil
+}
 
+func HttpPostData(client *http.Client, url, data string) ([]byte, error) {
+	resp, err := client.Post(url, "application/json", strings.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("http post request:%s error:%s", data, err)
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
+}
+
+func NewClient() *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost:   5,
+			DisableKeepAlives:     false,
+			IdleConnTimeout:       time.Second * 300,
+			ResponseHeaderTimeout: time.Second * 300,
+		},
+		Timeout: time.Second * 300,
+	}
 }

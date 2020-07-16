@@ -3,11 +3,6 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"time"
-
 	"git.ont.io/ontid/otf/cmd"
 	"git.ont.io/ontid/otf/message"
 	"git.ont.io/ontid/otf/packager"
@@ -56,7 +51,7 @@ var HttpClientCmd = cli.Command{
 		{
 			Action:      sendMsg,
 			Name:        "sendmsg",
-			Usage:       "send msg",
+			Usage:       "send basic msg",
 			Description: "send basic msg data",
 			Flags: []cli.Flag{
 				cmd.RpcUrlFlag,
@@ -85,7 +80,7 @@ var HttpClientCmd = cli.Command{
 		{
 			Action:      reqCredential,
 			Name:        "reqcredential",
-			Usage:       "req Credential",
+			Usage:       "req credential",
 			Description: "req credential",
 			Flags: []cli.Flag{
 				cmd.RpcUrlFlag,
@@ -175,7 +170,7 @@ func newInvitation(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	body, err := HttpPostData(url, string(bys))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("NewInvitation err:%s", err)
 	}
@@ -209,7 +204,7 @@ func connection(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.ConnectionRequestType)
-	body, err := HttpPostData(url, string(bys))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -243,7 +238,7 @@ func sendMsg(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendGeneralMsgType)
-	body, err := HttpPostData(url, string(bys))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -283,7 +278,7 @@ func queryMsg(ctx *cli.Context) error {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryGeneralMessageType)
-	respbts, err := HttpPostData(url, string(data))
+	respbts, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err
 	}
@@ -319,7 +314,7 @@ func reqCredential(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestCredentialType)
-	body, err := HttpPostData(url, string(bys))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -353,7 +348,7 @@ func reqPresentation(ctx *cli.Context) error {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestPresentationType)
-	body, err := HttpPostData(url, string(bys))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
 	}
@@ -387,7 +382,7 @@ func queryCredential(ctx *cli.Context) error {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryCredentialType)
-	body, err := HttpPostData(url, string(data))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err
 	}
@@ -425,7 +420,7 @@ func queryPresentation(ctx *cli.Context) error {
 		return err
 	}
 	url = url + utils.GetApiName(message.QueryPresentationType)
-	body, err := HttpPostData(url, string(data))
+	body, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err
 	}
@@ -434,22 +429,4 @@ func queryPresentation(ctx *cli.Context) error {
 	fmt.Println("==============presentation==============")
 
 	return nil
-}
-
-func HttpPostData(url, data string) ([]byte, error) {
-	client := &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConnsPerHost:   5,
-			DisableKeepAlives:     false,
-			IdleConnTimeout:       time.Second * 300,
-			ResponseHeaderTimeout: time.Second * 300,
-		},
-		Timeout: time.Second * 300,
-	}
-	resp, err := client.Post(url, "application/json", strings.NewReader(data))
-	if err != nil {
-		return nil, fmt.Errorf("http post request:%s error:%s", data, err)
-	}
-	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
 }
