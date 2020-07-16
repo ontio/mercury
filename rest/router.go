@@ -27,7 +27,6 @@ func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *serv
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	//r.Use(loggerToFile())
 	r.Use(gin.Recovery())
 	v := r.Group(utils.Group_Api_V1)
 	{
