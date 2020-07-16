@@ -1,6 +1,6 @@
 package utils
 
-import "git.ont.io/ontid/otf/message"
+import "git.ont.io/ontid/otf/common/message"
 
 const (
 	Group_Api_V1                  = "/api/v1/"

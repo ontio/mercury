@@ -3,14 +3,14 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/middleware"
-	"git.ont.io/ontid/otf/utils"
 	"time"
 
-	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/config"
+	"git.ont.io/ontid/otf/common/log"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -50,17 +50,17 @@ func (s CredentialController) Name() string {
 }
 
 func (s CredentialController) Initiate(param service.ParameterInf) error {
-	middleware.Log.Infof("%s Initiate", s.Name())
+	log.Infof("%s Initiate", s.Name())
 	//todo add logic
 	return nil
 }
 
 func (s CredentialController) Process(msg message.Message) (service.ControllerResp, error) {
-	middleware.Log.Infof("%s Process:%v", s.Name(), msg)
+	log.Infof("%s Process:%v", s.Name(), msg)
 	//todo add logic
 	switch msg.MessageType {
 	case message.SendProposalCredentialType:
-		middleware.Log.Infof("resolve SendProposalCredentialType")
+		log.Infof("resolve SendProposalCredentialType")
 		req := msg.Content.(*message.ProposalCredential)
 
 		outMsg := service.OutboundMsg{
@@ -72,26 +72,26 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
+			log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.ProposalCredentialType:
-		middleware.Log.Infof("resolve ProposalCredentialType")
+		log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.ProposalCredential)
 
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 
 		//todo deal with the proposal, do we need store the proposal???
-		middleware.Log.Infof("proposal is %v", req)
+		log.Infof("proposal is %v", req)
 
 		offer, err := s.vdri.OfferCredential(req)
 		if err != nil {
-			middleware.Log.Errorf("error on offerCredetial")
+			log.Errorf("error on offerCredetial")
 			return nil, err
 		}
 
@@ -105,29 +105,29 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 		err = s.msgsvr.HandleOutBound(outerMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound :%s", err.Error())
+			log.Errorf("error on HandleOutBound :%s", err.Error())
 			return nil, err
 		}
 
 	case message.OfferCredentialType:
-		middleware.Log.Infof("resolve ProposalCredentialType")
+		log.Infof("resolve ProposalCredentialType")
 		req := msg.Content.(*message.OfferCredential)
 
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		//todo save the offer in store
 		err = s.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
 		if err != nil {
-			middleware.Log.Errorf("error on SaveOfferCredential:%s", err.Error())
+			log.Errorf("error on SaveOfferCredential:%s", err.Error())
 			return nil, err
 		}
 		//
 
 	case message.SendRequestCredentialType:
-		middleware.Log.Infof("resolve SendRequestCredentialType")
+		log.Infof("resolve SendRequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
 		outMsg := service.OutboundMsg{
 			Msg: message.Message{
@@ -138,27 +138,27 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err := s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
+			log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.RequestCredentialType:
-		middleware.Log.Infof("resolve RequestCredentialType")
+		log.Infof("resolve RequestCredentialType")
 		req := msg.Content.(*message.RequestCredential)
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		err = s.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
 		if err != nil {
-			middleware.Log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
+			log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 		credential, err := s.vdri.IssueCredential(req)
 		if err != nil {
-			middleware.Log.Errorf("error on IssueCredential:%s\n", err.Error())
+			log.Errorf("error on IssueCredential:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -172,22 +172,22 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 
 		err = s.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound:%s\n", err.Error())
+			log.Errorf("error on HandleOutBound:%s\n", err.Error())
 			return nil, err
 		}
 
 	case message.IssueCredentialType:
-		middleware.Log.Infof("resolve IssueCredentialType")
+		log.Infof("resolve IssueCredentialType")
 		req := msg.Content.(*message.IssueCredential)
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		//store the credential
 		err = s.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
 		if err != nil {
-			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
+			log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
 		}
 
@@ -210,29 +210,29 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 		}
 		err = s.msgsvr.HandleOutBound(outmsg)
 		if err != nil {
-			middleware.Log.Errorf("error on SaveCredential:%s\n", err.Error())
+			log.Errorf("error on SaveCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 	case message.CredentialACKType:
-		middleware.Log.Infof("resolve IssueCredentialType")
+		log.Infof("resolve IssueCredentialType")
 		req := msg.Content.(*message.CredentialACK)
 		reqid := req.Thread.ID
 
 		err := s.UpdateRequestCredential(req.Connection.MyDid, reqid, message.RequestCredentialResolved)
 		if err != nil {
-			middleware.Log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
+			log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
 			return nil, err
 		}
 
 	case message.QueryCredentialType:
-		middleware.Log.Infof("resolve QueryCredentialType")
+		log.Infof("resolve QueryCredentialType")
 		req := msg.Content.(*message.QueryCredentialRequest)
 		fmt.Printf("did:%s,id:%s\n", req.DId, req.Id)
 
 		rec, err := s.QueryCredential(req.DId, req.Id)
 		if err != nil {
-			middleware.Log.Errorf("error on QueryCredentialType:%s\n", err.Error())
+			log.Errorf("error on QueryCredentialType:%s\n", err.Error())
 			return nil, err
 		}
 		resp := new(service.ServiceResponse)
@@ -251,7 +251,7 @@ func (s CredentialController) Process(msg message.Message) (service.ControllerRe
 	return nil, nil
 }
 func (s CredentialController) Shutdown() error {
-	middleware.Log.Infof("%s shutdown\n", s.Name())
+	log.Infof("%s shutdown\n", s.Name())
 	return nil
 }
 

@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/common/config"
+	"git.ont.io/ontid/otf/common/log"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/service/controller"
 	"git.ont.io/ontid/otf/store"
@@ -27,7 +27,7 @@ func NewService(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgSvr *serv
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(middleware.LoggerToFile())
+	//r.Use(loggerToFile())
 	r.Use(gin.Recovery())
 	v := r.Group(utils.Group_Api_V1)
 	{
@@ -64,7 +64,7 @@ func SendMsg(msgType message.MessageType, data interface{}) (interface{}, error)
 	msg := message.Message{MessageType: msgType, Content: data}
 	resp, err := Svr.Serv(msg)
 	if err != nil {
-		middleware.Log.Errorf("err:%s", err)
+		log.Errorf("err:%s", err)
 		return nil, err
 	}
 	sendMsg, err := resp.GetMessage()

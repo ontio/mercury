@@ -23,8 +23,8 @@ const (
 	DEFAULT_TYPE                  = ""
 	DEFAULT_SERVICE_END_POINT     = ""
 	DEFAULT_INDEX                 = 1
-	DEFAULT_CERT_PATH             = "./key/ssl.crt"
-	DEFAULT_KEY_PATH              = "./key/ssl.key"
+	DEFAULT_CERT_PATH             = "./common/key/ssl.crt"
+	DEFAULT_KEY_PATH              = "./common/key/ssl.key"
 	DEFAULT_CONNECT_DATA          = ""
 	DEFAULT_SEND_MSG_DATA         = ""
 	DEFAULT_CLIENT_REST_URL       = "http://127.0.0.1:8080"
@@ -37,6 +37,15 @@ var (
 		Name:  "loglevel",
 		Usage: "Set the log level to `<level>` (0~6). 0:Trace 1:Debug 2:Info 3:Warn 4:Error 5:Fatal 6:MaxLevel",
 		Value: DEFAULT_LOG_LEVEL,
+	}
+	LogDirFlag = cli.StringFlag{
+		Name:  "log-dir",
+		Usage: "log output to the file",
+		Value: DEFAULT_LOG_FILE_PATH,
+	}
+	DisableLogFileFlag = cli.BoolFlag{
+		Name:  "disable-log-file",
+		Usage: "Discard log output to file",
 	}
 	HttpPortFlag = cli.StringFlag{
 		Name:  "http-port",

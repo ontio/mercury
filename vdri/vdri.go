@@ -1,7 +1,7 @@
 package vdri
 
 import (
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/store"
 )
 

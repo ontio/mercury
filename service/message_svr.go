@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/middleware"
-	"git.ont.io/ontid/otf/packager"
-	"git.ont.io/ontid/otf/packager/ecdsa"
+	"git.ont.io/ontid/otf/common/log"
+	"git.ont.io/ontid/otf/common/message"
+	"git.ont.io/ontid/otf/common/packager"
+	"git.ont.io/ontid/otf/common/packager/ecdsa"
 	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri"
 	sdk "github.com/ontio/ontology-go-sdk"
@@ -64,12 +64,12 @@ func (m *MsgService) popMessage() {
 func (m *MsgService) SendMsg(msg OutboundMsg) {
 	url, err := m.GetServiceURL(msg)
 	if err != nil {
-		middleware.Log.Errorf("error on sendmsg:%s\n", err.Error())
+		log.Errorf("error on sendmsg:%s\n", err.Error())
 	}
 	var data []byte
 	data, err = json.Marshal(msg.Msg.Content)
 	if err != nil {
-		middleware.Log.Errorf("err while sendmsg:%s\n", err)
+		log.Errorf("err while sendmsg:%s\n", err)
 		return
 	}
 	if m.enableEnvelop {
@@ -89,14 +89,14 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		}
 		data, err = m.packager.PackMessage(msg)
 		if err != nil {
-			middleware.Log.Errorf("err while sendmsg:%s\n", err)
+			log.Errorf("err while sendmsg:%s\n", err)
 			return
 		}
 	}
-	middleware.Log.Infof("url:%s,data:%s\n", url, data)
+	log.Infof("url:%s,data:%s\n", url, data)
 	_, err = utils.HttpPostData(m.client, url, string(data))
 	if err != nil {
-		middleware.Log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
+		log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
 	}
 }
 

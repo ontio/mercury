@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"git.ont.io/ontid/otf/packager"
+	"git.ont.io/ontid/otf/common/packager"
 	"git.ont.io/ontid/otf/utils"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/ontio/ontology-crypto/ec"

@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"git.ont.io/ontid/otf/message"
-	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/common/log"
+	"git.ont.io/ontid/otf/common/message"
 	"github.com/gin-gonic/gin"
 )
 
@@ -100,13 +100,13 @@ func resolveRequest(c *gin.Context, messageType message.MessageType) {
 		err = c.Bind(req)
 	}
 	if err != nil {
-		middleware.Log.Errorf("Bind err:%s", err)
+		log.Errorf("Bind err:%s", err)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	data, err := SendMsg(messageType, req)
 	if err != nil {
-		middleware.Log.Errorf("SendMsg err:%s", err)
+		log.Errorf("SendMsg err:%s", err)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}

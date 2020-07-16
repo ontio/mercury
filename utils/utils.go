@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/store"
 	"github.com/google/uuid"
 	"github.com/howeyc/gopass"

@@ -3,7 +3,7 @@ package ontdid
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/service/controller"
 	"git.ont.io/ontid/otf/store"

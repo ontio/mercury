@@ -3,12 +3,12 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/middleware"
 	"git.ont.io/ontid/otf/utils"
 	"time"
 
-	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/config"
+	"git.ont.io/ontid/otf/common/log"
+	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/service"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/vdri"
@@ -45,7 +45,7 @@ func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Stor
 }
 
 func (p PresentationController) Initiate(param service.ParameterInf) error {
-	middleware.Log.Infof("%s Initiate", p.Name())
+	log.Infof("%s Initiate", p.Name())
 	//todo add logic
 	return nil
 }
@@ -55,15 +55,15 @@ func (p PresentationController) Name() string {
 }
 
 func (p PresentationController) Shutdown() error {
-	middleware.Log.Infof("%s shutdown\n", p.Name())
+	log.Infof("%s shutdown\n", p.Name())
 	return nil
 }
 
 func (p PresentationController) Process(msg message.Message) (service.ControllerResp, error) {
-	middleware.Log.Infof("%s Process:%v\n", p.Name(), msg)
+	log.Infof("%s Process:%v\n", p.Name(), msg)
 	switch msg.MessageType {
 	case message.SendRequestPresentationType:
-		middleware.Log.Infof("resolve SendPresentationType")
+		log.Infof("resolve SendPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
 
 		outMsg := service.OutboundMsg{
@@ -75,27 +75,27 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err := p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound :%s", err.Error())
+			log.Errorf("error on HandleOutBound :%s", err.Error())
 			return nil, err
 		}
 
 	case message.RequestPresentationType:
-		middleware.Log.Infof("resolve RequestPresentationType")
+		log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.RequestPresentation)
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		presentation, err := p.vdri.PresentProof(req, p.store)
 		if err != nil {
-			middleware.Log.Errorf("errors on PresentProof :%s", err.Error())
+			log.Errorf("errors on PresentProof :%s", err.Error())
 			return nil, err
 		}
 
 		err = p.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
 		if err != nil {
-			middleware.Log.Errorf("error on SaveRequestPresentation:%s", err.Error())
+			log.Errorf("error on SaveRequestPresentation:%s", err.Error())
 			return nil, err
 		}
 
@@ -108,15 +108,15 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err = p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
+			log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 	case message.PresentationType:
-		middleware.Log.Infof("resolve RequestPresentationType")
+		log.Infof("resolve RequestPresentationType")
 		req := msg.Content.(*message.Presentation)
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		err = p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
@@ -139,31 +139,31 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 		}
 		err = p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
-			middleware.Log.Errorf("error on HandleOutBound:%s", err.Error())
+			log.Errorf("error on HandleOutBound:%s", err.Error())
 			return nil, err
 		}
 
 	case message.PresentationACKType:
-		middleware.Log.Infof("resolve PresentationACKType")
+		log.Infof("resolve PresentationACKType")
 		req := msg.Content.(*message.PresentationACK)
 		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 		if err != nil {
-			middleware.Log.Infof("no connect found with did:%s", req.Connection.MyDid)
+			log.Infof("no connect found with did:%s", req.Connection.MyDid)
 			return nil, err
 		}
 		err = p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
 		if err != nil {
 			return nil, err
 		}
-		middleware.Log.Infof("ack received")
+		log.Infof("ack received")
 
 	case message.QueryPresentationType:
-		middleware.Log.Infof("resolve QueryPresentationType")
+		log.Infof("resolve QueryPresentationType")
 		req := msg.Content.(*message.QueryPresentationRequest)
 
 		rec, err := p.QueryPresentation(req.DId, req.Id)
 		if err != nil {
-			middleware.Log.Errorf("error on QueryPresentationType:%s", err.Error())
+			log.Errorf("error on QueryPresentationType:%s", err.Error())
 			return nil, err
 		}
 		queryRespons := new(message.QueryPresentationResponse)

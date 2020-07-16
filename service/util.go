@@ -1,6 +1,6 @@
 package service
 
-import "git.ont.io/ontid/otf/message"
+import "git.ont.io/ontid/otf/common/message"
 
 func ReverseConnection(conn message.Connection) message.Connection {
 	return message.Connection{

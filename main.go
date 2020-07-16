@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"syscall"
 
 	"git.ont.io/ontid/otf/cmd"
 	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
-	"git.ont.io/ontid/otf/config"
-	"git.ont.io/ontid/otf/middleware"
+	"git.ont.io/ontid/otf/common/config"
+	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/rest"
 	"git.ont.io/ontid/otf/service"
 	store "git.ont.io/ontid/otf/store/leveldb"
@@ -51,6 +52,7 @@ func main() {
 }
 
 func startAgent(ctx *cli.Context) {
+	initLog(ctx)
 	ontSdk := sdk.NewOntologySdk()
 	ontSdk.NewRpcClient().SetAddress(ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag)))
 	account, err := utils.OpenAccount(cmd.DEFAULT_WALLET_PATH, ontSdk)
@@ -80,7 +82,7 @@ func startAgent(ctx *cli.Context) {
 	ontvdri := ontdid.NewOntVDRI(ontSdk, account, "")
 	msgSvr := service.NewMessageService(ontvdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)))
 	rest.NewService(account, cfg, db, msgSvr, ontvdri, ontSdk)
-	middleware.Log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
+	log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
 		err = r.RunTLS(startPort, cmd.DEFAULT_CERT_PATH, cmd.DEFAULT_KEY_PATH)
@@ -94,6 +96,18 @@ func startAgent(ctx *cli.Context) {
 		}
 	}
 	signalHandle()
+}
+
+func initLog(ctx *cli.Context) {
+	logLevel := ctx.GlobalInt(cmd.GetFlagName(cmd.LogLevelFlag))
+	disableLogFile := ctx.GlobalBool(cmd.GetFlagName(cmd.DisableLogFileFlag))
+	if disableLogFile {
+		log.InitLog(logLevel, log.Stdout)
+	} else {
+		//Dir := ctx.GlobalString(cmd.GetFlagName(cmd.LogDirFlag))
+		logFileDir := filepath.Join(cmd.DEFAULT_LOG_FILE_PATH, "") + string(os.PathSeparator)
+		log.InitLog(logLevel, logFileDir, log.Stdout)
+	}
 }
 
 func signalHandle() {

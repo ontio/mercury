@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/message"
+	"git.ont.io/ontid/otf/common/message"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
 
