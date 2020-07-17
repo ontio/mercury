@@ -28,6 +28,7 @@ func setupAPP() *cli.App {
 	app.Action = startAgent
 	app.Flags = []cli.Flag{
 		cmd.LogLevelFlag,
+		cmd.LogDirFlag,
 		cmd.HttpIpFlag,
 		cmd.HttpPortFlag,
 		cmd.RestUrlFlag,
@@ -105,8 +106,8 @@ func initLog(ctx *cli.Context) {
 	if disableLogFile {
 		log.InitLog(logLevel, log.Stdout)
 	} else {
-		//Dir := ctx.GlobalString(cmd.GetFlagName(cmd.LogDirFlag))
-		logFileDir := filepath.Join(cmd.DEFAULT_LOG_FILE_PATH, "") + string(os.PathSeparator)
+		logFileDir := ctx.String(cmd.GetFlagName(cmd.LogDirFlag))
+		logFileDir = filepath.Join(logFileDir, "") + string(os.PathSeparator)
 		log.InitLog(logLevel, logFileDir, log.Stdout)
 	}
 }
