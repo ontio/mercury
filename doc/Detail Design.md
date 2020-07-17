@@ -477,7 +477,7 @@ Service agent 向请求方颁发凭证, cloud agent 将凭证保存在存储中,
 
 消息:
 
-```
+```json
 {
     "@type":"spec/credential/1.0/ack",
     "@id": "uuid-of-msg",
@@ -509,7 +509,128 @@ Service agent接收到ack之后,更新credential request的状态
 
 ### 3.4 Presentation
 
+Alice可以申请根据已有的凭证生成presentation
+
+流程:
+
+![](./images/presentation.png)
 
 
 
+#### 3.4.1 Request Presentation
+
+cloud agent向Service agent 发送Request presentation:
+
+消息:
+
+```json
+{
+	"@type":"spec/present-proof/1.0/request-presentation",
+	"@id":"uuid-of-msg",
+	"comment":"some comments",
+    "connection": {
+        "my_did": "did:ont:Alicedid",
+        "my_router":["did:ont:cloudAgent#id"]  ,
+        "their_did":"did:ont:serviceDID",
+        "their_router":["did:ont:serviceDID#id"]  ,
+      },
+      "formats":[
+    	{
+    		"attach_id":"1",
+    		"format":"base64"
+    	}
+    ],
+    "request_presentation_attach":[
+    	{
+	    	"@id":"1",
+	    	"data":{
+	    		"base64":"base64 format of credential id"
+	    	}
+    	}
+    ]
+```
+
+**type**: request presentation消息 的固定标准类型
+
+**id**: 本次请求的**id**
+
+**formats**: 标记attachment的结构信息
+
+​	**attachid** :关联attach 的id
+
+​	**format**: 关联attach的数据类型
+
+
+
+**requests_attach**: 凭证的附件信息
+
+#### 3.4.2 Presentation
+
+Service agent 生成presentation 后回调Alice的cloud agent
+
+```
+{
+    "@type": "spec/present-proof/1.0/presentation",
+    "@id": "<uuid-presentation>",
+    "comment": "some comment",
+    "formats":[
+      {
+          "attachid":"attachment id",
+          "format":"string",
+      }  
+    ],
+    "presentations~attach": [
+        {
+            "@id": "attachment id",
+            "mime-type": "application/json",
+            "data": {
+                "base64": "<bytes for base64>",
+                "json":{}
+            }
+        }
+    ],
+     "connection": {
+        "my_did": "did:ont:serviceDID",
+        "my_router":["did:ont:serviceDID#id"]  ,
+        "their_did":"did:ont:alicedid",
+        "their_router":["did:ont:cloudagent#id"]  ,
+      }
+}
+```
+
+**type**: presentation消息 的固定标准类型
+
+**id**: 本次请求的**id**
+
+**formats**: 标记attachment的结构信息
+
+​	**attachid** :关联attach 的id
+
+​	**format**: 关联attach的数据类型
+
+
+
+**presentations~attach**: presentation的附件信息
+
+#### 3.4.3 Presentation ACK
+
+Alice的service agent在收到presentation后,需要向service agent发送ACK.
+
+```json
+{
+    "@type":"spec/basic-message/1.0/message"
+    "@id": "<uuid-presentation>",
+	"sent_time":timestamp,
+	"content": string,
+	"~I10n":{
+        "local":"en"
+	},
+   "connection": {
+        "my_did": "did:ont:Alicedid",
+        "my_router":["did:ont:cloudAgent#id"]  ,
+        "their_did":"did:ont:serviceDID",
+        "their_router":["did:ont:serviceDID#id"]  ,
+      }
+}
+```
 
