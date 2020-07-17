@@ -6,7 +6,7 @@
 
 ## 简介
 
-[Ontology DID Communication Framework](../doc/Detail Design.md)
+[Ontology DID Communication Framework](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design.md)
 
 
 
