@@ -1,6 +1,13 @@
-## agent-otf cli manual
+# agent-otf cli manual
 
-###  1、did cli cmd
+
+## 目录
+
+[TOC]
+
+##  1. did cmd
+
+### 1.1 生成并绑定一个新的DID
 
 ```
 
@@ -11,6 +18,8 @@ Did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ,  Hash:4c4d3b8bafd22c16cc2b39e8
 did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
 
 ```
+
+### 1.2 为DID增加一个Service end point
 
 
 ```
@@ -23,6 +32,9 @@ txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
 ```
 
 
+
+### 1.3 查询DID 对应的DID doc
+
 ```
 
 ./agent-otf did diddoc --did did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
@@ -30,6 +42,8 @@ txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
 
 doc: &{[https://www.w3.org/ns/did/v1 https://ontid.ont.io/did/v1] did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ [map[controller:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ id:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1 publicKeyHex:03afb755bf9c9a3a7577b6d210f07aeac2730ff9800b7af443917be80ef1ddd52f type:EcdsaSecp256r1VerificationKey2019]] [did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1] <nil> <nil> [{did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#1 1 http://127.0.0.1:8080}] <nil> 1.59480394e+09 1.594804114e+09 }
 ```
+
+### 1.4 查询DID对应的 Service end points
 
 ```
 
@@ -39,8 +53,10 @@ endPoints:[http://127.0.0.1:8080]
 
 ```
 
-### 2、http_client cli cmd
+## 2、http_client cli cmd
+client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 
+### 2.1 创建一个 Invitation
 ```
 
 
@@ -48,6 +64,8 @@ endPoints:[http://127.0.0.1:8080]
 
 
 ```
+
+### 2.2 创建链接
 
 ```
 
@@ -65,7 +83,7 @@ endPoints:[http://127.0.0.1:8080]
 }'
 ```
 
-
+### 2.3 发送一个通用消息
 ```
 
 ./agent-otf httpclient sendmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --send-msg '{
@@ -79,7 +97,7 @@ endPoints:[http://127.0.0.1:8080]
 }'
 ```
 
-
+### 2.4 请求凭证
 ```
 ./agent-otf httpclient reqcredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-credential '{
     "@type":"spec/issue-credential/1.0/request-credential",
@@ -108,7 +126,7 @@ endPoints:[http://127.0.0.1:8080]
 }'
 ```
 
-
+### 2.5 请求presentation
 ```
 ./agent-otf httpclient reqpresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-presentation '{
     "@type":"spec/issue-credential/1.0/propose-credential",
@@ -123,7 +141,7 @@ endPoints:[http://127.0.0.1:8080]
 }'
 ```
 
-
+### 2.6 查询一个凭证
 ```
 ./agent-otf httpclient querycredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --credential-id 11
 Password:

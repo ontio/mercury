@@ -18,8 +18,13 @@
 2. 在项目根目录下执行 ```./make```
 
 
-
 ### Start project
+
+启动命令
+
+```./agent-otf```
+
+参数:
 
 ```
 GLOBAL OPTIONS:
