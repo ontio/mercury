@@ -28,64 +28,64 @@ func resolveRequest(c *gin.Context, messageType message.MessageType) {
 		//req, ok = msg.(*message.Invitation)
 		switch messageType {
 		case message.InvitationType:
-			req = msg.(*message.Invitation)
+			req, ok = msg.(*message.Invitation)
 
 		case message.ConnectionRequestType:
-			req = msg.(*message.ConnectionRequest)
+			req, ok = msg.(*message.ConnectionRequest)
 
 		case message.ConnectionResponseType:
-			req = msg.(*message.ConnectionResponse)
+			req, ok = msg.(*message.ConnectionResponse)
 
 		case message.ConnectionACKType:
-			req = msg.(*message.ConnectionACK)
+			req, ok = msg.(*message.ConnectionACK)
 
 		case message.DisconnectType, message.SendDisconnectType:
-			req = msg.(*message.DisconnectRequest)
+			req, ok = msg.(*message.DisconnectRequest)
 
 		case message.SendProposalCredentialType:
-			req = msg.(*message.ProposalCredential)
+			req, ok = msg.(*message.ProposalCredential)
 
 		case message.OfferCredentialType:
-			req = msg.(*message.OfferCredential)
+			req, ok = msg.(*message.OfferCredential)
 
 		case message.ProposalCredentialType:
-			req = msg.(*message.ProposalCredential)
+			req, ok = msg.(*message.ProposalCredential)
 
 		case message.SendRequestCredentialType:
-			req = msg.(*message.RequestCredential)
+			req, ok = msg.(*message.RequestCredential)
 
 		case message.RequestCredentialType:
-			req = msg.(*message.RequestCredential)
+			req, ok = msg.(*message.RequestCredential)
 
 		case message.IssueCredentialType:
-			req = msg.(*message.IssueCredential)
+			req, ok = msg.(*message.IssueCredential)
 
 		case message.CredentialACKType:
-			req = msg.(*message.CredentialACK)
+			req, ok = msg.(*message.CredentialACK)
 
 		case message.RequestPresentationType:
-			req = msg.(*message.RequestPresentation)
+			req, ok = msg.(*message.RequestPresentation)
 
 		case message.SendRequestPresentationType:
-			req = msg.(*message.RequestPresentation)
+			req, ok = msg.(*message.RequestPresentation)
 
 		case message.PresentationType:
-			req = msg.(*message.Presentation)
+			req, ok = msg.(*message.Presentation)
 
 		case message.PresentationACKType:
-			req = msg.(*message.PresentationACK)
+			req, ok = msg.(*message.PresentationACK)
 
 		case message.SendGeneralMsgType:
-			req = msg.(*message.BasicMessage)
+			req, ok = msg.(*message.BasicMessage)
 
 		case message.QueryGeneralMessageType:
-			req = msg.(*message.QueryGeneralMessageRequest)
+			req, ok = msg.(*message.QueryGeneralMessageRequest)
 
 		case message.QueryCredentialType:
-			req = msg.(*message.QueryCredentialRequest)
+			req, ok = msg.(*message.QueryCredentialRequest)
 
 		case message.QueryPresentationType:
-			req = msg.(*message.QueryPresentationRequest)
+			req, ok = msg.(*message.QueryPresentationRequest)
 
 		default:
 			resp.Response(http.StatusOK, message.ERROR_CODE_INNER, "not a supported message type", nil)

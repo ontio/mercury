@@ -8,7 +8,5 @@ func ReverseConnection(conn message.Connection) message.Connection {
 		MyRouter:    conn.TheirRouter,
 		TheirDid:    conn.MyDid,
 		TheirRouter: conn.MyRouter,
-		//MyServiceId:    conn.TheirServiceId,
-		//TheirServiceId: conn.MyServiceId,
 	}
 }

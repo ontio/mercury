@@ -32,6 +32,7 @@ func setupAPP() *cli.App {
 		cmd.HttpIpFlag,
 		cmd.HttpPortFlag,
 		cmd.RestUrlFlag,
+		cmd.RpcUrlFlag,
 		cmd.HttpsPortFlag,
 		cmd.EnableHttpsFlag,
 		cmd.EnablePackageFlag,

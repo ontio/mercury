@@ -130,7 +130,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 ```
 ./agent-otf httpclient reqpresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-presentation '{
     "@type":"spec/issue-credential/1.0/propose-credential",
-    "@id":"13",
+    "@id":"15",
     "comment":"proposal1",
     "connection": {
          "my_did": "did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr",
@@ -148,4 +148,15 @@ Password:
 ==============credential==============
 {"code":0,"msg":"","data":{"message_type":0,"content":{"formats":[{"attach_id":"1","format":"base64"}],"credentials~attach":[{"@id":"1","lastmod_time":"2020-07-15T15:20:18.630702+08:00","data":{"base64":"eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6VFFGbWZyYlFib0RVU2VWOTg5WnA4NjdyNkRhd2IxTVBTRiNrZXlzLTEiLCJ0eXAiOiJKV1QifQ==.eyJpc3MiOiJkaWQ6b250OlRRRm1mcmJRYm9EVVNlVjk4OVpwODY3cjZEYXdiMU1QU0YiLCJleHAiOjE1OTQ4ODQwMTcsIm5iZiI6MTU5NDc5NzYxOCwiaWF0IjoxNTk0Nzk3NjE4LCJqdGkiOiJ1cm46dXVpZDo5MzA3ZDdiNS1iMDcxLTRiNTktOWFlMy1iNTMzMWNiZDI2YWMiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwib3RmIl0sImNyZWRlbnRpYWxTdWJqZWN0IjpbeyJuYW1lIjoiYWdlIiwidmFsdWUiOiJncmVhdGVyIHRoYW4gMTgifV0sImNyZWRlbnRpYWxTdGF0dXMiOnsiaWQiOiIwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwidHlwZSI6IkF0dGVzdENvbnRyYWN0In0sInByb29mIjp7ImNyZWF0ZWQiOiIyMDIwLTA3LTE1VDA3OjIwOjE4WiIsInByb29mUHVycG9zZSI6ImFzc2VydGlvbk1ldGhvZCJ9fX0=.QfhkbGsYeYW+irt7PKZzU31DW1N4KWloZUYxc5ja/DWTYM/+nGyGgxPYPnTz2WMHsRyYSKprQqdqcxPSh7tFiw=="}}]}}}
 ==============credential==============
+```
+
+### 2.6 查询一个Presentation
+
+```
+./agent-otf httpclient querypresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --presentation-id 15
+
+
+==============presentation==============
+{"code":0,"msg":"","data":{"message_type":0,"content":{"formats":[{"attach_id":"1","format":"base64"}],"presentations~attach":[{"@id":"1","lastmod_time":"2020-07-17T15:21:23.109729+08:00","data":{"base64":"eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6VEw5ZDlKZGRleVVaem56OWVpVE53TEVXUUFpcFVMcjRtciNrZXlzLTEiLCJ0eXAiOiJKV1QifQ==.eyJpc3MiOiJkaWQ6b250OlRMOWQ5SmRkZXlVWnpuejllaVROd0xFV1FBaXBVTHI0bXIiLCJhdWQiOiIiLCJqdGkiOiJ1cm46dXVpZDoyYjlmYWYwYS1kY2Q3LTQ2YTEtOGMwMC1mNGRkY2FmYTEyNjEiLCJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwib3RmIl0sInByb29mIjp7ImNyZWF0ZWQiOiIyMDIwLTA3LTE3VDA3OjIxOjIyWiIsInByb29mUHVycG9zZSI6ImFzc2VydGlvbk1ldGhvZCJ9fX0=.7Smhyzps3mt/LOQxCgvAbK8JgawMAwXoY7t4Un+6x8r4hdaVOPfngoebmUrhRiVWlIDqpVm7MNkq1f7t+V3BCA=="}}]}}}
+==============presentation==============
 ```

@@ -397,7 +397,6 @@ func queryPresentation(ctx *cli.Context) error {
 	id := ctx.String(cmd.GetFlagName(cmd.PresentationIdFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
 	rpc := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
-
 	req := message.QueryPresentationRequest{
 		DId: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		Id:  id,
@@ -428,6 +427,5 @@ func queryPresentation(ctx *cli.Context) error {
 	fmt.Println("==============presentation==============")
 	fmt.Printf("%s\n", body)
 	fmt.Println("==============presentation==============")
-
 	return nil
 }

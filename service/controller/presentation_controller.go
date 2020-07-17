@@ -104,7 +104,7 @@ func (p PresentationController) Process(msg message.Message) (service.Controller
 				MessageType: message.PresentationType,
 				Content:     presentation,
 			},
-			Conn: presentation.Connection,
+			Conn: service.ReverseConnection(presentation.Connection),
 		}
 		err = p.msgsvr.HandleOutBound(outMsg)
 		if err != nil {
