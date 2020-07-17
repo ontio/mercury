@@ -6,7 +6,7 @@
 
 ## 简介
 
-[Ontology DID Communication Framework](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design.md)
+[Ontology DID Communication Framework](../doc/Detail Design.md)
 
 
 
@@ -22,13 +22,9 @@
 
 启动命令
 
-``` 
-./agent-otf
-```
-
+```./agent-otf```
 
 参数:
-
 
 ```
 GLOBAL OPTIONS:
@@ -64,4 +60,8 @@ GLOBAL OPTIONS:
 请参照: [http_cmd](https://git.ont.io/ontid/otf/src/master/cmd/manual.md)
 
 
+
+### Rest API
+
+请参照[RestAPI](https://git.ont.io/ontid/otf/src/master/doc/OTF%20RestAPI%20Document.md)
 
