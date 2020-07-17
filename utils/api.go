@@ -20,7 +20,7 @@ const (
 	SendRequestPresentation_Api   = "sendrequestpresentation"
 	RequestPresentation_Api       = "requestpresentation"
 	Presentation_Api              = "presentproof"
-	PresentationAckInfo           = "presentationack"
+	PresentationAckInfo_Api       = "presentationack"
 	SendGeneralMsg_Api            = "sendgeneralmsg"
 	ReceiveGeneralMsg_Api         = "receivegeneralmsg"
 	QueryGeneralMsg_Api           = "querygeneralmsg"
@@ -56,7 +56,7 @@ func GetApiName(msgType message.MessageType) string {
 	case message.PresentationType:
 		return Group_Api_V1 + Presentation_Api
 	case message.PresentationACKType:
-		return Group_Api_V1 + PresentationAckInfo
+		return Group_Api_V1 + PresentationAckInfo_Api
 	case message.SendGeneralMsgType:
 		return Group_Api_V1 + SendGeneralMsg_Api
 	case message.ReceiveGeneralMsgType:

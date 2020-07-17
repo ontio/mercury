@@ -48,7 +48,7 @@ func InitRouter() *gin.Engine {
 		v.POST(utils.SendRequestPresentation_Api, SendRequestPresentation)
 		v.POST(utils.RequestPresentation_Api, RequestPresentation)
 		v.POST(utils.Presentation_Api, Presentation)
-		v.POST(utils.PresentationAckInfo, PresentationAckInfo)
+		v.POST(utils.PresentationAckInfo_Api, PresentationAckInfo)
 
 		v.POST(utils.SendGeneralMsg_Api, SendGeneralMsg)
 		v.POST(utils.ReceiveGeneralMsg_Api, ReceiveGeneralMsg)

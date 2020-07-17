@@ -49,12 +49,12 @@ var (
 	}
 	HttpPortFlag = cli.StringFlag{
 		Name:  "http-port",
-		Usage: "Set http rest port default:8080",
+		Usage: "Set http rest port",
 		Value: DEFAULT_HTTP_PORT,
 	}
 	HttpsPortFlag = cli.StringFlag{
 		Name:  "https-port",
-		Usage: "Set https rest port default:8443",
+		Usage: "set https rest port",
 		Value: DEFAULT_HTTPS_PORT,
 	}
 	EnableHttpsFlag = cli.BoolFlag{
@@ -63,17 +63,17 @@ var (
 	}
 	HttpIpFlag = cli.StringFlag{
 		Name:  "rest-ip",
-		Usage: "Set http rest ip addr default:127.0.0.1",
+		Usage: "set services http rest ip addr",
 		Value: DEFAULT_HTTP_IP,
 	}
 	RestUrlFlag = cli.StringFlag{
 		Name:  "rest-url",
-		Usage: "Set block chain rpc addr default:127.0.0.1:20334",
+		Usage: "set block chain rest url",
 		Value: DEFAULT_BLOCK_CHAIN_REST_URL,
 	}
 	RpcUrlFlag = cli.StringFlag{
 		Name:  "chain-rpc-url",
-		Usage: "Json rpc server listening port `<url>`",
+		Usage: "Set block chain rpc url",
 		Value: DEFAULT_BLOCK_CHAIN_RPC_URL,
 	}
 	TransactionGasPriceFlag = cli.Uint64Flag{
@@ -122,7 +122,7 @@ var (
 	}
 	HttpClientFlag = cli.StringFlag{
 		Name:  "restful",
-		Usage: "set http client restful url default:http://127.0.0.1:8080",
+		Usage: "set http client restful url",
 		Value: DEFAULT_CLIENT_REST_URL,
 	}
 	InvitationFlag = cli.StringFlag{

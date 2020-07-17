@@ -64,18 +64,18 @@ func GenUUID() string {
 }
 
 func CutDId(did string) string {
-	var realdid string
+	var realDid string
 	if strings.Contains(did, "#") {
-		realdid = strings.Split(did, "#")[0]
+		realDid = strings.Split(did, "#")[0]
 	} else {
-		realdid = did
+		realDid = did
 	}
-	return realdid
+	return realDid
 
 }
 
-func CheckConnection(mydid, theirdid string, db store.Store) error {
-	connectionKey := []byte(fmt.Sprintf("%s_%s", ConnectionKey, mydid))
+func CheckConnection(myDid, theirDid string, db store.Store) error {
+	connectionKey := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDid))
 	data, err := db.Get(connectionKey)
 	if err != nil {
 		return nil
@@ -86,7 +86,7 @@ func CheckConnection(mydid, theirdid string, db store.Store) error {
 	if err != nil {
 		return err
 	}
-	_, ok := cr.Connections[theirdid]
+	_, ok := cr.Connections[theirDid]
 	if !ok {
 		return fmt.Errorf("connection not found!")
 	}
