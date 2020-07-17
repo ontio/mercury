@@ -2,3 +2,4 @@
 main
 agent-otf
 db_otf/
+**/*.log
