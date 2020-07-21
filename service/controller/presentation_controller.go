@@ -1,266 +1,244 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/utils"
-	"time"
+	"net/http"
+	"strings"
 
-	"git.ont.io/ontid/otf/common/config"
 	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/common/packager/ecdsa"
+	"git.ont.io/ontid/otf/service/common"
 	"git.ont.io/ontid/otf/store"
+	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri"
-	sdk "github.com/ontio/ontology-go-sdk"
-)
-
-const (
-	RequestPresentationKey = "RequestPresentation"
-	PresentationKey        = "Presentation"
+	"github.com/gin-gonic/gin"
 )
 
 type PresentationController struct {
-	account *sdk.Account
-	cfg     *config.Cfg
-	store   store.Store
-	msgsvr  *service.MsgService
-	vdri    vdri.VDRI
+	packager *ecdsa.Packager
+	store    store.Store
+	msgSvr   *common.MsgService
+	vdri     vdri.VDRI
 }
 
-func NewPresentationController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) PresentationController {
-	p := PresentationController{
-		account: acct,
-		cfg:     cfg,
-		store:   db,
-		msgsvr:  msgsvr,
-		vdri:    v,
+func NewPresentationController(packager *ecdsa.Packager, store store.Store,
+	msgSvr *common.MsgService, v vdri.VDRI) common.Router {
+	return &PresentationController{
+		packager: packager,
+		store:    store,
+		msgSvr:   msgSvr,
+		vdri:     v,
 	}
-	err := p.Initiate(nil)
-	if err != nil {
-		panic(err)
-	}
-	return p
-
 }
 
-func (p PresentationController) Initiate(param service.ParameterInf) error {
-	log.Infof("%s Initiate", p.Name())
-	//todo add logic
-	return nil
+func (c *PresentationController) Routes() common.Routes {
+	return common.Routes{
+		{
+			Name:        "SendRequestPresentation",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/sendrequestpresentation",
+			HandlerFunc: c.SendRequestPresentation,
+		},
+		{
+			Name:        "RequestPresentation",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/requestpresentation",
+			HandlerFunc: c.RequestPresentation,
+		},
+		{
+			Name:        "PresentProof",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/presentproof",
+			HandlerFunc: c.PresentProof,
+		},
+		{
+			Name:        "PresentationAck",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/presentationack",
+			HandlerFunc: c.PresentationAck,
+		},
+		{
+			Name:        "QueryPresentation",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/querypresentation",
+			HandlerFunc: c.QueryPresentation,
+		},
+	}
 }
 
-func (p PresentationController) Name() string {
-	return "CredentialController"
+func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendRequestPresentationType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	req, ok := data.(*message.RequestPresentation)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.RequestPresentationType,
+			Content:     req,
+		},
+		Conn: req.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound :%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (p PresentationController) Shutdown() error {
-	log.Infof("%s shutdown\n", p.Name())
-	return nil
+func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestPresentationType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	req, ok := data.(*message.RequestPresentation)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	if err != nil {
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	presentation, err := c.vdri.PresentProof(req, c.store)
+	if err != nil {
+		log.Errorf("errors on PresentProof :%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+
+	err = c.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
+	if err != nil {
+		log.Errorf("error on SaveRequestPresentation:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.PresentationType,
+			Content:     presentation,
+		},
+		Conn: common.ReverseConnection(presentation.Connection),
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (p PresentationController) Process(msg message.Message) (service.ControllerResp, error) {
-	log.Infof("%s Process:%v\n", p.Name(), msg)
-	switch msg.MessageType {
-	case message.SendRequestPresentationType:
-		log.Infof("resolve SendPresentationType")
-		req := msg.Content.(*message.RequestPresentation)
-
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.RequestPresentationType,
-				Content:     req,
-			},
-			Conn: req.Connection,
-		}
-		err := p.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound :%s", err.Error())
-			return nil, err
-		}
-
-	case message.RequestPresentationType:
-		log.Infof("resolve RequestPresentationType")
-		req := msg.Content.(*message.RequestPresentation)
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		presentation, err := p.vdri.PresentProof(req, p.store)
-		if err != nil {
-			log.Errorf("errors on PresentProof :%s", err.Error())
-			return nil, err
-		}
-
-		err = p.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
-		if err != nil {
-			log.Errorf("error on SaveRequestPresentation:%s", err.Error())
-			return nil, err
-		}
-
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.PresentationType,
-				Content:     presentation,
-			},
-			Conn: service.ReverseConnection(presentation.Connection),
-		}
-		err = p.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound:%s", err.Error())
-			return nil, err
-		}
-	case message.PresentationType:
-		log.Infof("resolve RequestPresentationType")
-		req := msg.Content.(*message.Presentation)
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		err = p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
-		if err != nil {
-			return nil, err
-		}
-		ack := new(message.PresentationACK)
-		ack.Id = utils.GenUUID()
-		ack.Thread = req.Thread
-		ack.Connection = service.ReverseConnection(req.Connection)
-		ack.Type = vdri.PresentationACKSpec
-		ack.Status = utils.ACK_SUCCEED
-
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.PresentationACKType,
-				Content:     ack,
-			},
-			Conn: ack.Connection,
-		}
-		err = p.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound:%s", err.Error())
-			return nil, err
-		}
-
-	case message.PresentationACKType:
-		log.Infof("resolve PresentationACKType")
-		req := msg.Content.(*message.PresentationACK)
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		err = p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
-		if err != nil {
-			return nil, err
-		}
-		log.Infof("ack received")
-
-	case message.QueryPresentationType:
-		log.Infof("resolve QueryPresentationType")
-		req := msg.Content.(*message.QueryPresentationRequest)
-
-		rec, err := p.QueryPresentation(req.DId, req.Id)
-		if err != nil {
-			log.Errorf("error on QueryPresentationType:%s", err.Error())
-			return nil, err
-		}
-		queryRespons := new(message.QueryPresentationResponse)
-		queryRespons.Formats = rec.Formats
-		queryRespons.PresentationAttach = rec.PresentationAttach
-
-		return service.ServiceResponse{
-			Message: queryRespons,
-		}, nil
-
-	default:
-		return service.Skipmessage(msg)
+func (c *PresentationController) PresentProof(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.PresentationType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-
-	return nil, nil
-
+	req, ok := data.(*message.Presentation)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	if err != nil {
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	err = c.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	ack := &message.PresentationACK{
+		Id:         utils.GenUUID(),
+		Thread:     req.Thread,
+		Connection: common.ReverseConnection(req.Connection),
+		Type:       vdri.PresentationACKSpec,
+		Status:     utils.ACK_SUCCEED,
+	}
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.PresentationACKType,
+			Content:     ack,
+		},
+		Conn: ack.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (p PresentationController) SaveRequestPresentation(did, id string, rr message.RequestPresentation) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", RequestPresentationKey, did, id))
-	b, err := p.store.Has(key)
+func (c *PresentationController) PresentationAck(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.PresentationACKType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if b {
-		return fmt.Errorf("ReqeustPresentation id:%s,all ready exist", id)
+	req, ok := data.(*message.PresentationACK)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
 	}
-
-	rec := new(message.RequestPresentationRec)
-	rec.RerquestPrentation = rr
-	rec.RequesterDID = rr.Connection.MyDid
-	rec.State = message.RequestPresentationReceived
-
-	data, err := json.Marshal(rec)
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
-		return err
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-
-	return p.store.Put(key, data)
+	err = c.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (p PresentationController) UpdateRequestPresentaion(did, id string, state message.RequestPresentationState) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", RequestPresentationKey, did, id))
-	data, err := p.store.Get(key)
+func (c *PresentationController) QueryPresentation(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryPresentationType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	rec := new(message.RequestPresentationRec)
-	err = json.Unmarshal(data, rec)
+	req, ok := data.(*message.QueryPresentationRequest)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	rec, err := c.QueryPresentationFromStore(req.DId, req.Id)
 	if err != nil {
-		return err
+		log.Errorf("error on QueryPresentationType:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if rec.State <= state {
-		return fmt.Errorf("request presentation id:%s state invalid", id)
-	}
-
-	rec.State = state
-	data, err = json.Marshal(rec)
-	if err != nil {
-		return err
-	}
-	return p.store.Put(key, data)
-}
-
-func (p PresentationController) SavePresentation(did, id string, pr message.Presentation) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
-	b, err := p.store.Has(key)
-	if err != nil {
-		return err
-	}
-	if b {
-		return fmt.Errorf("ReqeustPresentation id:%s,all ready exist", id)
-	}
-
-	rec := new(message.PresentationRec)
-	rec.Presentation = pr
-	rec.OwnerDID = pr.Connection.TheirDid
-	rec.Timestamp = time.Now()
-
-	data, err := json.Marshal(rec)
-	if err != nil {
-		return err
-	}
-
-	return p.store.Put(key, data)
-}
-
-func (p PresentationController) QueryPresentation(did, id string) (message.Presentation, error) {
-	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
-	data, err := p.store.Get(key)
-	if err != nil {
-		return message.Presentation{}, err
-	}
-	rec := new(message.PresentationRec)
-	err = json.Unmarshal(data, rec)
-	if err != nil {
-		return message.Presentation{}, err
-	}
-	return rec.Presentation, nil
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", &message.QueryPresentationResponse{
+		Formats: rec.Formats,
+		PresentationAttach: rec.PresentationAttach,
+	})
+	return
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/service/common"
 	"git.ont.io/ontid/otf/service/controller"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/utils"
@@ -44,7 +44,7 @@ func (ontVdri *OntVDRI) OfferCredential(req *message.ProposalCredential) (*messa
 	offer := new(message.OfferCredential)
 	offer.Type = vdri.OfferCredentialSpec
 	offer.Id = utils.GenUUID()
-	offer.Connection = service.ReverseConnection(req.Connection)
+	offer.Connection = common.ReverseConnection(req.Connection)
 	offer.CredentialPreview = message.CredentialPreview{Type: "sample", Attributre: []message.Attributre{message.Attributre{
 		Name:     "name1",
 		MimeType: "json",
@@ -90,7 +90,7 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 				Base64: vc,
 			},
 		}},
-		Connection: service.ReverseConnection(req.Connection),
+		Connection: common.ReverseConnection(req.Connection),
 		Thread: message.Thread{
 			ID: req.Id,
 		},
@@ -137,7 +137,7 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 	}
 	presentation.Type = vdri.PresentationProofSpec
 	presentation.Id = utils.GenUUID()
-	presentation.Connection = service.ReverseConnection(req.Connection)
+	presentation.Connection = common.ReverseConnection(req.Connection)
 	presentation.Formats = []message.Format{message.Format{
 		AttachID: "1", //fixed index
 		Format:   "base64",

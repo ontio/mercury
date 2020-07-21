@@ -13,8 +13,9 @@ import (
 	http_cmd "git.ont.io/ontid/otf/cmd/httpclient"
 	"git.ont.io/ontid/otf/common/config"
 	"git.ont.io/ontid/otf/common/log"
-	"git.ont.io/ontid/otf/rest"
+	"git.ont.io/ontid/otf/common/packager/ecdsa"
 	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/service/common"
 	store "git.ont.io/ontid/otf/store/leveldb"
 	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri/ontdid"
@@ -69,7 +70,7 @@ func startAgent(ctx *cli.Context) {
 		port = ctx.String(cmd.GetFlagName(cmd.HttpPortFlag))
 	}
 	if ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)) {
-		rest.EnablePackage = true
+		common.EnablePackage = true
 	}
 	ip := ctx.String(cmd.GetFlagName(cmd.HttpIpFlag))
 	prov := store.NewProvider(cmd.DEFAULT_STORE_DIR)
@@ -81,10 +82,9 @@ func startAgent(ctx *cli.Context) {
 		Port: port,
 		Ip:   ip,
 	}
-	r := rest.InitRouter()
-	ontvdri := ontdid.NewOntVDRI(ontSdk, account, "")
-	msgSvr := service.NewMessageService(ontvdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)))
-	rest.NewService(account, cfg, db, msgSvr, ontvdri, ontSdk)
+	ontVdri := ontdid.NewOntVDRI(ontSdk, account, "")
+	msgSvr := common.NewMessageService(ontVdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)))
+	r := service.NewApiRouter(ecdsa.New(ontSdk, account), db, msgSvr, ontVdri)
 	log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {

@@ -1,356 +1,353 @@
 package controller
 
 import (
-	"encoding/json"
+	"net/http"
+	"strings"
 	"fmt"
-	"time"
 
-	"git.ont.io/ontid/otf/common/config"
 	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/service"
+	"git.ont.io/ontid/otf/common/packager/ecdsa"
+	"git.ont.io/ontid/otf/service/common"
 	"git.ont.io/ontid/otf/store"
 	"git.ont.io/ontid/otf/utils"
 	"git.ont.io/ontid/otf/vdri"
-	sdk "github.com/ontio/ontology-go-sdk"
-)
-
-const (
-	CredentialKey        = "Credential"
-	RequestCredentialKey = "RequestCredential"
-	OfferCredentialKey   = "OfferCredential"
+	"github.com/gin-gonic/gin"
 )
 
 type CredentialController struct {
-	account *sdk.Account
-	cfg     *config.Cfg
-	store   store.Store
-	msgsvr  *service.MsgService
-	vdri    vdri.VDRI
+	packager *ecdsa.Packager
+	store    store.Store
+	msgSvr   *common.MsgService
+	vdri     vdri.VDRI
 }
 
-func NewCredentialController(acct *sdk.Account, cfg *config.Cfg, db store.Store, msgsvr *service.MsgService, v vdri.VDRI) CredentialController {
-	s := CredentialController{
-		account: acct,
-		cfg:     cfg,
-		store:   db,
-		msgsvr:  msgsvr,
-		vdri:    v,
+func NewCredentialController(packager *ecdsa.Packager, store store.Store,
+	msgSvr *common.MsgService, v vdri.VDRI) common.Router {
+	return &CredentialController{
+		packager: packager,
+		store:    store,
+		msgSvr:   msgSvr,
+		vdri:     v,
 	}
-	err := s.Initiate(nil)
-	if err != nil {
-		panic(err)
-	}
-	return s
-
 }
 
-func (s CredentialController) Name() string {
-	return "CredentialController"
+func (c *CredentialController) Routes() common.Routes {
+	return common.Routes{
+		{
+			Name:        "SendProposalCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/sendproposalcredential",
+			HandlerFunc: c.SendProposalCredential,
+		},
+		{
+			Name:        "ProposalCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/proposalcredential",
+			HandlerFunc: c.ProposalCredential,
+		},
+		{
+			Name:        "OfferCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/offercredential",
+			HandlerFunc: c.OfferCredential,
+		},
+		{
+			Name:        "SendRequestCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/sendrequestcredential",
+			HandlerFunc: c.SendRequestCredential,
+		},
+		{
+			Name:        "RequestCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/requestcredential",
+			HandlerFunc: c.RequestCredential,
+		},
+		{
+			Name:        "IssueCredential",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/issuecredential",
+			HandlerFunc: c.IssueCredential,
+		},
+		{
+			Name:        "CredentialAck",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "/api/v1/credentialack",
+			HandlerFunc: c.CredentialAck,
+		},
+		{
+			Name:        "QueryCredentail",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     "api/v1/querycredential",
+			HandlerFunc: c.QueryCredential,
+		},
+	}
 }
 
-func (s CredentialController) Initiate(param service.ParameterInf) error {
-	log.Infof("%s Initiate", s.Name())
-	//todo add logic
-	return nil
+func (c *CredentialController) SendProposalCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendProposalCredentialType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	req, ok := data.(*message.ProposalCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.ProposalCredentialType,
+			Content:     req,
+		},
+		Conn: req.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) Process(msg message.Message) (service.ControllerResp, error) {
-	log.Infof("%s Process:%v", s.Name(), msg)
-	//todo add logic
-	switch msg.MessageType {
-	case message.SendProposalCredentialType:
-		log.Infof("resolve SendProposalCredentialType")
-		req := msg.Content.(*message.ProposalCredential)
-
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.ProposalCredentialType,
-				Content:     req,
-			},
-			Conn: req.Connection,
-		}
-		err := s.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound:%s", err.Error())
-			return nil, err
-		}
-
-	case message.ProposalCredentialType:
-		log.Infof("resolve ProposalCredentialType")
-		req := msg.Content.(*message.ProposalCredential)
-
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-
-		//todo deal with the proposal, do we need store the proposal???
-		log.Infof("proposal is %v", req)
-
-		offer, err := s.vdri.OfferCredential(req)
-		if err != nil {
-			log.Errorf("error on offerCredetial")
-			return nil, err
-		}
-
-		outerMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.OfferCredentialType,
-				Content:     offer,
-			},
-			Conn: offer.Connection,
-		}
-
-		err = s.msgsvr.HandleOutBound(outerMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound :%s", err.Error())
-			return nil, err
-		}
-
-	case message.OfferCredentialType:
-		log.Infof("resolve ProposalCredentialType")
-		req := msg.Content.(*message.OfferCredential)
-
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		//todo save the offer in store
-		err = s.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
-		if err != nil {
-			log.Errorf("error on SaveOfferCredential:%s", err.Error())
-			return nil, err
-		}
-		//
-
-	case message.SendRequestCredentialType:
-		log.Infof("resolve SendRequestCredentialType")
-		req := msg.Content.(*message.RequestCredential)
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.RequestCredentialType,
-				Content:     req,
-			},
-			Conn: req.Connection,
-		}
-		err := s.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound:%s", err.Error())
-			return nil, err
-		}
-
-	case message.RequestCredentialType:
-		log.Infof("resolve RequestCredentialType")
-		req := msg.Content.(*message.RequestCredential)
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		err = s.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
-		if err != nil {
-			log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
-			return nil, err
-		}
-
-		credential, err := s.vdri.IssueCredential(req)
-		if err != nil {
-			log.Errorf("error on IssueCredential:%s\n", err.Error())
-			return nil, err
-		}
-
-		outMsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.IssueCredentialType,
-				Content:     credential,
-			},
-			Conn: credential.Connection,
-		}
-
-		err = s.msgsvr.HandleOutBound(outMsg)
-		if err != nil {
-			log.Errorf("error on HandleOutBound:%s\n", err.Error())
-			return nil, err
-		}
-
-	case message.IssueCredentialType:
-		log.Infof("resolve IssueCredentialType")
-		req := msg.Content.(*message.IssueCredential)
-		err := utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
-		if err != nil {
-			log.Infof("no connect found with did:%s", req.Connection.MyDid)
-			return nil, err
-		}
-		//store the credential
-		err = s.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
-		if err != nil {
-			log.Errorf("error on SaveCredential:%s\n", err.Error())
-			return nil, err
-		}
-
-		ack := message.CredentialACK{
-			Type: vdri.CredentialACKSpec,
-			Id:   utils.GenUUID(),
-			Thread: message.Thread{
-				ID: req.Thread.ID,
-			},
-			Status:     utils.ACK_SUCCEED,
-			Connection: service.ReverseConnection(req.Connection),
-		}
-
-		outmsg := service.OutboundMsg{
-			Msg: message.Message{
-				MessageType: message.CredentialACKType,
-				Content:     ack,
-			},
-			Conn: ack.Connection,
-		}
-		err = s.msgsvr.HandleOutBound(outmsg)
-		if err != nil {
-			log.Errorf("error on SaveCredential:%s\n", err.Error())
-			return nil, err
-		}
-
-	case message.CredentialACKType:
-		log.Infof("resolve IssueCredentialType")
-		req := msg.Content.(*message.CredentialACK)
-		reqid := req.Thread.ID
-
-		err := s.UpdateRequestCredential(req.Connection.MyDid, reqid, message.RequestCredentialResolved)
-		if err != nil {
-			log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
-			return nil, err
-		}
-
-	case message.QueryCredentialType:
-		log.Infof("resolve QueryCredentialType")
-		req := msg.Content.(*message.QueryCredentialRequest)
-		fmt.Printf("did:%s,id:%s\n", req.DId, req.Id)
-
-		rec, err := s.QueryCredential(req.DId, req.Id)
-		if err != nil {
-			log.Errorf("error on QueryCredentialType:%s\n", err.Error())
-			return nil, err
-		}
-		resp := new(service.ServiceResponse)
-
-		queryResult := new(message.QueryCredentialResponse)
-		queryResult.CredentialsAttach = rec.CredentialsAttach
-		queryResult.Formats = rec.Formats
-
-		resp.Message = queryResult
-		return resp, nil
-
-	default:
-		return service.Skipmessage(msg)
+func (c *CredentialController) ProposalCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ProposalCredentialType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-
-	return nil, nil
-}
-func (s CredentialController) Shutdown() error {
-	log.Infof("%s shutdown\n", s.Name())
-	return nil
+	req, ok := data.(*message.ProposalCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	if err != nil {
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	log.Infof("proposal is %v", req)
+	offer, err := c.vdri.OfferCredential(req)
+	if err != nil {
+		log.Errorf("error on offerCredetial")
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	outerMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.OfferCredentialType,
+			Content:     offer,
+		},
+		Conn: offer.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outerMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound :%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) SaveOfferCredential(did, id string, propsal *message.OfferCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", OfferCredentialKey, did, id))
-	b, err := s.store.Has(key)
+func (c *CredentialController) OfferCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.OfferCredentialType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if b {
-		return fmt.Errorf("id:%s already exist\n", id)
+	req, ok := data.(*message.OfferCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
 	}
-
-	data, err := json.Marshal(propsal)
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
-		return err
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	return s.store.Put(key, data)
+	err = c.SaveOfferCredential(req.Connection.TheirDid, req.Thread.ID, req)
+	if err != nil {
+		log.Errorf("error on SaveOfferCredential:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) SaveCredential(did, id string, credential message.IssueCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
-	b, err := s.store.Has(key)
+func (c *CredentialController) SendRequestCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestCredentialType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if b {
-		return fmt.Errorf("id:%s already exist\n", id)
+	req, ok := data.(*message.RequestCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
 	}
-
-	rec := message.CredentialRec{
-		OwnerDID:   credential.Connection.TheirDid,
-		Credential: credential,
-		Timestamp:  time.Now(),
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.RequestCredentialType,
+			Content:     req,
+		},
+		Conn: req.Connection,
 	}
-	data, err := json.Marshal(rec)
+	err = c.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
-		return err
+		log.Errorf("error on HandleOutBound:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	return s.store.Put(key, data)
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) SaveRequestCredential(did, id string, requestCredential message.RequestCredential) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
-	b, err := s.store.Has(key)
+func (c *CredentialController) RequestCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestCredentialType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if b {
-		return fmt.Errorf("id:%s already exist\n", id)
+	req, ok := data.(*message.RequestCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	if err != nil {
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	err = c.SaveRequestCredential(req.Connection.MyDid, req.Id, *req)
+	if err != nil {
+		log.Errorf("error on SaveRequestCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
 
-	rec := message.RequestCredentialRec{
-		RequesterDID:      requestCredential.Connection.MyDid,
-		RequestCredential: requestCredential,
-		State:             message.RequestCredentialReceived,
-	}
-	data, err := json.Marshal(rec)
+	credential, err := c.vdri.IssueCredential(req)
 	if err != nil {
-		return err
+		log.Errorf("error on IssueCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	return s.store.Put(key, data)
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.IssueCredentialType,
+			Content:     credential,
+		},
+		Conn: credential.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on HandleOutBound:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) QueryCredential(did, id string) (message.IssueCredential, error) {
-	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
-
-	data, err := s.store.Get(key)
+func (c *CredentialController) IssueCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.IssueCredentialType)
 	if err != nil {
-		return message.IssueCredential{}, err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-
-	rec := new(message.CredentialRec)
-	err = json.Unmarshal(data, rec)
+	req, ok := data.(*message.IssueCredential)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = c.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
 	if err != nil {
-		return message.IssueCredential{}, err
+		log.Errorf("error on SaveCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	return rec.Credential, nil
+	ack := message.CredentialACK{
+		Type: vdri.CredentialACKSpec,
+		Id:   utils.GenUUID(),
+		Thread: message.Thread{
+			ID: req.Thread.ID,
+		},
+		Status:     utils.ACK_SUCCEED,
+		Connection: common.ReverseConnection(req.Connection),
+	}
+	outMsg := common.OutboundMsg{
+		Msg: message.Message{
+			MessageType: message.CredentialACKType,
+			Content:     ack,
+		},
+		Conn: ack.Connection,
+	}
+	err = c.msgSvr.HandleOutBound(outMsg)
+	if err != nil {
+		log.Errorf("error on SaveCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
 }
 
-func (s CredentialController) UpdateRequestCredential(did, id string, state message.RequestCredentialState) error {
-	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
-	data, err := s.store.Get(key)
+func (c *CredentialController) CredentialAck(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ConnectionACKType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
+	req, ok := data.(*message.ConnectionACK)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = c.UpdateRequestCredential(req.Connection.MyDid, req.Thread.ID, message.RequestCredentialResolved)
+	if err != nil {
+		log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+	return
+}
 
-	rec := new(message.RequestCredentialRec)
-	err = json.Unmarshal(data, rec)
+func (c *CredentialController) QueryCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryCredentialType)
 	if err != nil {
-		return err
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	if rec.State >= state {
-		return fmt.Errorf("UpdateRequestCredential id :%s state invalid\n", id)
+	req, ok := data.(*message.QueryCredentialRequest)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		return
 	}
-	rec.State = state
-	data, err = json.Marshal(rec)
+	rec, err := c.QueryCredentialFromStore(req.DId, req.Id)
 	if err != nil {
-		return err
+		log.Errorf("error on QueryCredentialType:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
 	}
-	return s.store.Put(key, data)
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", &message.QueryCredentialResponse{
+		CredentialsAttach: rec.CredentialsAttach,
+		Formats:           rec.Formats,
+	})
+	return
 }
