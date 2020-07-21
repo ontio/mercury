@@ -228,7 +228,7 @@ func sendMsg(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.SendGeneralMsgType),
+			MsgType: int(message.SendBasicMsgType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -238,7 +238,7 @@ func sendMsg(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendGeneralMsgType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendBasicMsgType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
@@ -269,7 +269,7 @@ func queryMsg(ctx *cli.Context) error {
 	env := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqdata,
-			MsgType: int(message.QueryGeneralMessageType),
+			MsgType: int(message.QueryBasicMessageType),
 		},
 		FromDID: fromdid,
 		ToDID:   todid,
@@ -278,7 +278,7 @@ func queryMsg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	url = url + utils.GetApiName(message.QueryGeneralMessageType)
+	url = url + utils.GetApiName(message.QueryBasicMessageType)
 	respbts, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err

@@ -316,7 +316,7 @@ func (c *SystemController) Disconnect(ctx *gin.Context) {
 
 func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendGeneralMsgType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendBasicMsgType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -336,7 +336,7 @@ func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
 	req.Id = utils.GenUUID()
 	outMsg := common.OutboundMsg{
 		Msg: message.Message{
-			MessageType: message.ReceiveGeneralMsgType,
+			MessageType: message.ReceiveBasicMsgType,
 			Content:     req,
 		},
 		Conn: conn,
@@ -359,7 +359,7 @@ func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
 
 func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendGeneralMsgType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendBasicMsgType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -386,7 +386,7 @@ func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 
 func (c *SystemController) QueryBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryGeneralMessageType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryBasicMessageType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

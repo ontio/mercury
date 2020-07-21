@@ -24,9 +24,9 @@ const (
 	PresentationType
 	PresentationACKType
 
-	SendGeneralMsgType
-	ReceiveGeneralMsgType
-	QueryGeneralMessageType
+	SendBasicMsgType
+	ReceiveBasicMsgType
+	QueryBasicMessageType
 
 	QueryCredentialType
 	QueryPresentationType

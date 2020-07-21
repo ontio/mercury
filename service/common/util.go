@@ -96,9 +96,9 @@ func getMsgObjectByType(messageType message.MessageType) (interface{}, error) {
 		req = &message.Presentation{}
 	case message.PresentationACKType:
 		req = &message.PresentationACK{}
-	case message.SendGeneralMsgType:
+	case message.SendBasicMsgType:
 		req = &message.BasicMessage{}
-	case message.QueryGeneralMessageType:
+	case message.QueryBasicMessageType:
 		req = &message.QueryGeneralMessageRequest{}
 	case message.QueryCredentialType:
 		req = &message.QueryCredentialRequest{}
