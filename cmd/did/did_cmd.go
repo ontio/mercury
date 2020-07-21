@@ -49,6 +49,23 @@ var DidCommand = cli.Command{
 			},
 		},
 		{
+			Name:        "updatesvr",
+			Usage:       "update service endpoint",
+			Description: "Use Did add service endpoint to contract",
+			Action:      updateService,
+			Flags: []cli.Flag{
+				cmd.RpcUrlFlag,
+				cmd.TransactionGasPriceFlag,
+				cmd.TransactionGasLimitFlag,
+				cmd.WalletFileFlag,
+				cmd.DidFlag,
+				cmd.ServiceIdFlag,
+				cmd.TypeFlag,
+				cmd.ServiceEndPointFlag,
+				cmd.IndexFlag,
+			},
+		},
+		{
 			Name:        "diddoc",
 			Usage:       "query did doc from block chain",
 			Description: "query did doc from block chain",
@@ -114,6 +131,33 @@ func addService(ctx *cli.Context) error {
 	fmt.Printf("txHash:%v\n", txHash.ToHexString())
 	return nil
 }
+
+func updateService(ctx *cli.Context) error {
+	ontSdk := sdk.NewOntologySdk()
+	ontSdk.NewRpcClient().SetAddress(ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag)))
+	gasPrice := ctx.Uint64(cmd.TransactionGasPriceFlag.Name)
+	gasLimit := ctx.Uint64(cmd.TransactionGasLimitFlag.Name)
+	did := ctx.String(cmd.GetFlagName(cmd.DidFlag))
+	optionFile := checkFileName(ctx)
+	acc, err := utils.OpenAccount(optionFile, ontSdk)
+	if err != nil {
+		return fmt.Errorf("open account err:%s", err)
+	}
+	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
+		return fmt.Errorf("ontsdk is nil")
+	}
+	serviceId := ctx.String(cmd.GetFlagName(cmd.ServiceIdFlag))
+	type_ := ctx.String(cmd.GetFlagName(cmd.TypeFlag))
+	serviceEndpoint := ctx.String(cmd.GetFlagName(cmd.ServiceEndPointFlag))
+	index := ctx.Uint64(cmd.GetFlagName(cmd.IndexFlag))
+	txHash, err := ontSdk.Native.OntId.UpdateService(gasPrice, gasLimit, acc, did, []byte(serviceId), []byte(type_), []byte(serviceEndpoint), uint32(index), acc)
+	if err != nil {
+		return fmt.Errorf("update service err:%s", err)
+	}
+	fmt.Printf("txHash:%v\n", txHash.ToHexString())
+	return nil
+}
+
 func checkFileName(ctx *cli.Context) string {
 	if ctx.IsSet(cmd.GetFlagName(cmd.WalletFileFlag)) {
 		return ctx.String(cmd.GetFlagName(cmd.WalletFileFlag))

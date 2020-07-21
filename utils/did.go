@@ -94,7 +94,6 @@ func GetPubKeyByDid(did string, ontSdk *sdk.OntologySdk) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	var pks []DidPubkey
 	err = json.Unmarshal(pubKey, &pks)
 	if err != nil {
