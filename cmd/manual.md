@@ -19,7 +19,7 @@ did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
 
 ```
 
-### 1.2 为DID增加一个Service end point
+### 1.2 为DID增加一个Service endPoint
 
 
 ```
@@ -31,9 +31,17 @@ txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
 
 ```
 
+### 1.3 更新指定DID的 Service endPoint
 
+```
+./agent-otf did updatesvr --did did:ont:TWXpoTiCedMBUHiyrPtpwi171yp4gDSPyC --service-id "1" --type "1" --endpoint "http://127.0.0.1:8089" --index 1
 
-### 1.3 查询DID 对应的DID doc
+Password:
+txHash:44f5dc80012f516835b014afd4dbbe9cb255e1c6093e4a034d72133497ba7dc8
+
+```
+
+### 1.4 查询DID 对应的DID doc
 
 ```
 
@@ -43,7 +51,7 @@ txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
 doc: &{[https://www.w3.org/ns/did/v1 https://ontid.ont.io/did/v1] did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ [map[controller:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ id:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1 publicKeyHex:03afb755bf9c9a3a7577b6d210f07aeac2730ff9800b7af443917be80ef1ddd52f type:EcdsaSecp256r1VerificationKey2019]] [did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1] <nil> <nil> [{did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#1 1 http://127.0.0.1:8080}] <nil> 1.59480394e+09 1.594804114e+09 }
 ```
 
-### 1.4 查询DID对应的 Service end points
+### 1.5 查询DID对应的 Service end points
 
 ```
 
