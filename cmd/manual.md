@@ -158,7 +158,7 @@ Password:
 ==============credential==============
 ```
 
-### 2.6 查询一个Presentation
+### 2.7 查询一个Presentation
 
 ```
 ./agent-otf httpclient querypresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --presentation-id 15
