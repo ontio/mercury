@@ -14,9 +14,9 @@ const (
 	OfferCredentialKey   = "OfferCredential"
 )
 
-func (s *CredentialController) SaveOfferCredential(did, id string, propsal *message.OfferCredential) error {
+func (c *CredentialController) SaveOfferCredential(did, id string, propsal *message.OfferCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", OfferCredentialKey, did, id))
-	b, err := s.store.Has(key)
+	b, err := c.store.Has(key)
 	if err != nil {
 		return err
 	}
@@ -28,12 +28,12 @@ func (s *CredentialController) SaveOfferCredential(did, id string, propsal *mess
 	if err != nil {
 		return err
 	}
-	return s.store.Put(key, data)
+	return c.store.Put(key, data)
 }
 
-func (s *CredentialController) SaveCredential(did, id string, credential message.IssueCredential) error {
+func (c *CredentialController) SaveCredential(did, id string, credential message.IssueCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
-	b, err := s.store.Has(key)
+	b, err := c.store.Has(key)
 	if err != nil {
 		return err
 	}
@@ -50,12 +50,12 @@ func (s *CredentialController) SaveCredential(did, id string, credential message
 	if err != nil {
 		return err
 	}
-	return s.store.Put(key, data)
+	return c.store.Put(key, data)
 }
 
-func (s *CredentialController) SaveRequestCredential(did, id string, requestCredential message.RequestCredential) error {
+func (c *CredentialController) SaveRequestCredential(did, id string, requestCredential message.RequestCredential) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
-	b, err := s.store.Has(key)
+	b, err := c.store.Has(key)
 	if err != nil {
 		return err
 	}
@@ -72,13 +72,13 @@ func (s *CredentialController) SaveRequestCredential(did, id string, requestCred
 	if err != nil {
 		return err
 	}
-	return s.store.Put(key, data)
+	return c.store.Put(key, data)
 }
 
-func (s *CredentialController) QueryCredentialFromStore(did, id string) (message.IssueCredential, error) {
+func (c *CredentialController) QueryCredentialFromStore(did, id string) (message.IssueCredential, error) {
 	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
 
-	data, err := s.store.Get(key)
+	data, err := c.store.Get(key)
 	if err != nil {
 		return message.IssueCredential{}, err
 	}
@@ -91,9 +91,9 @@ func (s *CredentialController) QueryCredentialFromStore(did, id string) (message
 	return rec.Credential, nil
 }
 
-func (s *CredentialController) UpdateRequestCredential(did, id string, state message.RequestCredentialState) error {
+func (c *CredentialController) UpdateRequestCredential(did, id string, state message.RequestCredentialState) error {
 	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
-	data, err := s.store.Get(key)
+	data, err := c.store.Get(key)
 	if err != nil {
 		return err
 	}
@@ -111,5 +111,5 @@ func (s *CredentialController) UpdateRequestCredential(did, id string, state mes
 	if err != nil {
 		return err
 	}
-	return s.store.Put(key, data)
+	return c.store.Put(key, data)
 }
