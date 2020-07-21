@@ -22,9 +22,14 @@
 
 启动命令
 
-```./agent-otf```
+
+```
+./agent-otf
+```
+
 
 参数:
+
 
 ```
 GLOBAL OPTIONS:
