@@ -21,9 +21,8 @@ const (
 	ConnectionReqKey = "ConnectionReq"
 	ConnectionKey    = "Connection"
 	GeneralMsgKey    = "General"
-
-	ACK_SUCCEED = "succeed"
-	ACK_FAILED  = "failed"
+	ACK_SUCCEED      = "succeed"
+	ACK_FAILED       = "failed"
 )
 
 func OpenAccount(path string, ontSdk *sdk.OntologySdk) (*sdk.Account, error) {

@@ -37,31 +37,31 @@ func (c *PresentationController) Routes() common.Routes {
 		{
 			Name:        "SendRequestPresentation",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/sendrequestpresentation",
+			Pattern:     common.SendRequestPresentationApi,
 			HandlerFunc: c.SendRequestPresentation,
 		},
 		{
 			Name:        "RequestPresentation",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/requestpresentation",
+			Pattern:     common.RequestPresentationApi,
 			HandlerFunc: c.RequestPresentation,
 		},
 		{
 			Name:        "PresentProof",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/presentproof",
+			Pattern:     common.PresentationProofApi,
 			HandlerFunc: c.PresentProof,
 		},
 		{
 			Name:        "PresentationAck",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/presentationack",
+			Pattern:     common.PresentationAckApi,
 			HandlerFunc: c.PresentationAck,
 		},
 		{
 			Name:        "QueryPresentation",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/querypresentation",
+			Pattern:     common.QueryPresentationApi,
 			HandlerFunc: c.QueryPresentation,
 		},
 	}
@@ -69,19 +69,19 @@ func (c *PresentationController) Routes() common.Routes {
 
 func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendRequestPresentationType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.SendRequestPresentationType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.RequestPresentation)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.RequestPresentationType,
+		Msg: common.Message{
+			MessageType: common.RequestPresentationType,
 			Content:     req,
 		},
 		Conn: req.Connection,
@@ -98,14 +98,14 @@ func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 
 func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestPresentationType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.RequestPresentationType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.RequestPresentation)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -128,8 +128,8 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 		return
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.PresentationType,
+		Msg: common.Message{
+			MessageType: common.PresentationType,
 			Content:     presentation,
 		},
 		Conn: common.ReverseConnection(presentation.Connection),
@@ -146,14 +146,14 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 
 func (c *PresentationController) PresentProof(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.PresentationType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.PresentationType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.Presentation)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -175,8 +175,8 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 		Status:     utils.ACK_SUCCEED,
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.PresentationACKType,
+		Msg: common.Message{
+			MessageType: common.PresentationAckType,
 			Content:     ack,
 		},
 		Conn: ack.Connection,
@@ -193,14 +193,14 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 
 func (c *PresentationController) PresentationAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.PresentationACKType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.PresentationAckType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.PresentationACK)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -220,14 +220,14 @@ func (c *PresentationController) PresentationAck(ctx *gin.Context) {
 
 func (c *PresentationController) QueryPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryPresentationType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.QueryPresentationType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.QueryPresentationRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	rec, err := c.QueryPresentationFromStore(req.DId, req.Id)
@@ -237,7 +237,7 @@ func (c *PresentationController) QueryPresentation(ctx *gin.Context) {
 		return
 	}
 	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", &message.QueryPresentationResponse{
-		Formats: rec.Formats,
+		Formats:            rec.Formats,
 		PresentationAttach: rec.PresentationAttach,
 	})
 	return

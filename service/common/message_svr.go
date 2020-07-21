@@ -18,22 +18,22 @@ type MsgService struct {
 	msgQueue      chan OutboundMsg
 	client        *http.Client
 	quitC         chan struct{}
-	vdri          vdri.VDRI
+	v             vdri.VDRI
 	packager      *ecdsa.Packager
 	enableEnvelop bool
 }
 
 type OutboundMsg struct {
-	Msg  message.Message
+	Msg  Message
 	Conn message.Connection
 }
 
-func NewMessageService(vdri vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool) *MsgService {
+func NewMessageService(v vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool) *MsgService {
 	ms := &MsgService{
 		msgQueue:      make(chan OutboundMsg, 64),
 		client:        utils.NewClient(),
 		quitC:         make(chan struct{}),
-		vdri:          vdri,
+		v:             v,
 		packager:      ecdsa.New(ontSdk, acct),
 		enableEnvelop: enableEnvelop,
 	}
@@ -73,11 +73,11 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		return
 	}
 	if m.enableEnvelop {
-		var routerdid string
+		var routerDid string
 		if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
-			routerdid = msg.Conn.TheirDid
+			routerDid = msg.Conn.TheirDid
 		} else {
-			routerdid = utils.CutDId(msg.Conn.TheirRouter[0])
+			routerDid = utils.CutDId(msg.Conn.TheirRouter[0])
 		}
 		msg := &packager.Envelope{
 			Message: &packager.MessageData{
@@ -85,7 +85,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 				MsgType: int(msg.Msg.MessageType),
 			},
 			FromDID: msg.Conn.MyDid,
-			ToDID:   routerdid,
+			ToDID:   routerDid,
 		}
 		data, err = m.packager.PackMessage(msg)
 		if err != nil {
@@ -101,19 +101,19 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 }
 
 func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {
-	var routerdid string
+	var routerDid string
 	if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
-		routerdid = msg.Conn.TheirDid
+		routerDid = msg.Conn.TheirDid
 	} else {
-		routerdid = msg.Conn.TheirRouter[0]
+		routerDid = msg.Conn.TheirRouter[0]
 	}
-	doc, err := m.vdri.GetDIDDoc(utils.CutDId(routerdid))
+	doc, err := m.v.GetDIDDoc(utils.CutDId(routerDid))
 	if err != nil {
 		return "", err
 	}
-	endpoint, err := doc.GetServicePoint(routerdid)
+	endpoint, err := doc.GetServicePoint(routerDid)
 	if err != nil {
 		return "", err
 	}
-	return endpoint + utils.GetApiName(msg.Msg.MessageType), nil
+	return endpoint + GetApiName(msg.Msg.MessageType), nil
 }

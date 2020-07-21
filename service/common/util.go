@@ -38,7 +38,7 @@ func ParseRouterMsg(c *gin.Context, packager *ecdsa.Packager) ([]byte, error) {
 	return msg.Message.Data, nil
 }
 
-func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager, messageType message.MessageType) (interface{}, error) {
+func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager, messageType MessageType) (interface{}, error) {
 	msgObject, err := getMsgObjectByType(messageType)
 	if err != nil {
 		return nil, err
@@ -61,48 +61,48 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 	return msgObject, nil
 }
 
-func getMsgObjectByType(messageType message.MessageType) (interface{}, error) {
+func getMsgObjectByType(messageType MessageType) (interface{}, error) {
 	var req interface{}
 	switch messageType {
-	case message.InvitationType:
+	case InvitationType:
 		req = &message.Invitation{}
-	case message.ConnectionRequestType:
+	case ConnectionRequestType:
 		req = &message.ConnectionRequest{}
-	case message.ConnectionResponseType:
+	case ConnectionResponseType:
 		req = &message.ConnectionResponse{}
-	case message.ConnectionACKType:
+	case ConnectionAckType:
 		req = &message.ConnectionACK{}
-	case message.DisconnectType, message.SendDisconnectType:
+	case DisconnectType, SendDisconnectType:
 		req = &message.DisconnectRequest{}
-	case message.SendProposalCredentialType:
+	case SendProposalCredentialType:
 		req = &message.ProposalCredential{}
-	case message.OfferCredentialType:
+	case OfferCredentialType:
 		req = &message.OfferCredential{}
-	case message.ProposalCredentialType:
+	case ProposalCredentialType:
 		req = &message.ProposalCredential{}
-	case message.SendRequestCredentialType:
+	case SendRequestCredentialType:
 		req = &message.RequestCredential{}
-	case message.RequestCredentialType:
+	case RequestCredentialType:
 		req = &message.RequestCredential{}
-	case message.IssueCredentialType:
+	case IssueCredentialType:
 		req = &message.IssueCredential{}
-	case message.CredentialACKType:
+	case CredentialAckType:
 		req = &message.CredentialACK{}
-	case message.RequestPresentationType:
+	case RequestPresentationType:
 		req = &message.RequestPresentation{}
-	case message.SendRequestPresentationType:
+	case SendRequestPresentationType:
 		req = &message.RequestPresentation{}
-	case message.PresentationType:
+	case PresentationType:
 		req = &message.Presentation{}
-	case message.PresentationACKType:
+	case PresentationAckType:
 		req = &message.PresentationACK{}
-	case message.SendBasicMsgType:
+	case SendBasicMsgType:
 		req = &message.BasicMessage{}
-	case message.QueryBasicMessageType:
+	case QueryBasicMessageType:
 		req = &message.QueryGeneralMessageRequest{}
-	case message.QueryCredentialType:
+	case QueryCredentialType:
 		req = &message.QueryCredentialRequest{}
-	case message.QueryPresentationType:
+	case QueryPresentationType:
 		req = &message.QueryPresentationRequest{}
 	default:
 		return nil, fmt.Errorf("msg type err:%v", messageType)

@@ -92,12 +92,10 @@ type DIDDoc struct {
 }
 
 func (d DIDDoc) GetServicePoint(serviceID string) (string, error) {
-
 	for _, s := range d.Service {
 		if s.ServiceID == serviceID {
 			return s.ServiceEndpoint, nil
 		}
 	}
-
 	return "", fmt.Errorf("servicepoint not found")
 }

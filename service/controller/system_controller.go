@@ -30,78 +30,78 @@ func NewSystemController(packager *ecdsa.Packager, store store.Store,
 	}
 }
 
-func (c *SystemController) Routes() common.Routes {
+func (s *SystemController) Routes() common.Routes {
 	return common.Routes{
 		{
 			Name:        "Invitation",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/invitation",
-			HandlerFunc: c.Invitation,
+			Pattern:     common.InviteApi,
+			HandlerFunc: s.Invitation,
 		},
 		{
 			Name:        "ConnectionRequest",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/connectionrequest",
-			HandlerFunc: c.ConnectionRequest,
+			Pattern:     common.ConnectRequestApi,
+			HandlerFunc: s.ConnectionRequest,
 		},
 		{
 			Name:        "ConnectionResponse",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/connectionresponse",
-			HandlerFunc: c.ConnectionResponse,
+			Pattern:     common.ConnectResponseApi,
+			HandlerFunc: s.ConnectionResponse,
 		},
 		{
 			Name:        "ConnectionAck",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/connectionack",
-			HandlerFunc: c.ConnectionAck,
+			Pattern:     common.ConnectAckApi,
+			HandlerFunc: s.ConnectionAck,
 		},
 		{
 			Name:        "SendDisConnect",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/senddisconnect",
-			HandlerFunc: c.SendDisConnect,
+			Pattern:     common.SendDisconnectApi,
+			HandlerFunc: s.SendDisConnect,
 		},
 		{
 			Name:        "Disconnect",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/disconnect",
-			HandlerFunc: c.Disconnect,
+			Pattern:     common.DisconnectApi,
+			HandlerFunc: s.Disconnect,
 		},
 		{
 			Name:        "SendBasicMsg",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/sendbasicmsg",
-			HandlerFunc: c.SendBasicMsg,
+			Pattern:     common.SendBasicMsgApi,
+			HandlerFunc: s.SendBasicMsg,
 		},
 		{
 			Name:        "ReceiveBasicMsg",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/receivebasicmsg",
-			HandlerFunc: c.ReceiveBasicMsg,
+			Pattern:     common.ReceiveBasicMsgApi,
+			HandlerFunc: s.ReceiveBasicMsg,
 		},
 		{
 			Name:        "QueryBasicMsg",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/queryBasicMsg",
-			HandlerFunc: c.QueryBasicMsg,
+			Pattern:     common.QueryBasicMsgApi,
+			HandlerFunc: s.QueryBasicMsg,
 		},
 	}
 }
 
-func (c *SystemController) Invitation(ctx *gin.Context) {
+func (s *SystemController) Invitation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.InvitationType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.InvitationType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	invitation, ok := data.(*message.Invitation)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	err = c.SaveInvitation(*invitation)
+	err = s.SaveInvitation(*invitation)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -110,32 +110,32 @@ func (c *SystemController) Invitation(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) ConnectionRequest(ctx *gin.Context) {
+func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ConnectionRequestType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionRequestType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	ivrc, err := c.GetInvitation(req.Connection.TheirDid, req.InvitationId)
+	ivrc, err := s.GetInvitation(req.Connection.TheirDid, req.InvitationId)
 	if err != nil {
 		log.Infof("err on GetInvitation:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.SaveConnectionRequest(*req, message.ConnectionRequestReceived)
+	err = s.SaveConnectionRequest(*req, message.ConnectionRequestReceived)
 	if err != nil {
 		log.Infof("err on SaveConnectionRequest:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	//update invitation to used state
-	err = c.UpdateInvitation(ivrc.Invitation.Did, ivrc.Invitation.Id, message.InvitationUsed)
+	err = s.UpdateInvitation(ivrc.Invitation.Did, ivrc.Invitation.Id, message.InvitationUsed)
 	if err != nil {
 		log.Infof("err on UpdateInvitation:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -156,11 +156,11 @@ func (c *SystemController) ConnectionRequest(ctx *gin.Context) {
 		TheirDid:    req.Connection.MyDid,
 		TheirRouter: req.Connection.MyRouter,
 	}
-	outMsg := message.Message{
-		MessageType: message.ConnectionResponseType,
+	outMsg := common.Message{
+		MessageType: common.ConnectionResponseType,
 		Content:     res,
 	}
-	err = c.msgSvr.HandleOutBound(common.OutboundMsg{
+	err = s.msgSvr.HandleOutBound(common.OutboundMsg{
 		Msg:  outMsg,
 		Conn: res.Connection,
 	})
@@ -173,27 +173,25 @@ func (c *SystemController) ConnectionRequest(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) ConnectionResponse(ctx *gin.Context) {
+func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ConnectionResponseType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionResponseType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionResponse)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	connId := req.Thread.ID
-	//2. create and save a connection object
-	err = c.SaveConnection(common.ReverseConnection(req.Connection))
+	err = s.SaveConnection(common.ReverseConnection(req.Connection))
 	if err != nil {
 		log.Errorf("err on SaveConnection:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	//3. send ACK back
 	ack := message.ConnectionACK{
 		Type:       vdri.ConnectionACKSpec,
 		Id:         utils.GenUUID(),
@@ -201,11 +199,11 @@ func (c *SystemController) ConnectionResponse(ctx *gin.Context) {
 		Status:     utils.ACK_SUCCEED,
 		Connection: common.ReverseConnection(req.Connection),
 	}
-	outMsg := message.Message{
-		MessageType: message.ConnectionACKType,
+	outMsg := common.Message{
+		MessageType: common.ConnectionAckType,
 		Content:     ack,
 	}
-	err = c.msgSvr.HandleOutBound(common.OutboundMsg{
+	err = s.msgSvr.HandleOutBound(common.OutboundMsg{
 		Msg:  outMsg,
 		Conn: ack.Connection,
 	})
@@ -217,16 +215,16 @@ func (c *SystemController) ConnectionResponse(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) ConnectionAck(ctx *gin.Context) {
+func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ConnectionACKType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionAckType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionACK)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	if req.Status != utils.ACK_SUCCEED {
@@ -234,19 +232,19 @@ func (c *SystemController) ConnectionAck(ctx *gin.Context) {
 		return
 	}
 	connId := req.Thread.ID
-	err = c.UpdateConnectionRequest(req.Connection.TheirDid, connId, message.ConnectionACKReceived)
+	err = s.UpdateConnectionRequest(req.Connection.TheirDid, connId, message.ConnectionACKReceived)
 	if err != nil {
 		log.Errorf("err on UpdateConnectionRequest:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	cr, err := c.GetConnectionRequest(req.Connection.TheirDid, connId)
+	cr, err := s.GetConnectionRequest(req.Connection.TheirDid, connId)
 	if err != nil {
 		log.Errorf("err on GetConnectionRequest:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.SaveConnection(common.ReverseConnection(cr.ConnReq.Connection))
+	err = s.SaveConnection(common.ReverseConnection(cr.ConnReq.Connection))
 	if err != nil {
 		log.Errorf("err on SaveConnection:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -256,31 +254,30 @@ func (c *SystemController) ConnectionAck(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) SendDisConnect(ctx *gin.Context) {
+func (s *SystemController) SendDisConnect(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendDisconnectType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendDisconnectType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.DisconnectRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	myDid := req.Connection.MyDid
 	theirDid := req.Connection.TheirDid
-	//1. remove connection
-	err = c.DeleteConnection(myDid, theirDid)
+	err = s.DeleteConnection(myDid, theirDid)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	outMsg := message.Message{
-		MessageType: message.DisconnectType,
+	outMsg := common.Message{
+		MessageType: common.DisconnectType,
 		Content:     req,
 	}
-	err = c.msgSvr.HandleOutBound(common.OutboundMsg{
+	err = s.msgSvr.HandleOutBound(common.OutboundMsg{
 		Msg:  outMsg,
 		Conn: common.ReverseConnection(req.Connection),
 	})
@@ -292,19 +289,19 @@ func (c *SystemController) SendDisConnect(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) Disconnect(ctx *gin.Context) {
+func (s *SystemController) Disconnect(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.DisconnectType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.DisconnectType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.DisconnectRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	err = c.DeleteConnection(req.Connection.TheirDid, req.Connection.MyDid)
+	err = s.DeleteConnection(req.Connection.TheirDid, req.Connection.MyDid)
 	if err != nil {
 		log.Errorf("error:%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -314,19 +311,19 @@ func (c *SystemController) Disconnect(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
+func (s *SystemController) SendBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendBasicMsgType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.BasicMessage)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	conn, err := c.GetConnection(req.Connection.MyDid, req.Connection.TheirDid)
+	conn, err := s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid)
 	if err != nil {
 		log.Errorf("err on GetConnection:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -335,19 +332,19 @@ func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
 	req.Type = vdri.BasicMsgSpec
 	req.Id = utils.GenUUID()
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.ReceiveBasicMsgType,
+		Msg: common.Message{
+			MessageType: common.ReceiveBasicMsgType,
 			Content:     req,
 		},
 		Conn: conn,
 	}
-	err = c.msgSvr.HandleOutBound(outMsg)
+	err = s.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
 		log.Errorf("err on HandleOutBound:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.SaveGeneralMsg(req, true)
+	err = s.SaveGeneralMsg(req, true)
 	if err != nil {
 		log.Errorf("err on HandleOutBound:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -359,14 +356,14 @@ func (c *SystemController) SendBasicMsg(ctx *gin.Context) {
 
 func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendBasicMsgType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.SendBasicMsgType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.BasicMessage)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -384,19 +381,19 @@ func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) QueryBasicMsg(ctx *gin.Context) {
+func (s *SystemController) QueryBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryBasicMessageType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.QueryBasicMessageType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.QueryGeneralMessageRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	ret, err := c.QueryGeneraMsg(req.DID, req.Latest, req.RemoveAfterRead)
+	ret, err := s.QueryGeneraMsg(req.DID, req.Latest, req.RemoveAfterRead)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

@@ -11,6 +11,7 @@ import (
 
 func NewApiRouter(packager *ecdsa.Packager, store store.Store,
 	msgSvr *common.MsgService, v vdri.VDRI) *gin.Engine {
+
 	systemController := controller.NewSystemController(packager, store, msgSvr)
 	credentialController := controller.NewCredentialController(packager, store, msgSvr, v)
 	presentationController := controller.NewPresentationController(packager, store, msgSvr, v)

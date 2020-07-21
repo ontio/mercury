@@ -3,6 +3,7 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
+	"git.ont.io/ontid/otf/service/common"
 
 	"git.ont.io/ontid/otf/cmd"
 	"git.ont.io/ontid/otf/common/message"
@@ -148,7 +149,7 @@ func initPackager(addr string) *ecdsa.Packager {
 func newInvitation(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.InvitationFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.InvitationType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + common.GetApiName(common.InvitationType)
 	invite := &message.Invitation{}
 	err := json.Unmarshal([]byte(data), invite)
 	if err != nil {
@@ -161,7 +162,7 @@ func newInvitation(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.InvitationType),
+			MsgType: int(common.InvitationType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -194,7 +195,7 @@ func connection(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.ConnectionRequestType),
+			MsgType: int(common.ConnectionRequestType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -204,7 +205,7 @@ func connection(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.ConnectionRequestType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + common.GetApiName(common.ConnectionRequestType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
@@ -228,7 +229,7 @@ func sendMsg(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.SendBasicMsgType),
+			MsgType: int(common.SendBasicMsgType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -238,7 +239,7 @@ func sendMsg(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.SendBasicMsgType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + common.GetApiName(common.SendBasicMsgType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
@@ -269,7 +270,7 @@ func queryMsg(ctx *cli.Context) error {
 	env := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqdata,
-			MsgType: int(message.QueryBasicMessageType),
+			MsgType: int(common.QueryBasicMessageType),
 		},
 		FromDID: fromdid,
 		ToDID:   todid,
@@ -278,7 +279,7 @@ func queryMsg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	url = url + utils.GetApiName(message.QueryBasicMessageType)
+	url = url + common.GetApiName(common.QueryBasicMessageType)
 	respbts, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err
@@ -304,7 +305,7 @@ func reqCredential(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.RequestCredentialType),
+			MsgType: int(common.RequestCredentialType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -314,7 +315,7 @@ func reqCredential(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestCredentialType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + common.GetApiName(common.RequestCredentialType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
@@ -338,7 +339,7 @@ func reqPresentation(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.RequestPresentationType),
+			MsgType: int(common.RequestPresentationType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -348,7 +349,7 @@ func reqPresentation(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("packMessage err:%s", err)
 	}
-	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + utils.GetApiName(message.RequestPresentationType)
+	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)) + common.GetApiName(common.RequestPresentationType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(bys))
 	if err != nil {
 		return fmt.Errorf("http post url:%s err:%s", ctx.String(cmd.GetFlagName(cmd.HttpClientFlag)), err)
@@ -372,7 +373,7 @@ func queryCredential(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.QueryCredentialType),
+			MsgType: int(common.QueryCredentialType),
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		ToDID:   ctx.String(cmd.GetFlagName(cmd.ToDID)),
@@ -382,7 +383,7 @@ func queryCredential(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	url = url + utils.GetApiName(message.QueryCredentialType)
+	url = url + common.GetApiName(common.QueryCredentialType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err
@@ -408,7 +409,7 @@ func queryPresentation(ctx *cli.Context) error {
 	msg := &packager.Envelope{
 		Message: &packager.MessageData{
 			Data:    reqData,
-			MsgType: int(message.QueryPresentationType),
+			MsgType: int(common.QueryPresentationType),
 			Sign:    nil,
 		},
 		FromDID: ctx.String(cmd.GetFlagName(cmd.FromDID)),
@@ -419,7 +420,7 @@ func queryPresentation(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	url = url + utils.GetApiName(message.QueryPresentationType)
+	url = url + common.GetApiName(common.QueryPresentationType)
 	body, err := utils.HttpPostData(utils.NewClient(), url, string(data))
 	if err != nil {
 		return err

@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
-	"fmt"
 
 	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/common/message"
@@ -37,49 +37,49 @@ func (c *CredentialController) Routes() common.Routes {
 		{
 			Name:        "SendProposalCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/sendproposalcredential",
+			Pattern:     common.SendProposalCredentialReqApi,
 			HandlerFunc: c.SendProposalCredential,
 		},
 		{
 			Name:        "ProposalCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/proposalcredential",
+			Pattern:     common.ProposalCredentialReqApi,
 			HandlerFunc: c.ProposalCredential,
 		},
 		{
 			Name:        "OfferCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/offercredential",
+			Pattern:     common.OfferCredentialApi,
 			HandlerFunc: c.OfferCredential,
 		},
 		{
 			Name:        "SendRequestCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/sendrequestcredential",
+			Pattern:     common.SendRequestCredentialApi,
 			HandlerFunc: c.SendRequestCredential,
 		},
 		{
 			Name:        "RequestCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/requestcredential",
+			Pattern:     common.RequestCredentialApi,
 			HandlerFunc: c.RequestCredential,
 		},
 		{
 			Name:        "IssueCredential",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/issuecredential",
+			Pattern:     common.IssueCredentialApi,
 			HandlerFunc: c.IssueCredential,
 		},
 		{
 			Name:        "CredentialAck",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "/api/v1/credentialack",
+			Pattern:     common.CredentialAckApi,
 			HandlerFunc: c.CredentialAck,
 		},
 		{
 			Name:        "QueryCredentail",
 			Method:      strings.ToUpper("Post"),
-			Pattern:     "api/v1/querycredential",
+			Pattern:     common.QueryCredentialApi,
 			HandlerFunc: c.QueryCredential,
 		},
 	}
@@ -87,19 +87,19 @@ func (c *CredentialController) Routes() common.Routes {
 
 func (c *CredentialController) SendProposalCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.SendProposalCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.SendProposalCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ProposalCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.ProposalCredentialType,
+		Msg: common.Message{
+			MessageType: common.ProposalCredentialType,
 			Content:     req,
 		},
 		Conn: req.Connection,
@@ -116,14 +116,14 @@ func (c *CredentialController) SendProposalCredential(ctx *gin.Context) {
 
 func (c *CredentialController) ProposalCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ProposalCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.ProposalCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ProposalCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -140,8 +140,8 @@ func (c *CredentialController) ProposalCredential(ctx *gin.Context) {
 		return
 	}
 	outerMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.OfferCredentialType,
+		Msg: common.Message{
+			MessageType: common.OfferCredentialType,
 			Content:     offer,
 		},
 		Conn: offer.Connection,
@@ -158,14 +158,14 @@ func (c *CredentialController) ProposalCredential(ctx *gin.Context) {
 
 func (c *CredentialController) OfferCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.OfferCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.OfferCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.OfferCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -186,19 +186,19 @@ func (c *CredentialController) OfferCredential(ctx *gin.Context) {
 
 func (c *CredentialController) SendRequestCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.RequestCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.RequestCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.RequestCredentialType,
+		Msg: common.Message{
+			MessageType: common.RequestCredentialType,
 			Content:     req,
 		},
 		Conn: req.Connection,
@@ -215,14 +215,14 @@ func (c *CredentialController) SendRequestCredential(ctx *gin.Context) {
 
 func (c *CredentialController) RequestCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.RequestCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.RequestCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.RequestCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
@@ -245,8 +245,8 @@ func (c *CredentialController) RequestCredential(ctx *gin.Context) {
 		return
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.IssueCredentialType,
+		Msg: common.Message{
+			MessageType: common.IssueCredentialType,
 			Content:     credential,
 		},
 		Conn: credential.Connection,
@@ -263,14 +263,14 @@ func (c *CredentialController) RequestCredential(ctx *gin.Context) {
 
 func (c *CredentialController) IssueCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.IssueCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.IssueCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.IssueCredential)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = c.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
@@ -289,8 +289,8 @@ func (c *CredentialController) IssueCredential(ctx *gin.Context) {
 		Connection: common.ReverseConnection(req.Connection),
 	}
 	outMsg := common.OutboundMsg{
-		Msg: message.Message{
-			MessageType: message.CredentialACKType,
+		Msg: common.Message{
+			MessageType: common.CredentialAckType,
 			Content:     ack,
 		},
 		Conn: ack.Connection,
@@ -307,14 +307,14 @@ func (c *CredentialController) IssueCredential(ctx *gin.Context) {
 
 func (c *CredentialController) CredentialAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.ConnectionACKType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.ConnectionAckType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionACK)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	err = c.UpdateRequestCredential(req.Connection.MyDid, req.Thread.ID, message.RequestCredentialResolved)
@@ -329,14 +329,14 @@ func (c *CredentialController) CredentialAck(ctx *gin.Context) {
 
 func (c *CredentialController) QueryCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, message.QueryCredentialType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.QueryCredentialType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 	req, ok := data.(*message.QueryCredentialRequest)
 	if !ok {
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER,fmt.Errorf("data convert err").Error(), nil)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
 	rec, err := c.QueryCredentialFromStore(req.DId, req.Id)
