@@ -24,7 +24,6 @@ type MsgService struct {
 	packager      *ecdsa.Packager
 	enableEnvelop bool
 	Cfg           *config.Cfg
-
 }
 
 type OutboundMsg struct {
@@ -32,7 +31,7 @@ type OutboundMsg struct {
 	Conn message.Connection
 }
 
-func NewMessageService(v vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool,conf *config.Cfg) *MsgService {
+func NewMessageService(v vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool, conf *config.Cfg) *MsgService {
 	ms := &MsgService{
 		msgQueue:      make(chan OutboundMsg, 64),
 		client:        utils.NewClient(),
@@ -40,7 +39,7 @@ func NewMessageService(v vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, 
 		v:             v,
 		packager:      ecdsa.New(ontSdk, acct),
 		enableEnvelop: enableEnvelop,
-		Cfg :conf,
+		Cfg:           conf,
 	}
 	go ms.popMessage()
 	return ms

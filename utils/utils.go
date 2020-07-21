@@ -77,7 +77,7 @@ func CheckConnection(myDid, theirDid string, db store.Store) error {
 	connectionKey := []byte(fmt.Sprintf("%s_%s", ConnectionKey, myDid))
 	data, err := db.Get(connectionKey)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	cr := new(message.ConnectionRec)

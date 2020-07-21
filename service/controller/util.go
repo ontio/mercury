@@ -7,9 +7,9 @@ import (
 )
 
 func ResolveForward(req interface{},
-			msgsvr *common.MsgService,
-			conn message.Connection,
-			mtype common.MessageType )(bool,error){
+	msgsvr *common.MsgService,
+	conn message.Connection,
+	mtype common.MessageType) (bool, error) {
 	//add forward logic
 	routers := common.MergeRouter(conn.MyRouter, conn.TheirRouter)
 	if !common.IsReceiver(msgsvr.Cfg.SelfDID, routers) {
@@ -23,9 +23,9 @@ func ResolveForward(req interface{},
 			Conn: conn,
 		})
 		if err != nil {
-			return false,err
+			return false, err
 		}
-		return true,nil
+		return true, nil
 	}
-	return false,nil
+	return false, nil
 }

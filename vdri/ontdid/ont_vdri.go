@@ -102,7 +102,8 @@ func (ontVdri *OntVDRI) IssueCredential(req *message.RequestCredential) (*messag
 
 func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.Store) (*message.Presentation, error) {
 
-	holderdid := req.Connection.MyDid
+	//holderdid := req.Connection.MyDid
+	holderdid := req.Connection.TheirDid
 	creds := make([]string, 0)
 	for _, attachment := range req.RequestPresentationAttach {
 		b64 := attachment.Data.Base64

@@ -79,6 +79,14 @@ func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, c.store)
+	if err != nil {
+		log.Errorf("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+
 	outMsg := common.OutboundMsg{
 		Msg: common.Message{
 			MessageType: common.RequestPresentationType,
@@ -108,6 +116,19 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.RequestPresentationType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -156,6 +177,19 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.PresentationType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -203,6 +237,19 @@ func (c *PresentationController) PresentationAck(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.PresentationAckType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)

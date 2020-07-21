@@ -88,7 +88,7 @@ func startAgent(ctx *cli.Context) {
 		SelfDID: selfdid,
 	}
 	ontVdri := ontdid.NewOntVDRI(ontSdk, account, selfdid)
-	msgSvr := common.NewMessageService(ontVdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)),cfg)
+	msgSvr := common.NewMessageService(ontVdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)), cfg)
 	r := service.NewApiRouter(ecdsa.New(ontSdk, account), db, msgSvr, ontVdri)
 	log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
 	startPort := ip + ":" + port

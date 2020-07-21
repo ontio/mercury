@@ -97,6 +97,14 @@ func (c *CredentialController) SendProposalCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, c.store)
+	if err != nil {
+		log.Infof("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+
 	outMsg := common.OutboundMsg{
 		Msg: common.Message{
 			MessageType: common.ProposalCredentialType,
@@ -126,6 +134,19 @@ func (c *CredentialController) ProposalCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.ProposalCredentialType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -168,6 +189,19 @@ func (c *CredentialController) OfferCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.OfferCredentialType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -196,6 +230,16 @@ func (c *CredentialController) SendRequestCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	log.Infof("========before checkConnection ==========")
+	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, c.store)
+	if err != nil {
+		log.Errorf("no connect found with did:%s", req.Connection.MyDid)
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	log.Infof("========after checkConnection ==========")
+
 	outMsg := common.OutboundMsg{
 		Msg: common.Message{
 			MessageType: common.RequestCredentialType,
@@ -225,6 +269,19 @@ func (c *CredentialController) RequestCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.RequestCredentialType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -273,6 +330,19 @@ func (c *CredentialController) IssueCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.IssueCredentialType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = c.SaveCredential(req.Connection.TheirDid, req.Thread.ID, *req)
 	if err != nil {
 		log.Errorf("error on SaveCredential:%s\n", err.Error())
@@ -317,6 +387,19 @@ func (c *CredentialController) CredentialAck(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.CredentialAckType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = c.UpdateRequestCredential(req.Connection.MyDid, req.Thread.ID, message.RequestCredentialResolved)
 	if err != nil {
 		log.Errorf("error on UpdateRequestCredential:%s\n", err.Error())

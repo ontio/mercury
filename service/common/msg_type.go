@@ -41,12 +41,13 @@ type Message struct {
 }
 
 const (
-	InviteApi                    = "/api/v1/invitation"
-	ConnectRequestApi            = "/api/v1/connectionrequest"
-	ConnectResponseApi           = "/api/v1/connectionresponse"
-	ConnectAckApi                = "/api/v1/connectionack"
-	SendDisconnectApi            = "/api/v1/senddisconnect"
-	DisconnectApi                = "/api/v1/disconnect"
+	InviteApi          = "/api/v1/invitation"
+	ConnectRequestApi  = "/api/v1/connectionrequest"
+	ConnectResponseApi = "/api/v1/connectionresponse"
+	ConnectAckApi      = "/api/v1/connectionack"
+	SendDisconnectApi  = "/api/v1/senddisconnect"
+	DisconnectApi      = "/api/v1/disconnect"
+
 	SendProposalCredentialReqApi = "/api/v1/sendproposalcredential"
 	ProposalCredentialReqApi     = "/api/v1/proposalcredential"
 	OfferCredentialApi           = "/api/v1/offercredential"
@@ -54,15 +55,16 @@ const (
 	RequestCredentialApi         = "/api/v1/requestcredential"
 	IssueCredentialApi           = "/api/v1/issuecredentail"
 	CredentialAckApi             = "/api/v1/credentialack"
-	SendRequestPresentationApi   = "/api/v1/sendrequestpresentation"
-	RequestPresentationApi       = "/api/v1/requestpresentation"
-	PresentationProofApi         = "/api/v1/presentproof"
-	PresentationAckApi           = "/api/v1/presentationack"
-	SendBasicMsgApi              = "/api/v1/sendbasicmsg"
-	ReceiveBasicMsgApi           = "/api/v1/receivebasicmsg"
-	QueryBasicMsgApi             = "/api/v1/querybasicmsg"
-	QueryCredentialApi           = "/api/v1/querycredential"
-	QueryPresentationApi         = "/api/v1/querypresentation"
+
+	SendRequestPresentationApi = "/api/v1/sendrequestpresentation"
+	RequestPresentationApi     = "/api/v1/requestpresentation"
+	PresentationProofApi       = "/api/v1/presentproof"
+	PresentationAckApi         = "/api/v1/presentationack"
+	SendBasicMsgApi            = "/api/v1/sendbasicmsg"
+	ReceiveBasicMsgApi         = "/api/v1/receivebasicmsg"
+	QueryBasicMsgApi           = "/api/v1/querybasicmsg"
+	QueryCredentialApi         = "/api/v1/querycredential"
+	QueryPresentationApi       = "/api/v1/querypresentation"
 )
 
 func GetApiName(msgType MessageType) string {

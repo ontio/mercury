@@ -124,13 +124,13 @@ func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 	}
 
 	//add forward logic
-	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionRequestType)
+	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionRequestType)
 	if err != nil {
 		log.Infof("err on ResolveForward:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	if forward{
+	if forward {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
@@ -200,13 +200,13 @@ func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 	}
 
 	//add forward logic
-	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionResponseType)
+	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionResponseType)
 	if err != nil {
 		log.Infof("err on ResolveForward:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	if forward{
+	if forward {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
@@ -255,13 +255,13 @@ func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 	}
 
 	//add forward logic
-	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionAckType)
+	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionAckType)
 	if err != nil {
 		log.Infof("err on ResolveForward:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	if forward{
+	if forward {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
@@ -306,6 +306,14 @@ func (s *SystemController) SendDisConnect(ctx *gin.Context) {
 		return
 	}
 
+	//check connection
+	_, err = s.GetConnection(req.Connection.MyDid, req.Connection.TheirDid)
+	if err != nil {
+		log.Errorf("err on GetConnection:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+
 	myDid := req.Connection.MyDid
 	theirDid := req.Connection.TheirDid
 	err = s.DeleteConnection(myDid, theirDid)
@@ -343,13 +351,13 @@ func (s *SystemController) Disconnect(ctx *gin.Context) {
 	}
 
 	//add forward logic
-	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.DisconnectType)
+	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.DisconnectType)
 	if err != nil {
 		log.Infof("err on ResolveForward:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	if forward{
+	if forward {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
@@ -421,17 +429,16 @@ func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	}
 
 	//add forward logic
-	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ReceiveBasicMsgType)
+	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ReceiveBasicMsgType)
 	if err != nil {
 		log.Infof("err on ResolveForward:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	if forward{
+	if forward {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
-
 
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 	if err != nil {
