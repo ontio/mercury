@@ -122,6 +122,19 @@ func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionRequestType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward{
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	ivrc, err := s.GetInvitation(req.Connection.TheirDid, req.InvitationId)
 	if err != nil {
 		log.Infof("err on GetInvitation:%s\n", err.Error())
@@ -185,6 +198,19 @@ func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionResponseType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward{
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	connId := req.Thread.ID
 	err = s.SaveConnection(common.ReverseConnection(req.Connection))
 	if err != nil {
@@ -227,6 +253,19 @@ func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ConnectionAckType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward{
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	if req.Status != utils.ACK_SUCCEED {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("got failed ACK ").Error(), nil)
 		return
@@ -266,6 +305,7 @@ func (s *SystemController) SendDisConnect(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
 	myDid := req.Connection.MyDid
 	theirDid := req.Connection.TheirDid
 	err = s.DeleteConnection(myDid, theirDid)
@@ -301,6 +341,19 @@ func (s *SystemController) Disconnect(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
+
+	//add forward logic
+	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.DisconnectType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward{
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
 	err = s.DeleteConnection(req.Connection.TheirDid, req.Connection.MyDid)
 	if err != nil {
 		log.Errorf("error:%s", err.Error())
@@ -354,9 +407,9 @@ func (s *SystemController) SendBasicMsg(ctx *gin.Context) {
 	return
 }
 
-func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
+func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.SendBasicMsgType)
+	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -366,13 +419,27 @@ func (c *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+
+	//add forward logic
+	forward,err := ResolveForward(req,s.msgSvr,req.Connection,common.ReceiveBasicMsgType)
+	if err != nil {
+		log.Infof("err on ResolveForward:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if forward{
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+
+
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.SaveGeneralMsg(req, false)
+	err = s.SaveGeneralMsg(req, false)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

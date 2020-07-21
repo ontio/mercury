@@ -209,3 +209,9 @@ type QueryGeneralMessageRequest struct {
 	Latest          bool   `json:"latest"`
 	RemoveAfterRead bool   `json:"remove_after_read"`
 }
+
+type ForwardMessageRequest struct {
+	MsgType    int        `json:"msg_type"`
+	Data       []byte     `json:"data"`
+	Connection Connection `json:"connection"`
+}

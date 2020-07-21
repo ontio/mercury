@@ -57,6 +57,11 @@ var (
 		Usage: "set https rest port",
 		Value: DEFAULT_HTTPS_PORT,
 	}
+	SelfDIDFlag = cli.StringFlag{
+		Name:  "agent-did",
+		Usage: "agent did",
+		//Required: true,
+	}
 	EnableHttpsFlag = cli.BoolFlag{
 		Name:  "enable-https",
 		Usage: "start https restful service",

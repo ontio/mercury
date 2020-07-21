@@ -2,6 +2,7 @@
 package config
 
 type Cfg struct {
-	Port string
-	Ip   string
+	Port    string
+	Ip      string
+	SelfDID string
 }
