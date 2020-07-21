@@ -1,10 +1,5 @@
 package common
 
-import (
-	"fmt"
-	"git.ont.io/ontid/otf/common/message"
-)
-
 type MessageType int
 
 const (
@@ -107,52 +102,5 @@ func GetApiName(msgType MessageType) string {
 		return QueryPresentationApi
 	default:
 		return ""
-	}
-}
-
-func getMsgObjectByType(messageType MessageType) (interface{}, error) {
-	switch messageType {
-	case InvitationType:
-		return &message.Invitation{}, nil
-	case ConnectionRequestType:
-		return &message.ConnectionRequest{}, nil
-	case ConnectionResponseType:
-		return &message.ConnectionResponse{}, nil
-	case ConnectionAckType:
-		return &message.ConnectionACK{}, nil
-	case DisconnectType, SendDisconnectType:
-		return &message.DisconnectRequest{}, nil
-	case SendProposalCredentialType:
-		return &message.ProposalCredential{}, nil
-	case OfferCredentialType:
-		return &message.OfferCredential{}, nil
-	case ProposalCredentialType:
-		return &message.ProposalCredential{}, nil
-	case SendRequestCredentialType:
-		return &message.RequestCredential{}, nil
-	case RequestCredentialType:
-		return &message.RequestCredential{}, nil
-	case IssueCredentialType:
-		return &message.IssueCredential{}, nil
-	case CredentialAckType:
-		return &message.CredentialACK{}, nil
-	case RequestPresentationType:
-		return &message.RequestPresentation{}, nil
-	case SendRequestPresentationType:
-		return &message.RequestPresentation{}, nil
-	case PresentationType:
-		return &message.Presentation{}, nil
-	case PresentationAckType:
-		return &message.PresentationACK{}, nil
-	case SendBasicMsgType:
-		return &message.BasicMessage{}, nil
-	case QueryBasicMessageType:
-		return &message.QueryGeneralMessageRequest{}, nil
-	case QueryCredentialType:
-		return &message.QueryCredentialRequest{}, nil
-	case QueryPresentationType:
-		return &message.QueryPresentationRequest{}, nil
-	default:
-		return nil, fmt.Errorf("msg type err:%v", messageType)
 	}
 }
