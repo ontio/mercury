@@ -4,10 +4,10 @@ import "github.com/gin-gonic/gin"
 
 type SystemApiServicer interface {
 	Invitation(ctx *gin.Context)
-	ConnectRequest(ctx *gin.Context)
-	ConnectResponse(ctx *gin.Context)
-	ConnectAck(ctx *gin.Context)
-	SendDisconnect(ctx *gin.Context)
+	ConnectionRequest(ctx *gin.Context)
+	ConnectionResponse(ctx *gin.Context)
+	ConnectionAck(ctx *gin.Context)
+	SendDisConnect(ctx *gin.Context)
 	Disconnect(ctx *gin.Context)
 	SendBasicMsg(ctx *gin.Context)
 	ReceiveBasicMsg(ctx *gin.Context)
