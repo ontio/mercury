@@ -184,6 +184,16 @@ type I10n struct {
 	Locale string `json:"locale"`
 }
 
+type DeleteCredentialRequest struct {
+	DId string `json:"did"`
+	Id  string `json:"id"`
+}
+
+type DeletePresentationRequest struct {
+	DId string `json:"did"`
+	Id  string `json:"id"`
+}
+
 type QueryCredentialRequest struct {
 	DId string `json:"did"`
 	Id  string `json:"id"`

@@ -95,3 +95,13 @@ func (p *PresentationController) QueryPresentationFromStore(did, id string) (mes
 	}
 	return rec.Presentation, nil
 }
+
+func (p *PresentationController) DelPresentation(did,id string )error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", PresentationKey, did, id))
+	return p.store.Delete(key)
+}
+
+func (p *PresentationController) DelRequestPresentation(did, id string)error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestPresentationKey, did, id))
+	return p.store.Delete(key)
+}

@@ -113,3 +113,13 @@ func (c *CredentialController) UpdateRequestCredential(did, id string, state mes
 	}
 	return c.store.Put(key, data)
 }
+
+func (c *CredentialController) DelRequestCredential(did, id string) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", RequestCredentialKey, did, id))
+	return c.store.Delete(key)
+}
+
+func (c *CredentialController) DelCredential(did, id string) error {
+	key := []byte(fmt.Sprintf("%s_%s_%s", CredentialKey, did, id))
+	return c.store.Delete(key)
+}

@@ -64,6 +64,12 @@ func (c *PresentationController) Routes() common.Routes {
 			Pattern:     common.QueryPresentationApi,
 			HandlerFunc: c.QueryPresentation,
 		},
+		{
+			Name:        "DeletePresentation",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     common.DeletePresentationApi,
+			HandlerFunc: c.DeletePresentation,
+		},
 	}
 }
 
@@ -270,5 +276,26 @@ func (p *PresentationController) QueryPresentation(ctx *gin.Context) {
 		Formats:            rec.Formats,
 		PresentationAttach: rec.PresentationAttach,
 	})
+	return
+}
+func (c *PresentationController) DeletePresentation(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeletePresentationType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	req, ok := data.(*message.DeletePresentationRequest)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	err = c.DelPresentation(req.DId, req.Id)
+	if err != nil {
+		log.Errorf("error on QueryPresentationType:%s", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 	return
 }

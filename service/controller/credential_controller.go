@@ -82,6 +82,12 @@ func (c *CredentialController) Routes() common.Routes {
 			Pattern:     common.QueryCredentialApi,
 			HandlerFunc: c.QueryCredential,
 		},
+		{
+			Name:        "DeleteCredentail",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     common.DeleteCredetialApi,
+			HandlerFunc: c.DeleteCredential,
+		},
 	}
 }
 
@@ -221,14 +227,12 @@ func (c *CredentialController) SendRequestCredential(ctx *gin.Context) {
 		return
 	}
 
-	log.Infof("========before checkConnection ==========")
 	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, c.store)
 	if err != nil {
 		log.Errorf("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	log.Infof("========after checkConnection ==========")
 
 	outMsg := common.OutboundMsg{
 		Msg: common.Message{
@@ -401,5 +405,27 @@ func (c *CredentialController) QueryCredential(ctx *gin.Context) {
 		CredentialsAttach: rec.CredentialsAttach,
 		Formats:           rec.Formats,
 	})
+	return
+}
+
+func (c *CredentialController) DeleteCredential(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeleteCredentialType)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	req, ok := data.(*message.DeleteCredentialRequest)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	 err = c.DelCredential(req.DId, req.Id)
+	if err != nil {
+		log.Errorf("error on DeleteCredential:%s\n", err.Error())
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 	return
 }

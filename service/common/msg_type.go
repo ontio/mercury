@@ -17,17 +17,22 @@ const (
 	RequestCredentialType
 	IssueCredentialType
 	CredentialAckType
+	DeleteCredentialType
+	QueryCredentialType
 
 	SendRequestPresentationType
 	RequestPresentationType
 	PresentationType
 	PresentationAckType
+	DeletePresentationType
+	QueryPresentationType
+
 	SendBasicMsgType
 	ReceiveBasicMsgType
 	QueryBasicMessageType
 
-	QueryCredentialType
-	QueryPresentationType
+
+
 )
 
 type Message struct {
@@ -50,16 +55,19 @@ const (
 	RequestCredentialApi         = "/api/v1/requestcredential"
 	IssueCredentialApi           = "/api/v1/issuecredentail"
 	CredentialAckApi             = "/api/v1/credentialack"
+	DeleteCredetialApi           = "/api/v1/deletecredential"
+	QueryCredentialApi           = "/api/v1/querycredential"
 
 	SendRequestPresentationApi = "/api/v1/sendrequestpresentation"
 	RequestPresentationApi     = "/api/v1/requestpresentation"
 	PresentationProofApi       = "/api/v1/presentproof"
 	PresentationAckApi         = "/api/v1/presentationack"
-	SendBasicMsgApi            = "/api/v1/sendbasicmsg"
-	ReceiveBasicMsgApi         = "/api/v1/receivebasicmsg"
-	QueryBasicMsgApi           = "/api/v1/querybasicmsg"
-	QueryCredentialApi         = "/api/v1/querycredential"
 	QueryPresentationApi       = "/api/v1/querypresentation"
+	DeletePresentationApi      = "/api/v1/deletepresentation"
+
+	SendBasicMsgApi    = "/api/v1/sendbasicmsg"
+	ReceiveBasicMsgApi = "/api/v1/receivebasicmsg"
+	QueryBasicMsgApi   = "/api/v1/querybasicmsg"
 )
 
 func GetApiName(msgType MessageType) string {
