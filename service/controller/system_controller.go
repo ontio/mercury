@@ -91,9 +91,13 @@ func (s *SystemController) Routes() common.Routes {
 
 func (s *SystemController) Invitation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.InvitationType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.InvitationType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	invitation, ok := data.(*message.Invitation)
@@ -112,9 +116,13 @@ func (s *SystemController) Invitation(ctx *gin.Context) {
 
 func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionRequestType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionRequestType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionRequest)
@@ -122,19 +130,6 @@ func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionRequestType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
 	ivrc, err := s.GetInvitation(req.Connection.TheirDid, req.InvitationId)
 	if err != nil {
 		log.Infof("err on GetInvitation:%s\n", err.Error())
@@ -188,9 +183,13 @@ func (s *SystemController) ConnectionRequest(ctx *gin.Context) {
 
 func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionResponseType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionResponseType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionResponse)
@@ -198,19 +197,6 @@ func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionResponseType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
 	connId := req.Thread.ID
 	err = s.SaveConnection(common.ReverseConnection(req.Connection))
 	if err != nil {
@@ -243,9 +229,13 @@ func (s *SystemController) ConnectionResponse(ctx *gin.Context) {
 
 func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionAckType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.ConnectionAckType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.ConnectionACK)
@@ -253,19 +243,6 @@ func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ConnectionAckType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
 	if req.Status != utils.ACK_SUCCEED {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("got failed ACK ").Error(), nil)
 		return
@@ -295,9 +272,13 @@ func (s *SystemController) ConnectionAck(ctx *gin.Context) {
 
 func (s *SystemController) SendDisConnect(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendDisconnectType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendDisconnectType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.DisconnectRequest)
@@ -339,26 +320,18 @@ func (s *SystemController) SendDisConnect(ctx *gin.Context) {
 
 func (s *SystemController) Disconnect(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.DisconnectType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.DisconnectType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.DisconnectRequest)
 	if !ok {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
-		return
-	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.DisconnectType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 
@@ -374,9 +347,13 @@ func (s *SystemController) Disconnect(ctx *gin.Context) {
 
 func (s *SystemController) SendBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.BasicMessage)
@@ -417,9 +394,13 @@ func (s *SystemController) SendBasicMsg(ctx *gin.Context) {
 
 func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.SendBasicMsgType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.BasicMessage)
@@ -427,19 +408,6 @@ func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, s.msgSvr, req.Connection, common.ReceiveBasicMsgType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
 	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, s.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
@@ -457,9 +425,13 @@ func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 
 func (s *SystemController) QueryBasicMsg(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.QueryBasicMessageType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.QueryBasicMessageType, s.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.QueryGeneralMessageRequest)

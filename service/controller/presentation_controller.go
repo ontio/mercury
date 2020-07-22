@@ -67,11 +67,15 @@ func (c *PresentationController) Routes() common.Routes {
 	}
 }
 
-func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
+func (p *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.SendRequestPresentationType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, p.packager, common.SendRequestPresentationType, p.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.RequestPresentation)
@@ -80,7 +84,7 @@ func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 		return
 	}
 
-	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, c.store)
+	err = utils.CheckConnection(req.Connection.MyDid, req.Connection.TheirDid, p.store)
 	if err != nil {
 		log.Errorf("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -94,7 +98,7 @@ func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 		},
 		Conn: req.Connection,
 	}
-	err = c.msgSvr.HandleOutBound(outMsg)
+	err = p.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
 		log.Errorf("error on HandleOutBound :%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -104,11 +108,15 @@ func (c *PresentationController) SendRequestPresentation(ctx *gin.Context) {
 	return
 }
 
-func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
+func (p *PresentationController) RequestPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.RequestPresentationType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, p.packager, common.RequestPresentationType, p.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.RequestPresentation)
@@ -117,32 +125,20 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 		return
 	}
 
-	//add forward logic
-	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.RequestPresentationType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
-	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	presentation, err := c.vdri.PresentProof(req, c.store)
+	presentation, err := p.vdri.PresentProof(req, p.store)
 	if err != nil {
 		log.Errorf("errors on PresentProof :%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
 
-	err = c.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
+	err = p.SaveRequestPresentation(req.Connection.MyDid, req.Id, *req)
 	if err != nil {
 		log.Errorf("error on SaveRequestPresentation:%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -155,7 +151,7 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 		},
 		Conn: common.ReverseConnection(presentation.Connection),
 	}
-	err = c.msgSvr.HandleOutBound(outMsg)
+	err = p.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
 		log.Errorf("error on HandleOutBound:%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -165,11 +161,15 @@ func (c *PresentationController) RequestPresentation(ctx *gin.Context) {
 	return
 }
 
-func (c *PresentationController) PresentProof(ctx *gin.Context) {
+func (p *PresentationController) PresentProof(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.PresentationType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, p.packager, common.PresentationType, p.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.Presentation)
@@ -178,25 +178,13 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 		return
 	}
 
-	//add forward logic
-	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.PresentationType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
-	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
+	err = p.SavePresentation(req.Connection.TheirDid, req.Thread.ID, *req)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -215,7 +203,7 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 		},
 		Conn: ack.Connection,
 	}
-	err = c.msgSvr.HandleOutBound(outMsg)
+	err = p.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
 		log.Errorf("error on HandleOutBound:%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -225,11 +213,15 @@ func (c *PresentationController) PresentProof(ctx *gin.Context) {
 	return
 }
 
-func (c *PresentationController) PresentationAck(ctx *gin.Context) {
+func (p *PresentationController) PresentationAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.PresentationAckType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, p.packager, common.PresentationAckType, p.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.PresentationACK)
@@ -237,26 +229,13 @@ func (c *PresentationController) PresentationAck(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-
-	//add forward logic
-	forward, err := ResolveForward(req, c.msgSvr, req.Connection, common.PresentationAckType)
-	if err != nil {
-		log.Infof("err on ResolveForward:%s\n", err.Error())
-		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
-		return
-	}
-	if forward {
-		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
-		return
-	}
-
-	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, c.store)
+	err = utils.CheckConnection(req.Connection.TheirDid, req.Connection.MyDid, p.store)
 	if err != nil {
 		log.Infof("no connect found with did:%s", req.Connection.MyDid)
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = c.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
+	err = p.UpdateRequestPresentaion(req.Connection.MyDid, req.Thread.ID, message.RequestPresentationReceived)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -265,11 +244,15 @@ func (c *PresentationController) PresentationAck(ctx *gin.Context) {
 	return
 }
 
-func (c *PresentationController) QueryPresentation(ctx *gin.Context) {
+func (p *PresentationController) QueryPresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.QueryPresentationType)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, p.packager, common.QueryPresentationType, p.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
 	req, ok := data.(*message.QueryPresentationRequest)
@@ -277,7 +260,7 @@ func (c *PresentationController) QueryPresentation(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	rec, err := c.QueryPresentationFromStore(req.DId, req.Id)
+	rec, err := p.QueryPresentationFromStore(req.DId, req.Id)
 	if err != nil {
 		log.Errorf("error on QueryPresentationType:%s", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)

@@ -2,10 +2,10 @@ package common
 
 import (
 	"encoding/json"
-	"git.ont.io/ontid/otf/common/config"
 	"net/http"
 	"strings"
 
+	"git.ont.io/ontid/otf/common/config"
 	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/common/packager"
@@ -27,8 +27,9 @@ type MsgService struct {
 }
 
 type OutboundMsg struct {
-	Msg  Message
-	Conn message.Connection
+	Msg       Message
+	Conn      message.Connection
+	IsForward bool
 }
 
 func NewMessageService(v vdri.VDRI, ontSdk *sdk.OntologySdk, acct *sdk.Account, enableEnvelop bool, conf *config.Cfg) *MsgService {
@@ -69,90 +70,81 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 
 	//1. resolve the router
 	conn := msg.Conn
-	routerlist := MergeRouter(conn.MyRouter, conn.TheirRouter)
-	nextrouter, err := m.GetNextRouter(routerlist)
+	routerList := MergeRouter(conn.MyRouter, conn.TheirRouter)
+	nextRouter, err := m.GetNextRouter(routerList)
 	if err != nil {
 		log.Errorf("error on sendmsg:%s\n", err.Error())
 		return
 	}
-
 	//2. check need forward message
 	//f := m.NeedForwardMsg(nextrouter, routerlist)
-	var mdata []byte
 	var url string
 	//if f {
-	url, err = m.GetServiceURLByRouter(nextrouter, msg.Msg.MessageType)
+	url, err = m.GetServiceURLByRouter(nextRouter, msg.Msg.MessageType)
 	if err != nil {
 		log.Errorf("error on sendmsg:%s\n", err.Error())
 		return
 	}
-
-	mdata, err = json.Marshal(msg.Msg.Content)
-	if err != nil {
-		log.Errorf("err while sendmsg:%s\n", err)
-		return
-	}
-	var reqbody []byte
+	var sendData []byte
 	if m.enableEnvelop {
-		msg := &packager.Envelope{
-			Message: &packager.MessageData{
-				Data:    mdata,
+		var msgData *packager.MessageData
+		if !msg.IsForward {
+			mData, err := json.Marshal(msg.Msg.Content)
+			if err != nil {
+				log.Errorf("json marshal sendmsg:%s", err)
+				return
+			}
+			messageData := &packager.MessageData{
+				Data:    mData,
 				MsgType: int(msg.Msg.MessageType),
-			},
-			FromDID: m.Cfg.SelfDID,
-			ToDID:   utils.CutDId(nextrouter),
+			}
+			msgData, err = m.packager.PackMessage(messageData, m.Cfg.SelfDID)
+			if err != nil {
+				log.Errorf("pack message err:%s", err)
+				return
+			}
+		} else {
+			var ok bool
+			msgData, ok = (msg.Msg.Content).(*packager.MessageData)
+			if !ok {
+				log.Errorf("convert message data failed")
+				return
+			}
 		}
-		reqbody, err = m.packager.PackMessage(msg)
+		connectionData, err := json.Marshal(msg.Conn)
+		if err != nil {
+			log.Errorf("convert message data failed err:%s", err)
+			return
+		}
+		connectData, err := m.packager.PackConnection(connectionData, utils.CutDId(nextRouter))
+		if err != nil {
+			log.Errorf("convert message data failed")
+			return
+		}
+		msg := &packager.Envelope{
+			Message:    msgData,
+			Connection: connectData,
+			FromDID:    m.Cfg.SelfDID,
+			ToDID:      utils.CutDId(nextRouter),
+		}
+		sendData, err = m.packager.PackData(msg)
 		if err != nil {
 			log.Errorf("err while sendmsg:%s\n", err)
 			return
 		}
 	} else {
-		reqbody = mdata
-	}
-
-	log.Infof("url:%s,data:%s\n", url, reqbody)
-	_, err = utils.HttpPostData(m.client, url, string(reqbody))
-	if err != nil {
-		log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
-	}
-
-	/*url, err := m.GetServiceURL(msg)
-	if err != nil {
-		log.Errorf("error on sendmsg:%s\n", err.Error())
-	}
-	var data []byte
-	data, err = json.Marshal(msg.Msg.Content)
-	if err != nil {
-		log.Errorf("err while sendmsg:%s\n", err)
-		return
-	}
-	if m.enableEnvelop {
-		var routerDid string
-		if msg.Conn.TheirRouter == nil || len(msg.Conn.TheirRouter) == 0 {
-			routerDid = msg.Conn.TheirDid
-		} else {
-			routerDid = utils.CutDId(msg.Conn.TheirRouter[0])
-		}
-		msg := &packager.Envelope{
-			Message: &packager.MessageData{
-				Data:    data,
-				MsgType: int(msg.Msg.MessageType),
-			},
-			FromDID: msg.Conn.MyDid,
-			ToDID:   routerDid,
-		}
-		data, err = m.packager.PackMessage(msg)
+		mData, err := json.Marshal(msg.Msg.Content)
 		if err != nil {
-			log.Errorf("err while sendmsg:%s\n", err)
+			log.Errorf("json marshal sendMsg:%s", err)
 			return
 		}
+		sendData = mData
 	}
-	log.Infof("url:%s,data:%s\n", url, data)
-	_, err = utils.HttpPostData(m.client, url, string(data))
+	log.Infof("url:%s,data:%s\n", url, sendData)
+	_, err = utils.HttpPostData(m.client, url, string(sendData))
 	if err != nil {
 		log.Errorf("SendMsg msg url:%s,type:%d,err:%s", url, msg.Msg.MessageType, err)
-	}*/
+	}
 }
 
 func (m *MsgService) GetServiceURL(msg OutboundMsg) (string, error) {

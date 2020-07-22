@@ -3,10 +3,12 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"git.ont.io/ontid/otf/common/packager"
 	"git.ont.io/ontid/otf/utils"
 	"io/ioutil"
 	"strings"
 
+	"git.ont.io/ontid/otf/common/log"
 	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/common/packager/ecdsa"
 	"github.com/gin-gonic/gin"
@@ -25,42 +27,71 @@ func ReverseConnection(conn message.Connection) message.Connection {
 	}
 }
 
-func ParseRouterMsg(c *gin.Context, packager *ecdsa.Packager) ([]byte, error) {
+func ParseConnectionMsg(c *gin.Context, packager *ecdsa.Packager) (*message.Connection, *packager.MessageData, error) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	msg, err := packager.UnpackMessage(body)
+	msg, err := packager.UnPackData(body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	if msg.Message == nil {
-		return nil, fmt.Errorf("msg is nil")
+	if msg.Connection == nil {
+		return nil, nil, fmt.Errorf("msg connection is nil")
 	}
-	return msg.Message.Data, nil
+	data, err := packager.UnPackConnection(msg)
+	if err != nil {
+		return nil, nil, err
+	}
+	connection := &message.Connection{}
+	err = json.Unmarshal(data.Data, connection)
+	if err != nil {
+		return nil, nil, err
+	}
+	return connection, msg.Message, nil
 }
 
-func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager, messageType MessageType) (interface{}, error) {
+func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager, messageType MessageType, msgSvr *MsgService) (interface{}, bool, error) {
 	msgObject, err := getMsgObjectByType(messageType)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	if enablePackage {
-		data, err := ParseRouterMsg(ctx, packager)
+		connections, messageData, err := ParseConnectionMsg(ctx, packager)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
-		err = json.Unmarshal(data, msgObject)
+		//check need router forward
+		if !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
+			outMsg := OutboundMsg{
+				Msg: Message{
+					MessageType: messageType,
+					Content:     messageData,
+				},
+				IsForward: true,
+			}
+			err = msgSvr.HandleOutBound(outMsg)
+			if err != nil {
+				log.Errorf("error on HandleOutBound:%s", err.Error())
+				return nil, false, fmt.Errorf("handle forward msg error:%s", err)
+			}
+			return nil, true, nil
+		}
+		data, err := packager.UnpackMessage(messageData, msgSvr.Cfg.SelfDID)
 		if err != nil {
-			return nil, err
+			return nil, false, err
+		}
+		err = json.Unmarshal(data.Data, msgObject)
+		if err != nil {
+			return nil, false, err
 		}
 	} else {
 		err = ctx.Bind(msgObject)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 	}
-	return msgObject, nil
+	return msgObject, false, nil
 }
 
 func getMsgObjectByType(messageType MessageType) (interface{}, error) {

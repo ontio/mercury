@@ -28,8 +28,8 @@ func New(ontSdk *sdk.OntologySdk, acct *sdk.Account) *Packager {
 	}
 }
 
-func (bp *Packager) PackMessage(envelope *packager.Envelope) ([]byte, error) {
-	pub, err := utils.GetPubKeyByDid(envelope.ToDID, bp.ontSdk)
+func (bp *Packager) PackConnection(connectionData []byte, toDid string) (*packager.MsgConnection, error) {
+	pub, err := utils.GetPubKeyByDid(toDid, bp.ontSdk)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (bp *Packager) PackMessage(envelope *packager.Envelope) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := Encrypt(pk, envelope.Message.Data)
+	data, err := Encrypt(pk, connectionData)
 	if err != nil {
 		return nil, err
 	}
@@ -49,27 +49,13 @@ func (bp *Packager) PackMessage(envelope *packager.Envelope) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	packMsg := &packager.Envelope{
-		Message: &packager.MessageData{
-			Data:    data,
-			MsgType: envelope.Message.MsgType,
-			Sign:    sign,
-		},
-		FromDID: envelope.FromDID,
-		ToDID:   envelope.ToDID,
-	}
-	jsonBytes, err := json.Marshal(packMsg)
-	if err != nil {
-		return nil, err
-	}
-	return jsonBytes, nil
+	return &packager.MsgConnection{
+		Data: data,
+		Sign: sign,
+	}, nil
 }
-func (bp *Packager) UnpackMessage(encMessage []byte) (*packager.Envelope, error) {
-	data := &packager.Envelope{}
-	err := json.Unmarshal(encMessage, data)
-	if err != nil {
-		return nil, err
-	}
+
+func (bp *Packager) UnPackConnection(data *packager.Envelope) (*packager.MsgConnection, error) {
 	pub, err := utils.GetPubKeyByDid(data.FromDID, bp.ontSdk)
 	if err != nil {
 		return nil, err
@@ -82,25 +68,94 @@ func (bp *Packager) UnpackMessage(encMessage []byte) (*packager.Envelope, error)
 	if err != nil {
 		return nil, err
 	}
-	sig, err := signature.Deserialize(data.Message.Sign)
+	sig, err := signature.Deserialize(data.Connection.Sign)
 	if err != nil {
 		return nil, err
 	}
-	if !signature.Verify(pk, data.Message.Data, sig) {
+	if !signature.Verify(pk, data.Connection.Data, sig) {
+		return nil, fmt.Errorf("connection data verify sign failed")
+	}
+	msg, err := Decrypt(bp.acct.PrivateKey, data.Connection.Data)
+	if err != nil {
+		return nil, err
+	}
+	return &packager.MsgConnection{
+		Data: msg,
+	}, nil
+}
+
+func (bp *Packager) PackMessage(envelope *packager.MessageData, destDid string) (*packager.MessageData, error) {
+	pub, err := utils.GetPubKeyByDid(destDid, bp.ontSdk)
+	if err != nil {
+		return nil, err
+	}
+	pubKey, err := hex.DecodeString(pub)
+	if err != nil {
+		return nil, err
+	}
+	pk, err := keypair.DeserializePublicKey(pubKey)
+	if err != nil {
+		return nil, err
+	}
+	data, err := Encrypt(pk, envelope.Data)
+	if err != nil {
+		return nil, err
+	}
+	sign, err := bp.acct.Sign(data)
+	if err != nil {
+		return nil, err
+	}
+	return &packager.MessageData{
+		Data:    data,
+		MsgType: envelope.MsgType,
+		Sign:    sign,
+	}, nil
+}
+
+func (bp *Packager) UnpackMessage(data *packager.MessageData, sourceDid string) (*packager.MessageData, error) {
+	pub, err := utils.GetPubKeyByDid(sourceDid, bp.ontSdk)
+	if err != nil {
+		return nil, err
+	}
+	pubKey, err := hex.DecodeString(pub)
+	if err != nil {
+		return nil, err
+	}
+	pk, err := keypair.DeserializePublicKey(pubKey)
+	if err != nil {
+		return nil, err
+	}
+	sig, err := signature.Deserialize(data.Sign)
+	if err != nil {
+		return nil, err
+	}
+	if !signature.Verify(pk, data.Data, sig) {
 		return nil, fmt.Errorf("data verify sign failed")
 	}
-	msg, err := Decrypt(bp.acct.PrivateKey, data.Message.Data)
+	msg, err := Decrypt(bp.acct.PrivateKey, data.Data)
 	if err != nil {
 		return nil, err
 	}
-	return &packager.Envelope{
-		Message: &packager.MessageData{
-			Data:    msg,
-			MsgType: data.Message.MsgType,
-		},
-		FromDID: data.FromDID,
-		ToDID:   data.ToDID,
+	return &packager.MessageData{
+		Data: msg,
 	}, nil
+}
+
+func (bp *Packager) PackData(envelope *packager.Envelope) ([]byte, error) {
+	jsonBytes, err := json.Marshal(envelope)
+	if err != nil {
+		return nil, err
+	}
+	return jsonBytes, nil
+}
+
+func (bp *Packager) UnPackData(enData []byte) (*packager.Envelope, error) {
+	data := &packager.Envelope{}
+	err := json.Unmarshal(enData, data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func Encrypt(pub keypair.PublicKey, m []byte) ([]byte, error) {
