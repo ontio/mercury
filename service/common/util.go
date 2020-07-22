@@ -90,12 +90,33 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 		if err != nil {
 			return nil, false, err
 		}
+
+		connections := msgObject.GetConnection()
+		if connections != nil {
+			//check need router forward
+			if !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
+				outMsg := OutboundMsg{
+					Msg: Message{
+						MessageType: messageType,
+						Content:     msgObject,
+					},
+					IsForward: true,
+				}
+				err = msgSvr.HandleOutBound(outMsg)
+				if err != nil {
+					log.Errorf("error on HandleOutBound:%s", err.Error())
+					return nil, false, fmt.Errorf("handle forward msg error:%s", err)
+				}
+				return nil, true, nil
+			}
+		}
+
 	}
 	return msgObject, false, nil
 }
 
-func getMsgObjectByType(messageType MessageType) (interface{}, error) {
-	var req interface{}
+func getMsgObjectByType(messageType MessageType) (message.RequestInf, error) {
+	var req message.RequestInf
 	switch messageType {
 	case InvitationType:
 		req = &message.Invitation{}
@@ -137,6 +158,11 @@ func getMsgObjectByType(messageType MessageType) (interface{}, error) {
 		req = &message.QueryCredentialRequest{}
 	case QueryPresentationType:
 		req = &message.QueryPresentationRequest{}
+	case DeleteCredentialType:
+		req = &message.DeleteCredentialRequest{}
+	case DeletePresentationType:
+		req = &message.DeletePresentationRequest{}
+
 	default:
 		return nil, fmt.Errorf("msg type err:%v", messageType)
 	}

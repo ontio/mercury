@@ -410,7 +410,7 @@ func (c *CredentialController) QueryCredential(ctx *gin.Context) {
 
 func (c *CredentialController) DeleteCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeleteCredentialType)
+	data,_, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeleteCredentialType,c.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
