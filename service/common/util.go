@@ -37,7 +37,7 @@ func ParseConnectionMsg(c *gin.Context, packager *ecdsa.Packager) (*message.Conn
 		return nil, nil, err
 	}
 	if msg.Connection == nil {
-		return nil, nil, fmt.Errorf("msg connection is nil")
+		return nil, msg.Message, nil
 	}
 	data, err := packager.UnPackConnection(msg)
 	if err != nil {
@@ -62,7 +62,7 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 			return nil, false, err
 		}
 		//check need router forward
-		if !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
+		if connections != nil && !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
 			outMsg := OutboundMsg{
 				Msg: Message{
 					MessageType: messageType,
