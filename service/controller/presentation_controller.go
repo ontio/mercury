@@ -280,7 +280,7 @@ func (p *PresentationController) QueryPresentation(ctx *gin.Context) {
 }
 func (c *PresentationController) DeletePresentation(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data,_, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeletePresentationType,c.msgSvr)
+	data, _, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeletePresentationType, c.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

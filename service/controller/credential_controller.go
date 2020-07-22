@@ -354,7 +354,7 @@ func (c *CredentialController) IssueCredential(ctx *gin.Context) {
 
 func (c *CredentialController) CredentialAck(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.ConnectionAckType, c.msgSvr)
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.CredentialAckType, c.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -410,7 +410,7 @@ func (c *CredentialController) QueryCredential(ctx *gin.Context) {
 
 func (c *CredentialController) DeleteCredential(ctx *gin.Context) {
 	resp := common.Gin{C: ctx}
-	data,_, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeleteCredentialType,c.msgSvr)
+	data, _, err := common.ParseMessage(common.EnablePackage, ctx, c.packager, common.DeleteCredentialType, c.msgSvr)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -420,7 +420,7 @@ func (c *CredentialController) DeleteCredential(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	 err = c.DelCredential(req.DId, req.Id)
+	err = c.DelCredential(req.DId, req.Id)
 	if err != nil {
 		log.Errorf("error on DeleteCredential:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)

@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"git.ont.io/ontid/otf/common/log"
 
 	"git.ont.io/ontid/otf/common/message"
 	"git.ont.io/ontid/otf/utils"
@@ -101,6 +102,8 @@ func (s SystemController) GetConnectionRequest(did, id string) (*message.Connect
 }
 
 func (s *SystemController) SaveConnection(con message.Connection) error {
+	log.Info("===GetConnection:mydid:%s,theirdid:%s===", con.MyDid, con.TheirDid)
+
 	cr := new(message.ConnectionRec)
 
 	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, con.MyDid))
@@ -155,6 +158,7 @@ func (s *SystemController) UpdateConnectionRequest(did, id string, state message
 }
 
 func (s *SystemController) GetConnection(myDID, theirDID string) (message.Connection, error) {
+	log.Info("===GetConnection:mydid:%s,theirdid:%s===", myDID, theirDID)
 	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, myDID))
 	data, err := s.store.Get(key)
 	if err != nil {

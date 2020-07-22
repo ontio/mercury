@@ -10,10 +10,10 @@ type Invitation struct {
 	Router []string `json:"router"`
 	//ServiceId string   `json:"service_id,omitempty"`
 }
-func (self *Invitation)GetConnection() *Connection{
+
+func (self *Invitation) GetConnection() *Connection {
 	return nil
 }
-
 
 type RequestInf interface {
 	GetConnection() *Connection
@@ -26,7 +26,8 @@ type ConnectionRequest struct {
 	Connection   Connection `json:"connection,omitempty"`
 	InvitationId string     `json:"invitation_id"`
 }
-func (self *ConnectionRequest)GetConnection() *Connection{
+
+func (self *ConnectionRequest) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -51,7 +52,8 @@ type ConnectionResponse struct {
 	Thread     Thread     `json:"~thread,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *ConnectionResponse)GetConnection() *Connection{
+
+func (self *ConnectionResponse) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -62,7 +64,8 @@ type ConnectionACK struct {
 	Status     string     `json:"status,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *ConnectionACK)GetConnection() *Connection{
+
+func (self *ConnectionACK) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -71,7 +74,8 @@ type DisconnectRequest struct {
 	Id         string     `json:"@id,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *DisconnectRequest)GetConnection() *Connection{
+
+func (self *DisconnectRequest) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -82,7 +86,8 @@ type CredentialACK struct {
 	Status     string     `json:"status,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *CredentialACK)GetConnection() *Connection{
+
+func (self *CredentialACK) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -93,10 +98,10 @@ type PresentationACK struct {
 	Status     string     `json:"status,omitempty"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *PresentationACK)GetConnection() *Connection{
+
+func (self *PresentationACK) GetConnection() *Connection {
 	return &self.Connection
 }
-
 
 //issue credential
 type ProposalCredential struct {
@@ -106,7 +111,8 @@ type ProposalCredential struct {
 	CredentialProposal CredentialPreview `json:"credential_proposal,omitempty"`
 	Connection         Connection        `json:"connection,omitempty"`
 }
-func (self *ProposalCredential)GetConnection() *Connection{
+
+func (self *ProposalCredential) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -119,7 +125,8 @@ type OfferCredential struct {
 	Connection        Connection        `json:"connection,omitempty"`
 	Thread            Thread            `json:"~thread,omitempty"`
 }
-func (self *OfferCredential)GetConnection() *Connection{
+
+func (self *OfferCredential) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -166,7 +173,8 @@ type RequestCredential struct {
 	RequestsAttach []Attachment `json:"requests_attach"`
 	Connection     Connection   `json:"connection,omitempty"`
 }
-func (self *RequestCredential)GetConnection() *Connection{
+
+func (self *RequestCredential) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -179,10 +187,10 @@ type IssueCredential struct {
 	Connection        Connection   `json:"connection,omitempty"`
 	Thread            Thread       `json:"~thread,omitempty"`
 }
-func (self *IssueCredential)GetConnection() *Connection{
+
+func (self *IssueCredential) GetConnection() *Connection {
 	return &self.Connection
 }
-
 
 //present proof
 type ProposePresentation struct {
@@ -201,10 +209,10 @@ type RequestPresentation struct {
 	RequestPresentationAttach []Attachment `json:"request_presentation_attach,omitempty"`
 	Connection                Connection   `json:"connection,omitempty"`
 }
-func (self *RequestPresentation)GetConnection() *Connection{
+
+func (self *RequestPresentation) GetConnection() *Connection {
 	return &self.Connection
 }
-
 
 type Presentation struct {
 	Type               string       `json:"@type,omitempty"`
@@ -215,7 +223,8 @@ type Presentation struct {
 	Connection         Connection   `json:"connection,omitempty"`
 	Thread             Thread       `json:"~thread,omitempty"`
 }
-func (self *Presentation)GetConnection() *Connection{
+
+func (self *Presentation) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -227,7 +236,8 @@ type BasicMessage struct {
 	I10n       I10n       `json:"~I10n"`
 	Connection Connection `json:"connection,omitempty"`
 }
-func (self *BasicMessage)GetConnection() *Connection{
+
+func (self *BasicMessage) GetConnection() *Connection {
 	return &self.Connection
 }
 
@@ -235,12 +245,12 @@ type I10n struct {
 	Locale string `json:"locale"`
 }
 
-
 type DeleteCredentialRequest struct {
 	DId string `json:"did"`
 	Id  string `json:"id"`
 }
-func (self *DeleteCredentialRequest)GetConnection() *Connection{
+
+func (self *DeleteCredentialRequest) GetConnection() *Connection {
 	return nil
 }
 
@@ -248,7 +258,8 @@ type DeletePresentationRequest struct {
 	DId string `json:"did"`
 	Id  string `json:"id"`
 }
-func (self *DeletePresentationRequest)GetConnection() *Connection{
+
+func (self *DeletePresentationRequest) GetConnection() *Connection {
 	return nil
 }
 
@@ -256,7 +267,8 @@ type QueryCredentialRequest struct {
 	DId string `json:"did"`
 	Id  string `json:"id"`
 }
-func (self *QueryCredentialRequest)GetConnection() *Connection{
+
+func (self *QueryCredentialRequest) GetConnection() *Connection {
 	return nil
 }
 
@@ -264,7 +276,8 @@ type QueryCredentialResponse struct {
 	Formats           []Format     `json:"formats,omitempty"`
 	CredentialsAttach []Attachment `json:"credentials~attach,omitempty"`
 }
-func (self *QueryCredentialResponse)GetConnection() *Connection{
+
+func (self *QueryCredentialResponse) GetConnection() *Connection {
 	return nil
 }
 
@@ -272,7 +285,8 @@ type QueryPresentationRequest struct {
 	DId string `json:"did"`
 	Id  string `json:"id"`
 }
-func (self *QueryPresentationRequest)GetConnection() *Connection{
+
+func (self *QueryPresentationRequest) GetConnection() *Connection {
 	return nil
 }
 
@@ -280,17 +294,18 @@ type QueryPresentationResponse struct {
 	Formats            []Format     `json:"formats,omitempty"`
 	PresentationAttach []Attachment `json:"presentations~attach,omitempty"`
 }
-func (self *QueryPresentationResponse)GetConnection() *Connection{
+
+func (self *QueryPresentationResponse) GetConnection() *Connection {
 	return nil
 }
-
 
 type QueryGeneralMessageRequest struct {
 	DID             string `json:"did"`
 	Latest          bool   `json:"latest"`
 	RemoveAfterRead bool   `json:"remove_after_read"`
 }
-func (self *QueryGeneralMessageRequest)GetConnection() *Connection{
+
+func (self *QueryGeneralMessageRequest) GetConnection() *Connection {
 	return nil
 }
 
@@ -299,6 +314,7 @@ type ForwardMessageRequest struct {
 	Data       []byte     `json:"data"`
 	Connection Connection `json:"connection"`
 }
-func (self *ForwardMessageRequest)GetConnection() *Connection{
+
+func (self *ForwardMessageRequest) GetConnection() *Connection {
 	return &self.Connection
 }

@@ -85,6 +85,8 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		log.Errorf("error on sendmsg:%s\n", err.Error())
 		return
 	}
+	log.Infof("===SendMsg messagetype:%d", msg.Msg.MessageType)
+	log.Infof("===SendMsg url:%s", url)
 	var sendData []byte
 	if m.enableEnvelop {
 		var msgData *packager.MessageData

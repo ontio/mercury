@@ -30,9 +30,6 @@ const (
 	SendBasicMsgType
 	ReceiveBasicMsgType
 	QueryBasicMessageType
-
-
-
 )
 
 type Message struct {
@@ -110,5 +107,22 @@ func GetApiName(msgType MessageType) string {
 		return QueryPresentationApi
 	default:
 		return ""
+	}
+}
+
+func TransferForwardMsgType(msgType MessageType) MessageType {
+	switch msgType {
+	case SendBasicMsgType:
+		return ReceiveBasicMsgType
+	case SendRequestCredentialType:
+		return RequestCredentialType
+	case SendProposalCredentialType:
+		return ProposalCredentialType
+	case SendDisconnectType:
+		return DisconnectType
+	case SendRequestPresentationType:
+		return RequestPresentationType
+	default:
+		return msgType
 	}
 }

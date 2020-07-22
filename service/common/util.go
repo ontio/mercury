@@ -65,7 +65,7 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 		if connections != nil && !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
 			outMsg := OutboundMsg{
 				Msg: Message{
-					MessageType: messageType,
+					MessageType: TransferForwardMsgType(messageType),
 					Content:     messageData,
 				},
 				IsForward: true,
@@ -97,9 +97,10 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 			if !IsReceiver(msgSvr.Cfg.SelfDID, MergeRouter(connections.MyRouter, connections.TheirRouter)) {
 				outMsg := OutboundMsg{
 					Msg: Message{
-						MessageType: messageType,
+						MessageType: TransferForwardMsgType(messageType),
 						Content:     msgObject,
 					},
+					Conn:      *connections,
 					IsForward: true,
 				}
 				err = msgSvr.HandleOutBound(outMsg)
