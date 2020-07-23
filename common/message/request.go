@@ -299,13 +299,13 @@ func (self *QueryPresentationResponse) GetConnection() *Connection {
 	return nil
 }
 
-type QueryGeneralMessageRequest struct {
+type QueryBasicMessageRequest struct {
 	DID             string `json:"did"`
 	Latest          bool   `json:"latest"`
 	RemoveAfterRead bool   `json:"remove_after_read"`
 }
 
-func (self *QueryGeneralMessageRequest) GetConnection() *Connection {
+func (self *QueryBasicMessageRequest) GetConnection() *Connection {
 	return nil
 }
 

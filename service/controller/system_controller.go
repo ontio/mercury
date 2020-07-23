@@ -382,7 +382,7 @@ func (s *SystemController) SendBasicMsg(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = s.SaveGeneralMsg(req, true)
+	err = s.SaveBasicMsgToStore(req, true)
 	if err != nil {
 		log.Errorf("err on HandleOutBound:%s\n", err.Error())
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
@@ -414,7 +414,7 @@ func (s *SystemController) ReceiveBasicMsg(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
 	}
-	err = s.SaveGeneralMsg(req, false)
+	err = s.SaveBasicMsgToStore(req, false)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return
@@ -434,12 +434,12 @@ func (s *SystemController) QueryBasicMsg(ctx *gin.Context) {
 		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
 		return
 	}
-	req, ok := data.(*message.QueryGeneralMessageRequest)
+	req, ok := data.(*message.QueryBasicMessageRequest)
 	if !ok {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
 		return
 	}
-	ret, err := s.QueryGeneraMsg(req.DID, req.Latest, req.RemoveAfterRead)
+	ret, err := s.QueryBasicMsgFromStore(req.DID, req.Latest, req.RemoveAfterRead)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

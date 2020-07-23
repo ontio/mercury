@@ -155,7 +155,7 @@ func getMsgObjectByType(messageType MessageType) (message.RequestInf, error) {
 	case SendBasicMsgType, ReceiveBasicMsgType:
 		req = &message.BasicMessage{}
 	case QueryBasicMessageType:
-		req = &message.QueryGeneralMessageRequest{}
+		req = &message.QueryBasicMessageRequest{}
 	case QueryCredentialType:
 		req = &message.QueryCredentialRequest{}
 	case QueryPresentationType:

@@ -16,13 +16,13 @@
 | ------------------------- | ------ | -------------------------------- | --------------------------- |
 | invitation                | POST   | /api/v1/ invitation              | create a invitation         |
 | connection request        | POST   | /api/v1/connectionrequest        | request connection          |
-| send message              | POST   | /api/v1/sendgeneralmsg           | send a general message      |
+| send message              | POST   | /api/v1/sendbasicmsg           | send a basic message      |
 | send proposal credential  | POST   | /api/v1/sendproposalcredential   | send a proposal credential  |
 | send request credential   | POST   | /api/v1/sendrequestcredential    | send a request credential   |
 | send request presentation | POST   | /api/v1/ sendrequestpresentation | send a request presentation |
 | query credential          | POST   | /api/v1/querycredential          | query a credential          |
 | query presentation        | POST   | /api/v1/querypresentation        | query a presentation        |
-| query general message     | POST   | /api/v1/querygeneralmsg          | query general message       |
+| query basic message       | POST   | /api/v1/querybasicmsg          | query basic message       |
 | send disconnect           | POST   | /api/v1/senddisconnect           | send disconnect request     |
 
 ### 2.1 Invitation
@@ -110,7 +110,7 @@ Response:
 POST
 
 ```
-/api/v1/sendgeneralmsg
+/api/v1/sendbasicmsg
 ```
 
 Request body example:
@@ -309,7 +309,7 @@ Response
 }
 ```
 
-### 2.8 query general message
+### 2.8 query basic message
 
 POST
 
@@ -355,7 +355,7 @@ Response
 }
 ```
 
-### 2.9 query general message
+### 2.9 query basic message
 
 POST
 
@@ -380,7 +380,7 @@ Request body example:
 Response
 
 ```
-/api/v1/querygeneralmsg
+/api/v1/querybasicmsg
 ```
 
 Request body example:
@@ -393,7 +393,7 @@ Request body example:
         "message_type": 0,
         "content": [
             {
-                "@type": "spec/didcomm/1.0/generalmessage",
+                "@type": "spec/didcomm/1.0/basicmessage",
                 "@id": "6ff22592-3476-42a8-8e50-2d76cf771cb7",
                 "send_time": "0001-01-01T00:00:00Z",
                 "content": "124 adfasdfasefa",

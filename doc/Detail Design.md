@@ -225,11 +225,11 @@ Alice 接收到connection ACK后:
 
 
 
-### 3.2 General Message 协议
+### 3.2 basic Message 协议
 
 在Alice 和Bob建立链接后, 可以相互发送通用的message
 
-![](./images/generalmsg.png)
+![](./images/basicmsg.png)
 
 
 

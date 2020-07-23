@@ -66,7 +66,7 @@ var HttpClientCmd = cli.Command{
 		},
 		{
 			Action:      queryMsg,
-			Name:        "querymsg",
+			Name:        "query basic msg",
 			Usage:       "query basic msg",
 			Description: "query basic message",
 			Flags: []cli.Flag{
@@ -283,7 +283,7 @@ func queryMsg(ctx *cli.Context) error {
 	latest := ctx.Bool(cmd.GetFlagName(cmd.ReadLatestMsgFlag))
 	rar := ctx.Bool(cmd.GetFlagName(cmd.RemoveAfterReadFlag))
 	url := ctx.String(cmd.GetFlagName(cmd.HttpClientFlag))
-	req := message.QueryGeneralMessageRequest{
+	req := message.QueryBasicMessageRequest{
 		DID:             ctx.String(cmd.GetFlagName(cmd.FromDID)),
 		Latest:          latest,
 		RemoveAfterRead: rar,
@@ -314,9 +314,9 @@ func queryMsg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("==============general message==============")
+	fmt.Println("==============basic message==============")
 	fmt.Printf("%s\n", respbts)
-	fmt.Println("==============general message==============")
+	fmt.Println("==============basic message==============")
 	return nil
 }
 

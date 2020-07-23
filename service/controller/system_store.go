@@ -195,19 +195,19 @@ func (s *SystemController) DeleteConnection(myDID, theirDID string) error {
 	return s.store.Put(key, data)
 }
 
-func (s *SystemController) SaveGeneralMsg(m *message.BasicMessage, send bool) error {
+func (s *SystemController) SaveBasicMsgToStore(m *message.BasicMessage, send bool) error {
 	var did string
 	if send {
 		did = m.Connection.MyDid
 	} else {
 		did = m.Connection.TheirDid
 	}
-	key := []byte(fmt.Sprintf("%s_%s", utils.GeneralMsgKey, did))
+	key := []byte(fmt.Sprintf("%s_%s", utils.BasicMsgKey, did))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return err
 	}
-	rec := new(message.GeneralMsgRec)
+	rec := new(message.BasicMsgRec)
 	if b {
 		data, err := s.store.Get(key)
 		if err != nil {
@@ -228,8 +228,8 @@ func (s *SystemController) SaveGeneralMsg(m *message.BasicMessage, send bool) er
 	return s.store.Put(key, data)
 }
 
-func (s *SystemController) QueryGeneraMsg(did string, latest bool, removeAfterRead bool) ([]message.BasicMessage, error) {
-	key := []byte(fmt.Sprintf("%s_%s", utils.GeneralMsgKey, did))
+func (s *SystemController) QueryBasicMsgFromStore(did string, latest bool, removeAfterRead bool) ([]message.BasicMessage, error) {
+	key := []byte(fmt.Sprintf("%s_%s", utils.BasicMsgKey, did))
 	b, err := s.store.Has(key)
 	if err != nil {
 		return nil, err
@@ -241,7 +241,7 @@ func (s *SystemController) QueryGeneraMsg(did string, latest bool, removeAfterRe
 	if err != nil {
 		return nil, err
 	}
-	rec := new(message.GeneralMsgRec)
+	rec := new(message.BasicMsgRec)
 	err = json.Unmarshal(data, rec)
 	if err != nil {
 		return nil, err

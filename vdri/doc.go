@@ -6,7 +6,7 @@ const (
 	ConnectionRequestSpec   = "spec/connections/" + Version + "/request"
 	ConnectionResponseSpec  = "spec/connections/" + Version + "/response"
 	ConnectionACKSpec       = "spec/connections/" + Version + "/ack"
-	BasicMsgSpec            = "spec/didcomm/" + Version + "/generalmessage"
+	BasicMsgSpec            = "spec/didcomm/" + Version + "/basicmessage"
 	ProposalCredentialSpec  = "spec/issue-credential/" + Version + "/propose-credential"
 	OfferCredentialSpec     = "spec/issue-credential/" + Version + "/offer-credential"
 	RequestCredentialSpec   = "spec/issue-credential/" + Version + "/request-credential"

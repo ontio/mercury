@@ -20,7 +20,7 @@ const (
 	InvitationKey    = "Invitation"
 	ConnectionReqKey = "ConnectionReq"
 	ConnectionKey    = "Connection"
-	GeneralMsgKey    = "General"
+	BasicMsgKey      = "Basic"
 	ACK_SUCCEED      = "succeed"
 	ACK_FAILED       = "failed"
 )

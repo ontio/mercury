@@ -28,7 +28,7 @@ const (
 	RequestPresentationResolved
 )
 
-type GeneralMsgRec struct {
+type BasicMsgRec struct {
 	Msglist []BasicMessage `json:"msglist"`
 }
 
