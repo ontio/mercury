@@ -638,5 +638,5 @@ Alice的service agent在收到presentation后,需要向service agent发送ACK.
 
 ## 4. Envelop and Encrypt
 
-[Envelop and Encrypt]: ./Forward&amp;amp;encrypt.md
+[Envelop and Encrypt](https://git.ont.io/ontid/otf/src/master/doc/Forward&encrypt.md)
 
