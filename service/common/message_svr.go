@@ -67,25 +67,20 @@ func (m *MsgService) popMessage() {
 }
 
 func (m *MsgService) SendMsg(msg OutboundMsg) {
-
-	//1. resolve the router
 	conn := msg.Conn
 	routerList := MergeRouter(conn.MyRouter, conn.TheirRouter)
 	nextRouter, err := m.GetNextRouter(routerList)
 	if err != nil {
-		log.Errorf("error on sendmsg:%s\n", err.Error())
+		log.Errorf("error on sendMsg:%s\n", err.Error())
 		return
 	}
-	//2. check need forward message
-	//f := m.NeedForwardMsg(nextrouter, routerlist)
 	var url string
-	//if f {
 	url, err = m.GetServiceURLByRouter(nextRouter, msg.Msg.MessageType)
 	if err != nil {
-		log.Errorf("error on sendmsg:%s\n", err.Error())
+		log.Errorf("error on sendMsg:%s\n", err.Error())
 		return
 	}
-	log.Infof("===SendMsg messagetype:%d", msg.Msg.MessageType)
+	log.Infof("===SendMsg messageType:%d", msg.Msg.MessageType)
 	log.Infof("===SendMsg url:%s", url)
 	var sendData []byte
 	if m.enableEnvelop {
@@ -93,7 +88,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		if !msg.IsForward {
 			mData, err := json.Marshal(msg.Msg.Content)
 			if err != nil {
-				log.Errorf("json marshal sendmsg:%s", err)
+				log.Errorf("json marshal sendMsg:%s", err)
 				return
 			}
 			messageData := &packager.MessageData{
@@ -131,7 +126,7 @@ func (m *MsgService) SendMsg(msg OutboundMsg) {
 		}
 		sendData, err = m.packager.PackData(msg)
 		if err != nil {
-			log.Errorf("err while sendmsg:%s\n", err)
+			log.Errorf("err while sendMsg:%s\n", err)
 			return
 		}
 	} else {
@@ -179,18 +174,17 @@ func (m *MsgService) GetServiceURLByRouter(router string, msgType MessageType) (
 }
 
 func (m *MsgService) GetNextRouter(routers []string) (string, error) {
-	mydid := m.Cfg.SelfDID
+	myDid := m.Cfg.SelfDID
 	//if the last one is myself
-	if strings.EqualFold(mydid, utils.CutDId(routers[len(routers)-1])) {
+	if strings.EqualFold(myDid, utils.CutDId(routers[len(routers)-1])) {
 		return routers[len(routers)-1], nil
 	}
-
-	idx, err := RouterLastIndexOf(mydid, routers)
+	idx, err := RouterLastIndexOf(myDid, routers)
 	if err != nil {
-		log.Errorf("error on sendmsg:%s\n", err.Error())
+		log.Errorf("error on sendMsg:%s\n", err.Error())
 		return "", err
 	}
-	if strings.EqualFold(mydid, utils.CutDId(routers[idx+1])) {
+	if strings.EqualFold(myDid, utils.CutDId(routers[idx+1])) {
 		return routers[idx+2], nil
 	}
 	return routers[idx+1], nil

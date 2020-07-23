@@ -73,9 +73,7 @@ func startAgent(ctx *cli.Context) {
 	if ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)) {
 		common.EnablePackage = true
 	}
-
-	selfdid := ctx.String(cmd.GetFlagName(cmd.SelfDIDFlag))
-
+	selfDid := ctx.String(cmd.GetFlagName(cmd.SelfDIDFlag))
 	ip := ctx.String(cmd.GetFlagName(cmd.HttpIpFlag))
 	prov := store.NewProvider(cmd.DEFAULT_STORE_DIR)
 	db, err := prov.OpenStore(cmd.DEFAULT_STORE_DIR)
@@ -85,9 +83,9 @@ func startAgent(ctx *cli.Context) {
 	cfg := &config.Cfg{
 		Port:    port,
 		Ip:      ip,
-		SelfDID: selfdid,
+		SelfDID: selfDid,
 	}
-	ontVdri := ontdid.NewOntVDRI(ontSdk, account, selfdid)
+	ontVdri := ontdid.NewOntVDRI(ontSdk, account, selfDid)
 	msgSvr := common.NewMessageService(ontVdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)), cfg)
 	r := service.NewApiRouter(ecdsa.New(ontSdk, account), db, msgSvr, ontVdri)
 	log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)

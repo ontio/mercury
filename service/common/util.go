@@ -170,8 +170,8 @@ func getMsgObjectByType(messageType MessageType) (message.RequestInf, error) {
 	return req, nil
 }
 
-func MergeRouter(myrouters, theirrouters []string) []string {
-	return append(myrouters, reverseRouter(theirrouters)...)
+func MergeRouter(myRouters, theirRouters []string) []string {
+	return append(myRouters, reverseRouter(theirRouters)...)
 }
 
 func reverseRouter(routers []string) []string {

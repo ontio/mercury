@@ -102,10 +102,8 @@ func (s SystemController) GetConnectionRequest(did, id string) (*message.Connect
 }
 
 func (s *SystemController) SaveConnection(con message.Connection) error {
-	log.Info("===GetConnection:mydid:%s,theirdid:%s===", con.MyDid, con.TheirDid)
-
+	log.Infof("===GetConnection:myDid:%s,theirDid:%s===", con.MyDid, con.TheirDid)
 	cr := new(message.ConnectionRec)
-
 	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, con.MyDid))
 	exist, err := s.store.Has(key)
 	if err != nil {
@@ -158,7 +156,7 @@ func (s *SystemController) UpdateConnectionRequest(did, id string, state message
 }
 
 func (s *SystemController) GetConnection(myDID, theirDID string) (message.Connection, error) {
-	log.Info("===GetConnection:mydid:%s,theirdid:%s===", myDID, theirDID)
+	log.Infof("===GetConnection:myDid:%s,theirDid:%s===", myDID, theirDID)
 	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, myDID))
 	data, err := s.store.Get(key)
 	if err != nil {
