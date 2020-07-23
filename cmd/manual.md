@@ -94,7 +94,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 ### 2.3 发送一个通用消息
 ```
 
-./agent-otf httpclient sendmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --send-msg '{
+./agent-otf httpclient sendbasicmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --send-msg '{
     "content":"test agent",
     "connection": {
         "my_did": "did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr",
@@ -167,4 +167,10 @@ Password:
 ==============presentation==============
 {"code":0,"msg":"","data":{"message_type":0,"content":{"formats":[{"attach_id":"1","format":"base64"}],"presentations~attach":[{"@id":"1","lastmod_time":"2020-07-17T15:21:23.109729+08:00","data":{"base64":"eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6VEw5ZDlKZGRleVVaem56OWVpVE53TEVXUUFpcFVMcjRtciNrZXlzLTEiLCJ0eXAiOiJKV1QifQ==.eyJpc3MiOiJkaWQ6b250OlRMOWQ5SmRkZXlVWnpuejllaVROd0xFV1FBaXBVTHI0bXIiLCJhdWQiOiIiLCJqdGkiOiJ1cm46dXVpZDoyYjlmYWYwYS1kY2Q3LTQ2YTEtOGMwMC1mNGRkY2FmYTEyNjEiLCJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwib3RmIl0sInByb29mIjp7ImNyZWF0ZWQiOiIyMDIwLTA3LTE3VDA3OjIxOjIyWiIsInByb29mUHVycG9zZSI6ImFzc2VydGlvbk1ldGhvZCJ9fX0=.7Smhyzps3mt/LOQxCgvAbK8JgawMAwXoY7t4Un+6x8r4hdaVOPfngoebmUrhRiVWlIDqpVm7MNkq1f7t+V3BCA=="}}]}}}
 ==============presentation==============
+```
+
+### 2.8 查询BasicMsg
+
+```
+./agent-otf httpclient querybasicmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF
 ```

@@ -51,8 +51,8 @@ var HttpClientCmd = cli.Command{
 			},
 		},
 		{
-			Action:      sendMsg,
-			Name:        "sendmsg",
+			Action:      sendBasicMsg,
+			Name:        "sendibasicmsg",
 			Usage:       "send basic msg",
 			Description: "send basic msg data",
 			Flags: []cli.Flag{
@@ -65,8 +65,8 @@ var HttpClientCmd = cli.Command{
 			},
 		},
 		{
-			Action:      queryMsg,
-			Name:        "query basic msg",
+			Action:      queryBasicMsg,
+			Name:        "querybasicmsg",
 			Usage:       "query basic msg",
 			Description: "query basic message",
 			Flags: []cli.Flag{
@@ -231,7 +231,7 @@ func connection(ctx *cli.Context) error {
 	return nil
 }
 
-func sendMsg(ctx *cli.Context) error {
+func sendBasicMsg(ctx *cli.Context) error {
 	data := ctx.String(cmd.GetFlagName(cmd.SendMsgFlag))
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	basicMsg := &message.BasicMessage{}
@@ -278,7 +278,7 @@ func sendMsg(ctx *cli.Context) error {
 	return nil
 }
 
-func queryMsg(ctx *cli.Context) error {
+func queryBasicMsg(ctx *cli.Context) error {
 	restUrl := ctx.String(cmd.GetFlagName(cmd.RpcUrlFlag))
 	latest := ctx.Bool(cmd.GetFlagName(cmd.ReadLatestMsgFlag))
 	rar := ctx.Bool(cmd.GetFlagName(cmd.RemoveAfterReadFlag))

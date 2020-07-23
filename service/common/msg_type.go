@@ -38,13 +38,12 @@ type Message struct {
 }
 
 const (
-	InviteApi          = "/api/v1/invitation"
-	ConnectRequestApi  = "/api/v1/connectionrequest"
-	ConnectResponseApi = "/api/v1/connectionresponse"
-	ConnectAckApi      = "/api/v1/connectionack"
-	SendDisconnectApi  = "/api/v1/senddisconnect"
-	DisconnectApi      = "/api/v1/disconnect"
-
+	InviteApi                    = "/api/v1/invitation"
+	ConnectRequestApi            = "/api/v1/connectionrequest"
+	ConnectResponseApi           = "/api/v1/connectionresponse"
+	ConnectAckApi                = "/api/v1/connectionack"
+	SendDisconnectApi            = "/api/v1/senddisconnect"
+	DisconnectApi                = "/api/v1/disconnect"
 	SendProposalCredentialReqApi = "/api/v1/sendproposalcredential"
 	ProposalCredentialReqApi     = "/api/v1/proposalcredential"
 	OfferCredentialApi           = "/api/v1/offercredential"
@@ -54,17 +53,15 @@ const (
 	CredentialAckApi             = "/api/v1/credentialack"
 	DeleteCredetialApi           = "/api/v1/deletecredential"
 	QueryCredentialApi           = "/api/v1/querycredential"
-
-	SendRequestPresentationApi = "/api/v1/sendrequestpresentation"
-	RequestPresentationApi     = "/api/v1/requestpresentation"
-	PresentationProofApi       = "/api/v1/presentproof"
-	PresentationAckApi         = "/api/v1/presentationack"
-	QueryPresentationApi       = "/api/v1/querypresentation"
-	DeletePresentationApi      = "/api/v1/deletepresentation"
-
-	SendBasicMsgApi    = "/api/v1/sendbasicmsg"
-	ReceiveBasicMsgApi = "/api/v1/receivebasicmsg"
-	QueryBasicMsgApi   = "/api/v1/querybasicmsg"
+	SendRequestPresentationApi   = "/api/v1/sendrequestpresentation"
+	RequestPresentationApi       = "/api/v1/requestpresentation"
+	PresentationProofApi         = "/api/v1/presentproof"
+	PresentationAckApi           = "/api/v1/presentationack"
+	QueryPresentationApi         = "/api/v1/querypresentation"
+	DeletePresentationApi        = "/api/v1/deletepresentation"
+	SendBasicMsgApi              = "/api/v1/sendbasicmsg"
+	ReceiveBasicMsgApi           = "/api/v1/receivebasicmsg"
+	QueryBasicMsgApi             = "/api/v1/querybasicmsg"
 )
 
 func GetApiName(msgType MessageType) string {
