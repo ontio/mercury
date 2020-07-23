@@ -42,8 +42,7 @@ Message sample
     "@id": "uuid-of-msg",
     "label": "Alice",
     "did": "did:ont:alicedid",
-    "router":["did:ont:cloudAgent"]
-    "service_id":"serviceid"
+    "router":["did:ont:cloudAgent#serviceid"]
 }
 ```
 
@@ -74,11 +73,9 @@ Message sample
   "label": "Bob",
   "connection": {
     "my_did": "did:ont:Bobdid",
-    "my_router":["did:ont:cloudAgent"]  ,
-  	"my_service_id":"BobServiceID",
+    "my_router":["did:ont:cloudAgent#id"]  ,
     "their_did":"did:ont:Alicedid",
-     "their_router":["did:ont:cloudAgent"]  ,
-    "their_service_id":"AliceServiceID"  
+     "their_router":["did:ont:cloudAgent#id"]  ,
   },
   "invitation_id":"invitation_id",
 }

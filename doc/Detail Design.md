@@ -225,11 +225,11 @@ Alice 接收到connection ACK后:
 
 
 
-### 3.2 basic Message 协议
+### 3.2 General Message 协议
 
 在Alice 和Bob建立链接后, 可以相互发送通用的message
 
-![](./images/basicmsg.png)
+![](./images/generalmsg.png)
 
 
 
@@ -633,4 +633,10 @@ Alice的service agent在收到presentation后,需要向service agent发送ACK.
       }
 }
 ```
+
+
+
+## 4. Envelop and Encrypt
+
+[Envelop and Encrypt]: ./Forward&amp;amp;encrypt.md
 
