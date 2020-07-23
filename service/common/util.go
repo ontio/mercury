@@ -68,6 +68,7 @@ func ParseMessage(enablePackage bool, ctx *gin.Context, packager *ecdsa.Packager
 					MessageType: TransferForwardMsgType(messageType),
 					Content:     messageData,
 				},
+				Conn:*connections,
 				IsForward: true,
 			}
 			err = msgSvr.HandleOutBound(outMsg)
