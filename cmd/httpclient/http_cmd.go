@@ -199,7 +199,7 @@ func connection(ctx *cli.Context) error {
 	pack := initPackager(restUrl)
 	messageData, err := pack.PackMessage(&packager.MessageData{
 		Data:    reqData,
-		MsgType: int(common.ConnectionResponseType),
+		MsgType: int(common.ConnectionRequestType),
 	}, ctx.String(cmd.GetFlagName(cmd.ToDID)))
 	if err != nil {
 		return err
