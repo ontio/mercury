@@ -155,7 +155,7 @@ func (p *PresentationController) RequestPresentation(ctx *gin.Context) {
 			MessageType: common.PresentationType,
 			Content:     presentation,
 		},
-		Conn: common.ReverseConnection(presentation.Connection),
+		Conn: common.ReverseConnection(req.Connection),
 	}
 	err = p.msgSvr.HandleOutBound(outMsg)
 	if err != nil {
