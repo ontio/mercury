@@ -165,7 +165,8 @@ func getMsgObjectByType(messageType MessageType) (message.RequestInf, error) {
 		req = &message.DeleteCredentialRequest{}
 	case DeletePresentationType:
 		req = &message.DeletePresentationRequest{}
-
+	case QueryConnectionsType:
+		req = &message.QueryConnectionsRequest{}
 	default:
 		return nil, fmt.Errorf("msg type err:%v", messageType)
 	}

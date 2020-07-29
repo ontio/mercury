@@ -274,3 +274,18 @@ func (s *SystemController) QueryBasicMsgFromStore(did string, latest bool, remov
 	}
 	return retlist, nil
 }
+
+func (s *SystemController) QueryConnectsFromStore(did string) (map[string]message.Connection, error) {
+	key := []byte(fmt.Sprintf("%s_%s", utils.ConnectionKey, did))
+	data, err := s.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	rec := &message.ConnectionRec{}
+	err = json.Unmarshal(data, rec)
+	if err != nil {
+		return nil, err
+	}
+	return rec.Connections, nil
+
+}

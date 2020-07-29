@@ -86,6 +86,12 @@ func (s *SystemController) Routes() common.Routes {
 			Pattern:     common.QueryBasicMsgApi,
 			HandlerFunc: s.QueryBasicMsg,
 		},
+		{
+			Name:        "QueryConnections",
+			Method:      strings.ToUpper("Post"),
+			Pattern:     common.QueryConnectionsApi,
+			HandlerFunc: s.QueryConnections,
+		},
 	}
 }
 
@@ -440,6 +446,30 @@ func (s *SystemController) QueryBasicMsg(ctx *gin.Context) {
 		return
 	}
 	ret, err := s.QueryBasicMsgFromStore(req.DID, req.Latest, req.RemoveAfterRead)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	resp.Response(http.StatusOK, message.SUCCEED_CODE, "", ret)
+	return
+}
+func (s *SystemController) QueryConnections(ctx *gin.Context) {
+	resp := common.Gin{C: ctx}
+	data, isForward, err := common.ParseMessage(common.EnablePackage, ctx, s.packager, common.QueryConnectionsType, s.msgSvr)
+	if err != nil {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
+		return
+	}
+	if isForward {
+		resp.Response(http.StatusOK, message.SUCCEED_CODE, "", nil)
+		return
+	}
+	req, ok := data.(*message.QueryConnectionsRequest)
+	if !ok {
+		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, fmt.Errorf("data convert err").Error(), nil)
+		return
+	}
+	ret, err := s.QueryConnectsFromStore(req.DID)
 	if err != nil {
 		resp.Response(http.StatusOK, message.ERROR_CODE_INNER, err.Error(), nil)
 		return

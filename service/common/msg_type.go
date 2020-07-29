@@ -30,6 +30,7 @@ const (
 	SendBasicMsgType
 	ReceiveBasicMsgType
 	QueryBasicMessageType
+	QueryConnectionsType
 )
 
 type Message struct {
@@ -62,6 +63,7 @@ const (
 	SendBasicMsgApi              = "/api/v1/sendbasicmsg"
 	ReceiveBasicMsgApi           = "/api/v1/receivebasicmsg"
 	QueryBasicMsgApi             = "/api/v1/querybasicmsg"
+	QueryConnectionsApi          = "/api/v1/queryconnections"
 )
 
 func GetApiName(msgType MessageType) string {
@@ -102,6 +104,8 @@ func GetApiName(msgType MessageType) string {
 		return QueryCredentialApi
 	case QueryPresentationType:
 		return QueryPresentationApi
+	case QueryConnectionsType:
+		return QueryConnectionsApi
 	default:
 		return ""
 	}

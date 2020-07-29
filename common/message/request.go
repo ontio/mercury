@@ -318,3 +318,11 @@ type ForwardMessageRequest struct {
 func (self *ForwardMessageRequest) GetConnection() *Connection {
 	return &self.Connection
 }
+
+type QueryConnectionsRequest struct {
+	DID string `json:"did"`
+}
+
+func (q *QueryConnectionsRequest) GetConnection() *Connection {
+	return nil
+}
