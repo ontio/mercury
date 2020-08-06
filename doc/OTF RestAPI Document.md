@@ -2,11 +2,11 @@
 
 [TOC]
 
-## 1. 简介
+## 1. Overview
 
-本文档是对cloud agent开放与mobile agent的交互RESTful API的介绍
+This document the introduction for cloud agent RESTful API.
 
-**Note**: 如果启动时设置了参数 ```--enable-pack```, 所有参数必须以加密并签名的方式传输,如果要使用swagger或postman时, 不要设置改参数,以便于调试
+**Note**: The startup parameter ```--enable-pack```, all messages will be encrypt and packed to envelope .
 
 
 
@@ -373,9 +373,9 @@ Request body example:
 }
 ```
 
-**latest**: true : 返回最新一条消息, false:返回所有消息
+**latest**: true : return the latest message, false:return all messages.
 
-**remove_after_read**:true 在cloud agent 的存储中删除返回的数据
+**remove_after_read**:true :remove the message in storage.
 
 Response
 
@@ -418,7 +418,7 @@ Request body example:
 
 ### 2.10  send disconnect
 
-删除一个connection
+Delete connection
 
 POST
 
