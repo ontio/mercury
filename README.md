@@ -1,10 +1,9 @@
 # Ontology DID Communication Framework(Nezha)
 
 
-English | [中文](README_CN.md)
+English | [中文](README_cn.md)
 
 Ontology DID communication framework is a trusted, decentralized peer to peer communication framework, based on DID, we also define protocols for connection , basic message, verifiable credential and presentation proofs.
-
 
 
 ## Features
