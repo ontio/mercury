@@ -1,35 +1,43 @@
-# mercury
+# Ontology DID Communication Framework(Nezha)
 
-# Ontology DID Communication
 
-[TOC]
+English | [中文](README_CN.md)
 
-## 简介
-
-[Ontology DID Communication Framework](../doc/Detail Design.md)
+Ontology DID communication framework is a trusted, decentralized peer to peer communication framework, based on DID, we also define protocols for connection , basic message, verifiable credential and presentation proofs.
 
 
 
-## 使用
+## Features
 
-### build project
+- Connection protocol based on DID
+- Encrypted channel message exchange 
+- Verifiable Credential protocol
+- Presentation proof protocol
+- Support message routing 
+- Scalable to support multiple DID systems 
 
-1. clone 项目
-2. 在项目根目录下执行 ```./make```
+## Detail Design
+
+[Detail design](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design.md)
 
 
-### Start project
 
-启动命令
+## How to use
 
+### Build binary file
+
+1. git clone project
+2. use command  ``` ./make```
+
+### Run agent 
+
+Use CLI
 
 ```
 ./agent-otf
 ```
 
-
-参数:
-
+CLI parameters:
 
 ```
 GLOBAL OPTIONS:
@@ -44,29 +52,20 @@ GLOBAL OPTIONS:
 
 ```
 
-参数说明:
-
-**loglevel**:日志级别
-
-**rest-ip**:启动rest服务的ip地址,默认为127.0.0.1
-
-**http-port**:rest服务的端口, 默认为8080
-
-**chain-addr**:链接ontology节点的rpc地址,默认为polaris测试网地址
-
-**enable-https**:是否开启https
-
-**enable-package**:是否开启消息加密
+By default , agent will connect polaris (ontology testnet) for querying DID, you can change   ```chain-addr```  to connect mainnet node or you local sync node.
 
 
 
-### did 和 client
+### Tools
 
-请参照: [http_cmd](https://git.ont.io/ontid/otf/src/master/cmd/manual.md)
+We provide some CLI to help create did and other functions. 
+
+Detail please refer to :[Tools cli](https://git.ont.io/ontid/otf/src/master/cmd/manual.md)
 
 
 
-### Rest API
+### Restful API
 
-请参照[RestAPI](https://git.ont.io/ontid/otf/src/master/doc/OTF%20RestAPI%20Document.md)
+Agent also provides restful APIs for clients
 
+Detail please refer to :[Restful API](https://git.ont.io/ontid/otf/src/master/doc/OTF%20RestAPI%20Document.md)
