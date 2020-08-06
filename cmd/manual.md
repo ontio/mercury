@@ -1,13 +1,13 @@
 # agent-otf cli manual
 
 
-## 目录
+## Contents
 
 [TOC]
 
 ##  1. did cmd
 
-### 1.1 生成并绑定一个新的DID
+### 1.1 Create and bind a new DID
 
 ```
 
@@ -19,7 +19,7 @@ did:  did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ
 
 ```
 
-### 1.2 为DID增加一个Service endPoint
+### 1.2 Add a new Service endPoint for DID
 
 
 ```
@@ -31,7 +31,7 @@ txHash:8d5ddcd9bc7050748336de8c81da689f9798c66b687c3eefa835337276a9272f
 
 ```
 
-### 1.3 更新指定DID的 Service endPoint
+### 1.3 Update DID Service endPoint
 
 ```
 ./agent-otf did updatesvr --did did:ont:TWXpoTiCedMBUHiyrPtpwi171yp4gDSPyC --service-id "1" --type "1" --endpoint "http://127.0.0.1:8089" --index 1
@@ -41,7 +41,7 @@ txHash:44f5dc80012f516835b014afd4dbbe9cb255e1c6093e4a034d72133497ba7dc8
 
 ```
 
-### 1.4 查询DID 对应的DID doc
+### 1.4 Query DID doc
 
 ```
 
@@ -51,7 +51,7 @@ txHash:44f5dc80012f516835b014afd4dbbe9cb255e1c6093e4a034d72133497ba7dc8
 doc: &{[https://www.w3.org/ns/did/v1 https://ontid.ont.io/did/v1] did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ [map[controller:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ id:did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1 publicKeyHex:03afb755bf9c9a3a7577b6d210f07aeac2730ff9800b7af443917be80ef1ddd52f type:EcdsaSecp256r1VerificationKey2019]] [did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#keys-1] <nil> <nil> [{did:ont:TT2sekt32e4pDNrjmjFsJYcXJhGaiiurfQ#1 1 http://127.0.0.1:8080}] <nil> 1.59480394e+09 1.594804114e+09 }
 ```
 
-### 1.5 查询DID对应的 Service end points
+### 1.5 Query DID Service end points
 
 ```
 
@@ -62,9 +62,9 @@ endPoints:[http://127.0.0.1:8080]
 ```
 
 ## 2、http_client cli cmd
-client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
+client cli is an agent simulator cli:
 
-### 2.1 创建一个 Invitation
+### 2.1 Create Invitation
 ```
 
 
@@ -73,7 +73,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 
 ```
 
-### 2.2 创建链接
+### 2.2 Create connection
 
 ```
 
@@ -91,7 +91,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 }'
 ```
 
-### 2.3 发送一个通用消息
+### 2.3 Send a basic message
 ```
 
 ./agent-otf httpclient sendbasicmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --send-msg '{
@@ -105,7 +105,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 }'
 ```
 
-### 2.4 请求凭证
+### 2.4 Request credential
 ```
 ./agent-otf httpclient reqcredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-credential '{
     "@type":"spec/issue-credential/1.0/request-credential",
@@ -134,7 +134,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 }'
 ```
 
-### 2.5 请求presentation
+### 2.5 Request presentation
 ```
 ./agent-otf httpclient reqpresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --req-presentation '{
     "@type":"spec/issue-credential/1.0/propose-credential",
@@ -149,7 +149,7 @@ client cli是模拟一个用户的终端agent行为的cli,提供如下功能:
 }'
 ```
 
-### 2.6 查询一个凭证
+### 2.6 Query credential
 ```
 ./agent-otf httpclient querycredential --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --credential-id 11
 Password:
@@ -158,7 +158,7 @@ Password:
 ==============credential==============
 ```
 
-### 2.7 查询一个Presentation
+### 2.7 Query a Presentation
 
 ```
 ./agent-otf httpclient querypresentation --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF --presentation-id 15
@@ -169,7 +169,7 @@ Password:
 ==============presentation==============
 ```
 
-### 2.8 查询BasicMsg
+### 2.8 Query BasicMsg
 
 ```
 ./agent-otf httpclient querybasicmsg --from-did did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr --to-did did:ont:TQFmfrbQboDUSeV989Zp867r6Dawb1MPSF
