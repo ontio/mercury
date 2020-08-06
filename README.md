@@ -17,7 +17,7 @@ Ontology DID communication framework is a trusted, decentralized peer to peer co
 
 ## Detail Design
 
-[Detail design](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design.md)
+[Detail design](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design_en.md)
 
 
 
