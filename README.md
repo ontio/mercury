@@ -17,7 +17,7 @@ Ontology Mercury is a trusted, decentralized, DID based peer to peer communicati
 
 ## Detail Design
 
-[Detail design](./doc/Detail Design_en.md)
+[Detail design](doc/Detail_Design_en.md)
 
 
 
@@ -67,4 +67,4 @@ Detail please refer to :[Tools cli](./cmd/manual.md)
 
 Agent also provides restful APIs for clients
 
-Detail please refer to :[Restful API](./doc/OTF RestAPI Document.md)
+Detail please refer to :[Restful API](doc/RestAPI_Document.md)

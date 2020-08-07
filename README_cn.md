@@ -4,7 +4,7 @@
 
 ## 简介
 
-[Ontology DID Communication Framework](./doc/Detail Design.md)
+[Ontology DID Communication Framework](doc/Detail_Design.md)
 
 
 
@@ -66,5 +66,5 @@ GLOBAL OPTIONS:
 
 ### Rest API
 
-请参照: [RestAPI](./doc/OTF RestAPI Document.md)
+请参照: [RestAPI](./doc/RestAPI_Document.md)
 
