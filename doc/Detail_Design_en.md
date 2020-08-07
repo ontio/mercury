@@ -596,4 +596,4 @@ User will send the ACK after received the presentation from service agent.
 
 ## 4. Envelop and Encrypt
 
-Please refer to [Envelop and Encrypt](https://git.ont.io/ontid/otf/src/master/doc/Envelop%20and%20Encrypt%20Message_en.md)
+Please refer to [Envelop and Encrypt](./Envelop&Encrypt_Message_en.md)

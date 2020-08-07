@@ -8,7 +8,7 @@ For some cases, agent may not be able to connect to other directly due to networ
 
 ## 2. Solution
 
-We define a Envelop format to contain the messages between agents.
+We define an envelop format to contain the messages between agents.
 
 ```
 {
