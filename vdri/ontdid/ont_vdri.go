@@ -1,14 +1,32 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ * The ontology is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The ontology is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ontdid
 
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/service/common"
-	"git.ont.io/ontid/otf/service/controller"
-	"git.ont.io/ontid/otf/store"
-	"git.ont.io/ontid/otf/utils"
-	"git.ont.io/ontid/otf/vdri"
+	"github.com/ontio/mercury/common/message"
+	"github.com/ontio/mercury/service/common"
+	"github.com/ontio/mercury/service/controller"
+	"github.com/ontio/mercury/store"
+	"github.com/ontio/mercury/utils"
+	"github.com/ontio/mercury/vdri"
 	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"strings"

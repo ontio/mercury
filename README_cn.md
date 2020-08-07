@@ -1,10 +1,10 @@
-# Ontology DID Communication
+# Ontology Mercury
 
 [TOC]
 
 ## 简介
 
-[Ontology DID Communication Framework](../doc/Detail Design.md)
+[Ontology DID Communication Framework](./doc/Detail Design.md)
 
 
 
@@ -60,11 +60,11 @@ GLOBAL OPTIONS:
 
 ### did 和 client
 
-请参照: [http_cmd](https://git.ont.io/ontid/otf/src/master/cmd/manual.md)
+请参照: [http_cmd](./cmd/manual.md)
 
 
 
 ### Rest API
 
-请参照[RestAPI](https://git.ont.io/ontid/otf/src/master/doc/OTF%20RestAPI%20Document.md)
+请参照: [RestAPI](./doc/OTF RestAPI Document.md)
 

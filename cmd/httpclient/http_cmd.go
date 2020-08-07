@@ -1,15 +1,33 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ * The ontology is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The ontology is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package httpclient
 
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/service/common"
+	"github.com/ontio/mercury/service/common"
 
-	"git.ont.io/ontid/otf/cmd"
-	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/common/packager"
-	"git.ont.io/ontid/otf/common/packager/ecdsa"
-	"git.ont.io/ontid/otf/utils"
+	"github.com/ontio/mercury/cmd"
+	"github.com/ontio/mercury/common/message"
+	"github.com/ontio/mercury/common/packager"
+	"github.com/ontio/mercury/common/packager/ecdsa"
+	"github.com/ontio/mercury/utils"
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/urfave/cli"
 )

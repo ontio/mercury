@@ -1,4 +1,4 @@
-module git.ont.io/ontid/otf
+module github.com/ontio/mercury
 
 go 1.14
 

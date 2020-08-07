@@ -1,9 +1,9 @@
-# Ontology DID Communication Framework(Nezha)
+# Ontology Mercury
 
 
 English | [中文](README_cn.md)
 
-Ontology DID communication framework is a trusted, decentralized peer to peer communication framework, based on DID, we also define protocols for connection , basic message, verifiable credential and presentation proofs.
+Ontology Mercury is a trusted, decentralized, DID based peer to peer communication framework, based on DID, we also define protocols for connection , basic message, verifiable credential and presentation proofs.
 
 
 ## Features
@@ -17,7 +17,7 @@ Ontology DID communication framework is a trusted, decentralized peer to peer co
 
 ## Detail Design
 
-[Detail design](https://git.ont.io/ontid/otf/src/master/doc/Detail%20Design_en.md)
+[Detail design](./doc/Detail Design_en.md)
 
 
 
@@ -33,7 +33,7 @@ Ontology DID communication framework is a trusted, decentralized peer to peer co
 Use CLI
 
 ```
-./agent-otf
+./mercury
 ```
 
 CLI parameters:
@@ -59,7 +59,7 @@ By default , agent will connect polaris (ontology testnet) for querying DID, you
 
 We provide some CLI to help create did and other functions. 
 
-Detail please refer to :[Tools cli](https://git.ont.io/ontid/otf/src/master/cmd/manual.md)
+Detail please refer to :[Tools cli](./cmd/manual.md)
 
 
 
@@ -67,4 +67,4 @@ Detail please refer to :[Tools cli](https://git.ont.io/ontid/otf/src/master/cmd/
 
 Agent also provides restful APIs for clients
 
-Detail please refer to :[Restful API](https://git.ont.io/ontid/otf/src/master/doc/OTF%20RestAPI%20Document.md)
+Detail please refer to :[Restful API](./doc/OTF RestAPI Document.md)

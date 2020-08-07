@@ -3,14 +3,14 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"git.ont.io/ontid/otf/common/packager"
-	"git.ont.io/ontid/otf/utils"
+	"github.com/ontio/mercury/common/packager"
+	"github.com/ontio/mercury/utils"
 	"io/ioutil"
 	"strings"
 
-	"git.ont.io/ontid/otf/common/log"
-	"git.ont.io/ontid/otf/common/message"
-	"git.ont.io/ontid/otf/common/packager/ecdsa"
+	"github.com/ontio/mercury/common/log"
+	"github.com/ontio/mercury/common/message"
+	"github.com/ontio/mercury/common/packager/ecdsa"
 	"github.com/gin-gonic/gin"
 )
 

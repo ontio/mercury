@@ -1,8 +1,8 @@
-# Ontology DID Communication Framework
+# Ontology DID Communication Framework (Mercury)
 
 ## 1. 背景
 
-Ontology DID Communication Framework (ODCF) 是基于Ontology DID协议的点对点,去中心化可信的数字身份通信框架.
+Ontology DID Communication Framework (Mercury) 是基于Ontology DID协议的点对点,去中心化可信的数字身份通信框架.
 
 
 

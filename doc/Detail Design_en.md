@@ -1,8 +1,8 @@
-# Ontology DID Communication Framework Detail Design
+# Ontology DID Communication Framework Detail Design (Mercury)
 
 ## 1. Overview
 
-Ontology DID Communication Framework is a trusted, decentralized peer to peer DID communication framework.
+Ontology DID Communication Framework(Mercury) is a trusted, decentralized peer to peer DID communication framework.
 
 
 
