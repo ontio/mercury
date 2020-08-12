@@ -19,29 +19,16 @@
 package packager
 
 type Packager interface {
-	// PackMessage Pack a message for one or more recipients.
-	//
-	// Args:
-	//
-	// envelope: The message to pack
-	//
-	// Returns:
-	//
-	// []byte: The packed message
-	//
-	// error: error
-	PackMessage(envelope *Envelope) ([]byte, error)
-
-	// UnpackMessage Unpack a message.
-	//
-	// Args:
-	//
-	// encMessage: The encrypted message
-	//
-	// Returns:
-	//
-	// envelope: unpack message
-	//
-	// error: error
-	UnpackMessage(encMessage []byte) (*Envelope, error)
+	//PackConnection
+	PackConnection(data []byte, did string) (*MsgConnection, error)
+	//UnPackConnection
+	UnPackConnection(data *Envelope) (*MsgConnection, error)
+	//PackMessage
+	PackMessage(envelope *MessageData, destDid string) (*MessageData, error)
+	//UnpackMessage
+	UnpackMessage(data *MessageData, sourceDid string) (*MessageData, error)
+	//PackData
+	PackData(envelope *Envelope) ([]byte, error)
+	//UnPackData
+	UnPackData(enData []byte) (*Envelope, error)
 }

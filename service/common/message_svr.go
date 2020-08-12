@@ -184,7 +184,7 @@ func (m *MsgService) GetServiceURLByRouter(router string, msgType MessageType) (
 	if err != nil {
 		return "", err
 	}
-	endpoint, err := doc.GetServicePoint(router)
+	endpoint, err := doc.GetServicePoint(utils.CutRouter(router))
 	if err != nil {
 		return "", err
 	}

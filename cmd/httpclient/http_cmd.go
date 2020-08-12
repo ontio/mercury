@@ -70,7 +70,7 @@ var HttpClientCmd = cli.Command{
 		},
 		{
 			Action:      sendBasicMsg,
-			Name:        "sendibasicmsg",
+			Name:        "sendbasicmsg",
 			Usage:       "send basic msg",
 			Description: "send basic msg data",
 			Flags: []cli.Flag{

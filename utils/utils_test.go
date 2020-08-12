@@ -31,3 +31,8 @@ func TestGetPubKeyIndex(t *testing.T) {
 	index := GetIndex("did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr@1#2")
 	assert.Equal(t, index, "1")
 }
+
+func TestCutRouter(t *testing.T) {
+	router := CutRouter("did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr@1#2")
+	assert.Equal(t, router, "did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr#2")
+}

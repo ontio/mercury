@@ -89,6 +89,21 @@ func CutDId(did string) string {
 	return did
 }
 
+//did@index#svrIndex => did@svrIndex
+func CutRouter(router string) string {
+	index := strings.LastIndex(router, "@")
+	if index == -1 {
+		return router
+	} else {
+		svrIndex := strings.LastIndex(router, "#")
+		if svrIndex != -1 {
+			return router[:index] + router[svrIndex:]
+		} else {
+			return router[:index]
+		}
+	}
+}
+
 //Did format  did@index#svrIndex
 func GetIndex(did string) string {
 	index := strings.LastIndex(did, "@")

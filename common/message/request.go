@@ -26,7 +26,6 @@ type Invitation struct {
 	Label  string   `json:"label,omitempty"`
 	Did    string   `json:"did,omitempty"`
 	Router []string `json:"router"`
-	//ServiceId string   `json:"service_id,omitempty"`
 }
 
 func (self *Invitation) GetConnection() *Connection {
