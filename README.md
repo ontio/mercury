@@ -33,7 +33,7 @@ Ontology Mercury is a trusted, decentralized, DID based peer to peer communicati
 Use CLI
 
 ```
-./mercury
+./agent-mercury
 ```
 
 CLI parameters:

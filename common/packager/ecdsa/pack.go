@@ -24,9 +24,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/ontio/mercury/common/packager"
 	"github.com/ontio/mercury/utils"
-	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/ontio/ontology-crypto/ec"
 	"github.com/ontio/ontology-crypto/keypair"
 	"github.com/ontio/ontology-crypto/signature"

@@ -20,14 +20,20 @@ package ontdid
 
 import (
 	"fmt"
-	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
-	"github.com/ontio/ontology/common"
-	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
+
+	ontology_go_sdk "github.com/ontio/ontology-go-sdk"
+	"github.com/stretchr/testify/assert"
 )
 
 var testOntSdk *ontology_go_sdk.OntologySdk
 var testDefAcc *ontology_go_sdk.Account
+
+func FileExisted(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil || os.IsExist(err)
+}
 
 func Init() {
 	testOntSdk = ontology_go_sdk.NewOntologySdk()
@@ -35,7 +41,7 @@ func Init() {
 
 	var err error
 	var wallet *ontology_go_sdk.Wallet
-	if !common.FileExisted("./wallet.dat") {
+	if !FileExisted("./wallet.dat") {
 		wallet, err = testOntSdk.CreateWallet("./wallet.dat")
 		if err != nil {
 			fmt.Println("[CreateWallet] error:", err)

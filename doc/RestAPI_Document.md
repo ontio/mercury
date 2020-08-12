@@ -1,4 +1,4 @@
-# OTF RestAPI Document
+# Mercury RestAPI Document
 
 [TOC]
 

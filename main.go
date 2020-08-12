@@ -43,7 +43,7 @@ import (
 
 func setupAPP() *cli.App {
 	app := cli.NewApp()
-	app.Usage = "agent otf"
+	app.Usage = "agent mercury"
 	app.Action = startAgent
 	app.Flags = []cli.Flag{
 		cmd.LogLevelFlag,

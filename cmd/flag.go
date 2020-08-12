@@ -30,7 +30,7 @@ const (
 	DEFAULT_HTTPS_PORT            = "8443"
 	DEFAULT_HTTP_IP               = "127.0.0.1"
 	DEFAULT_LOG_FILE_PATH         = "./Log/"
-	DEFAULT_STORE_DIR             = "./db_otf/"
+	DEFAULT_STORE_DIR             = "./db_mercury/"
 	DEFAULT_BLOCK_CHAIN_REST_URL  = "http://polaris2.ont.io:20334"
 	DEFAULT_BLOCK_CHAIN_RPC_URL   = "http://polaris2.ont.io:20336"
 	MIN_TRANSACTION_GAS           = 20000

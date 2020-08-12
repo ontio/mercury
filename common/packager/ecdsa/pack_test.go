@@ -21,8 +21,9 @@ package ecdsa
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/ontio/ontology-crypto/keypair"
 	"testing"
+
+	"github.com/ontio/ontology-crypto/keypair"
 )
 
 func TestEncrypt(t *testing.T) {

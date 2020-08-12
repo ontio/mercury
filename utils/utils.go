@@ -21,15 +21,16 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ontio/mercury/common/message"
-	"github.com/ontio/mercury/store"
-	"github.com/google/uuid"
-	"github.com/howeyc/gopass"
-	sdk "github.com/ontio/ontology-go-sdk"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/howeyc/gopass"
+	"github.com/ontio/mercury/common/message"
+	"github.com/ontio/mercury/store"
+	sdk "github.com/ontio/ontology-go-sdk"
 )
 
 var Version = ""
@@ -81,14 +82,25 @@ func GenUUID() string {
 }
 
 func CutDId(did string) string {
-	var realDid string
-	if strings.Contains(did, "#") {
-		realDid = strings.Split(did, "#")[0]
-	} else {
-		realDid = did
+	index := strings.LastIndex(did, "@")
+	if index != -1 {
+		return did[:index]
 	}
-	return realDid
+	return did
+}
 
+//Did format  did@index#svrIndex
+func GetIndex(did string) string {
+	index := strings.LastIndex(did, "@")
+	svrIndex := strings.LastIndex(did, "#")
+	if index != -1 {
+		if svrIndex != -1 {
+			return did[index+1 : svrIndex]
+		} else {
+			return did[index+1:]
+		}
+	}
+	return "1" //default 1
 }
 
 func CheckConnection(myDid, theirDid string, db store.Store) error {
