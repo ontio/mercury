@@ -38,7 +38,7 @@ var HttpClientCmd = cli.Command{
 	Usage:     "http client cli",
 	ArgsUsage: "[arguments ...]",
 	Description: "cli management commands can be use to invitation,connect,sendmsg,reqcredential," +
-		"reqpresentation,querycredential,querypresentation.you can use ./agent-otf httpclient --help to view information",
+		"reqpresentation,querycredential,querypresentation.you can use ./agent-mercury httpclient --help to view information",
 	Subcommands: []cli.Command{
 		{
 			Action:      newInvitation,
@@ -70,7 +70,7 @@ var HttpClientCmd = cli.Command{
 		},
 		{
 			Action:      sendBasicMsg,
-			Name:        "sendibasicmsg",
+			Name:        "sendbasicmsg",
 			Usage:       "send basic msg",
 			Description: "send basic msg data",
 			Flags: []cli.Flag{

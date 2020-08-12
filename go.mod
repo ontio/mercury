@@ -9,10 +9,10 @@ require (
 	github.com/google/uuid v1.0.0
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/kr/pretty v0.2.0 // indirect
+	github.com/magiconair/properties v1.8.1
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/ontio/ontology v1.8.2
 	github.com/ontio/ontology-crypto v1.0.7
 	github.com/ontio/ontology-go-sdk v1.11.3
 	github.com/stretchr/testify v1.4.0

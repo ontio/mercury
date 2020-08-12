@@ -21,6 +21,8 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+
 	"github.com/ontio/mercury/common/message"
 	sdk "github.com/ontio/ontology-go-sdk"
 )
@@ -65,14 +67,14 @@ type DidPubkey struct {
 }
 
 func ValidateDid(did string) bool {
-	return sdk.VerifyID(did)
+	return sdk.VerifyID(CutDId(did))
 }
 
 func GetDidDocByDid(did string, ontSdk *sdk.OntologySdk) (*message.DIDDoc, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return nil, fmt.Errorf("ontsdk is nil")
 	}
-	data, err := ontSdk.Native.OntId.GetDocumentJson(did)
+	data, err := ontSdk.Native.OntId.GetDocumentJson(CutDId(did))
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +90,7 @@ func GetServiceEndpointByDid(did string, ontSdk *sdk.OntologySdk) ([]string, err
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return nil, fmt.Errorf("ontsdk is nil")
 	}
-	data, err := ontSdk.Native.OntId.GetDocumentJson(did)
+	data, err := ontSdk.Native.OntId.GetDocumentJson(CutDId(did))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +110,11 @@ func GetPubKeyByDid(did string, ontSdk *sdk.OntologySdk) (string, error) {
 	if ontSdk.Native == nil || ontSdk.Native.OntId == nil {
 		return "", fmt.Errorf("ontsdk is nil")
 	}
-	pubKey, err := ontSdk.Native.OntId.GetPublicKeysJson(did)
+	index, err := strconv.ParseInt(GetIndex(did), 10, 32)
+	if err != nil {
+		return "", err
+	}
+	pubKey, err := ontSdk.Native.OntId.GetPublicKeysJson(CutDId(did))
 	if err != nil {
 		return "", err
 	}
@@ -117,9 +123,8 @@ func GetPubKeyByDid(did string, ontSdk *sdk.OntologySdk) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(pks) == 0 {
+	if len(pks) < int(index) {
 		return "", fmt.Errorf("no public key found")
 	}
-
-	return pks[0].PublicKeyHex, nil
+	return pks[index-1].PublicKeyHex, nil
 }

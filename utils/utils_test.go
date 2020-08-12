@@ -15,20 +15,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
+package utils
 
-package packager
+import (
+	"github.com/magiconair/properties/assert"
+	"testing"
+)
 
-type Packager interface {
-	//PackConnection
-	PackConnection(data []byte, did string) (*MsgConnection, error)
-	//UnPackConnection
-	UnPackConnection(data *Envelope) (*MsgConnection, error)
-	//PackMessage
-	PackMessage(envelope *MessageData, destDid string) (*MessageData, error)
-	//UnpackMessage
-	UnpackMessage(data *MessageData, sourceDid string) (*MessageData, error)
-	//PackData
-	PackData(envelope *Envelope) ([]byte, error)
-	//UnPackData
-	UnPackData(enData []byte) (*Envelope, error)
+func TestCutDid(t *testing.T) {
+	did := CutDId("did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr")
+	assert.Equal(t, did, "did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr")
+}
+
+func TestGetPubKeyIndex(t *testing.T) {
+	index := GetIndex("did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr@1#2")
+	assert.Equal(t, index, "1")
+}
+
+func TestCutRouter(t *testing.T) {
+	router := CutRouter("did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr@1#2")
+	assert.Equal(t, router, "did:ont:TL9d9JddeyUZznz9eiTNwLEWQAipULr4mr#2")
 }

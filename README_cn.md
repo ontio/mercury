@@ -22,7 +22,7 @@
 
 
 ```
-./agent-otf
+./agent-mercury
 ```
 
 

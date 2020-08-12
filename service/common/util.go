@@ -3,15 +3,15 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ontio/mercury/common/packager"
-	"github.com/ontio/mercury/utils"
 	"io/ioutil"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/ontio/mercury/common/log"
 	"github.com/ontio/mercury/common/message"
+	"github.com/ontio/mercury/common/packager"
 	"github.com/ontio/mercury/common/packager/ecdsa"
-	"github.com/gin-gonic/gin"
+	"github.com/ontio/mercury/utils"
 )
 
 var (

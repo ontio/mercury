@@ -21,21 +21,22 @@ package ontdid
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/ontio/mercury/common/message"
 	"github.com/ontio/mercury/service/common"
 	"github.com/ontio/mercury/service/controller"
 	"github.com/ontio/mercury/store"
 	"github.com/ontio/mercury/utils"
 	"github.com/ontio/mercury/vdri"
-	"github.com/google/uuid"
 	sdk "github.com/ontio/ontology-go-sdk"
-	"strings"
-	"time"
 )
 
 var (
 	contexts = []string{"context1", "context2"}
-	types    = []string{"otf"}
+	types    = []string{"mercury"}
 )
 
 type SampleSubject struct {
@@ -177,13 +178,10 @@ func (ontVdri *OntVDRI) PresentProof(req *message.RequestPresentation, db store.
 	return presentation, nil
 }
 func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
-
-	realdid := utils.CutDId(did)
-	bts, err := o.ontSdk.Native.OntId.GetDocumentJson(realdid)
+	bts, err := o.ontSdk.Native.OntId.GetDocumentJson(utils.CutDId(did))
 	if err != nil {
 		return nil, err
 	}
-
 	doc := new(message.DIDDoc)
 	err = json.Unmarshal(bts, doc)
 	if err != nil {
@@ -252,5 +250,5 @@ func (o OntVDRI) GetDIDDoc(did string) (vdri.CommonDIDDoc, error) {
 }
 
 func (o OntVDRI) VerifyDID(did string) bool {
-	return strings.HasPrefix(did, "did:ont:")
+	return strings.HasPrefix(utils.CutDId(did), "did:ont:")
 }

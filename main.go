@@ -43,7 +43,7 @@ import (
 
 func setupAPP() *cli.App {
 	app := cli.NewApp()
-	app.Usage = "agent otf"
+	app.Usage = "agent mercury"
 	app.Action = startAgent
 	app.Flags = []cli.Flag{
 		cmd.LogLevelFlag,
@@ -106,7 +106,7 @@ func startAgent(ctx *cli.Context) {
 	ontVdri := ontdid.NewOntVDRI(ontSdk, account, selfDid)
 	msgSvr := common.NewMessageService(ontVdri, ontSdk, account, ctx.Bool(cmd.GetFlagName(cmd.EnablePackageFlag)), cfg)
 	r := service.NewApiRouter(ecdsa.New(ontSdk, account), db, msgSvr, ontVdri)
-	log.Infof("start agent svr account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
+	log.Infof("start agent mercury account:%s,port:%s", account.Address.ToBase58(), cfg.Port)
 	startPort := ip + ":" + port
 	if ctx.Bool(cmd.GetFlagName(cmd.EnableHttpsFlag)) {
 		err = r.RunTLS(startPort, cmd.DEFAULT_CERT_PATH, cmd.DEFAULT_KEY_PATH)
@@ -143,7 +143,7 @@ func signalHandle() {
 		si := <-ch
 		switch si {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			fmt.Println("get a signal: stop the rest gateway process", si.String())
+			fmt.Println("get a signal: stop the agent mercury process", si.String())
 			return
 		case syscall.SIGHUP:
 		default:

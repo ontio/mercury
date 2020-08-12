@@ -21,8 +21,8 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ontio/mercury/common/log"
 
+	"github.com/ontio/mercury/common/log"
 	"github.com/ontio/mercury/common/message"
 	"github.com/ontio/mercury/utils"
 )

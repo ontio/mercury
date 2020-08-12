@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/ontio/mercury/common/log"
 	"github.com/ontio/mercury/common/message"
 	"github.com/ontio/mercury/common/packager/ecdsa"
@@ -30,7 +31,6 @@ import (
 	"github.com/ontio/mercury/store"
 	"github.com/ontio/mercury/utils"
 	"github.com/ontio/mercury/vdri"
-	"github.com/gin-gonic/gin"
 )
 
 type SystemController struct {

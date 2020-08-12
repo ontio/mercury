@@ -19,12 +19,12 @@
 package service
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/ontio/mercury/common/packager/ecdsa"
 	"github.com/ontio/mercury/service/common"
 	"github.com/ontio/mercury/service/controller"
 	"github.com/ontio/mercury/store"
 	"github.com/ontio/mercury/vdri"
-	"github.com/gin-gonic/gin"
 )
 
 func NewApiRouter(packager *ecdsa.Packager, store store.Store,
