@@ -25,6 +25,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"syscall"
+	"time"
 
 	"github.com/ontio/mercury/cmd"
 	"github.com/ontio/mercury/cmd/did"
@@ -119,6 +120,7 @@ func startAgent(ctx *cli.Context) {
 			panic(err)
 		}
 	}
+	go CheckLogFileSize(ctx)
 	signalHandle()
 }
 
@@ -131,6 +133,21 @@ func initLog(ctx *cli.Context) {
 		logFileDir := ctx.String(cmd.GetFlagName(cmd.LogDirFlag))
 		logFileDir = filepath.Join(logFileDir, "") + string(os.PathSeparator)
 		log.InitLog(logLevel, logFileDir, log.Stdout)
+	}
+}
+
+func CheckLogFileSize(ctx *cli.Context) {
+	ticker := time.NewTicker(cmd.DEFAULT_CHECK_LOG * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			isNeedNewFile := log.CheckIfNeedNewFile()
+			if isNeedNewFile {
+				log.ClosePrintLog()
+				log.InitLog(ctx.GlobalInt(cmd.GetFlagName(cmd.LogLevelFlag)), log.PATH, log.Stdout)
+			}
+		}
 	}
 }
 
