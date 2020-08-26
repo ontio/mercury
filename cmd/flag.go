@@ -48,6 +48,7 @@ const (
 	DEFAULT_CLIENT_REST_URL       = "http://127.0.0.1:8080"
 	DEFAULT_REQ_CREDENTIAL_DATA   = ""
 	DEFAULT_REQ_PRESENTATION_DATA = ""
+	DEFAULT_CHECK_LOG             = 6
 )
 
 var (
