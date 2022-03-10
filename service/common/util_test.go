@@ -19,13 +19,14 @@
 package common
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRouterLastIndexOf(t *testing.T) {
 	did := "did:ont:abcde"
-	routers := []string{"did:ont:12345#1", "did:ont:abcde#1"}
+	routers := []string{"did:ont:12345#1", "did:ont:abcde@1"}
 	i, err := RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 1)
@@ -33,11 +34,11 @@ func TestRouterLastIndexOf(t *testing.T) {
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 1)
-	routers = []string{"did:ont:abcde#1"}
+	routers = []string{"did:ont:abcde@1"}
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 0)
-	routers = []string{"did:ont:ccadfa#1", "did:ont:12345#1", "did:ont:abcde#1"}
+	routers = []string{"did:ont:ccadfa#1", "did:ont:12345#1", "did:ont:abcde@1"}
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 2)
@@ -48,11 +49,11 @@ func TestRouterLastIndexOf(t *testing.T) {
 
 func TestIsReceiver(t *testing.T) {
 	did := "did:ont:abcde"
-	routers := []string{"did:ont:12345#1", "did:ont:abcde#1"}
+	routers := []string{"did:ont:12345#1", "did:ont:abcde@1"}
 	f := IsReceiver(did, routers)
 	assert.True(t, f)
 
-	routers = []string{"did:ont:abcde#1"}
+	routers = []string{"did:ont:abcde@1"}
 	f = IsReceiver(did, routers)
 	assert.True(t, f)
 
@@ -63,7 +64,7 @@ func TestIsReceiver(t *testing.T) {
 
 func TestMergeRouter(t *testing.T) {
 	myrouter := []string{"did:ont:abcde#1", "did:ont:ccccc#1"}
-	theirrouter := []string{"did:ont:ddddd#1", "did:ont:eeeee#1"}
+	theirrouter := []string{"did:ont:ddddd@1", "did:ont:eeeee#1"}
 	res := MergeRouter(myrouter, theirrouter)
 	assert.Equal(t, len(res), 4)
 	l, _ := RouterLastIndexOf("did:ont:ddddd", res)

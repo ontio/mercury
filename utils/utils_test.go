@@ -18,8 +18,9 @@
 package utils
 
 import (
-	"github.com/magiconair/properties/assert"
 	"testing"
+
+	"github.com/magiconair/properties/assert"
 )
 
 func TestCutDid(t *testing.T) {
