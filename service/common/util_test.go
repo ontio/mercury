@@ -26,7 +26,7 @@ import (
 
 func TestRouterLastIndexOf(t *testing.T) {
 	did := "did:ont:abcde"
-	routers := []string{"did:ont:12345#1", "did:ont:abcde#1"}
+	routers := []string{"did:ont:12345#1", "did:ont:abcde@1"}
 	i, err := RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 1)
@@ -34,11 +34,11 @@ func TestRouterLastIndexOf(t *testing.T) {
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 1)
-	routers = []string{"did:ont:abcde#1"}
+	routers = []string{"did:ont:abcde@1"}
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 0)
-	routers = []string{"did:ont:ccadfa#1", "did:ont:12345#1", "did:ont:abcde#1"}
+	routers = []string{"did:ont:ccadfa#1", "did:ont:12345#1", "did:ont:abcde@1"}
 	i, err = RouterLastIndexOf(did, routers)
 	assert.Nil(t, err)
 	assert.Equal(t, i, 2)
